@@ -13,7 +13,7 @@ import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
 export class BlogsController {
   constructor(
     private readonly blogsQueryRepo: BlogsQueryRepositories,
-    private readonly postsQueryRepositories: PostsQueryRepositories,
+    private readonly postsQueryRepo: PostsQueryRepositories,
   ) {}
 
   @Get()
@@ -31,7 +31,7 @@ export class BlogsController {
     @Query() paginationInputModel: PaginationDto,
   ): Promise<PaginationViewModel<PostViewModel[]>> {
     await this.blogsQueryRepo.findBlog(blogId);
-    return this.postsQueryRepositories.findPosts(paginationInputModel, userId, blogId);
+    return this.postsQueryRepo.findPosts(paginationInputModel, userId, blogId);
   }
 
   @Get(`:id`)

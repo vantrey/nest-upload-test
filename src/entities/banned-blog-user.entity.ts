@@ -1,6 +1,7 @@
-import { Column, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Blog } from './blog.entity';
 
+@Entity()
 export class BannedBlogUser {
   @PrimaryGeneratedColumn('uuid')
   id: string;

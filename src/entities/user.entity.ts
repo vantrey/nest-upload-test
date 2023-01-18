@@ -4,6 +4,7 @@ import { add } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { Device } from './device.entity';
 import { Blog } from './blog.entity';
+import { Post } from './post.entity';
 
 @Entity()
 export class User {
@@ -42,6 +43,8 @@ export class User {
   device: Device[];
   @OneToMany(() => Blog, (d) => d.user)
   blogs: Blog[];
+  @OneToMany(() => Post, (d) => d.user)
+  posts: Post[];
 
   constructor(login: string, email: string, passwordHash: string, isConfirmation: boolean) {
     this.login = login;

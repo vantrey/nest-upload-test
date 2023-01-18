@@ -22,7 +22,6 @@ import { CommentsRepositories } from './modules/comments/infrastructure/comments
 import { BasicAuthGuard } from './guards/basic-auth.guard';
 import { UsersService } from './modules/users/domain/users.service';
 import { CqrsModule } from '@nestjs/cqrs';
-import { Post, PostSchema } from './modules/posts/domain/post-schema-Model';
 import { Comment, CommentSchema } from './modules/comments/domain/comments-schema-Model';
 import { LikeComment, LikeCommentSchema } from './modules/comments/domain/likeComment-schema-Model';
 import { LikePost, LikePostSchema } from './modules/posts/domain/likePost-schema-Model';
@@ -75,6 +74,7 @@ import { User } from './entities/user.entity';
 import { Device } from './entities/device.entity';
 import { Blog } from './entities/blog.entity';
 import { BannedBlogUser } from './entities/banned-blog-user.entity';
+import { Post } from './entities/post.entity';
 
 const controllers = [
   AuthController,
@@ -146,7 +146,7 @@ const handlers = [
   UpdatePostHandler,
   UpdateBanUserForCurrentBlogHandler,
 ];
-const entities = [User, Device, Blog, BannedBlogUser];
+const entities = [User, Device, Blog, BannedBlogUser, Post];
 
 @Module({
   imports: [
@@ -163,8 +163,6 @@ const entities = [User, Device, Blog, BannedBlogUser];
       },
     }),
     MongooseModule.forFeature([
-      // { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: LikePost.name, schema: LikePostSchema },
       { name: LikeComment.name, schema: LikeCommentSchema },

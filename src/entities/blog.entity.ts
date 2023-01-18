@@ -1,8 +1,10 @@
 import { UpdateBlogDto } from '../modules/blogger/api/input-dtos/update-Blog-Dto-Model';
-import { Column, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { BannedBlogUser } from './banned-blog-user.entity';
+import { Post } from './post.entity';
 
+@Entity()
 export class Blog {
   @PrimaryGeneratedColumn('uuid')
   blogId: string;
@@ -28,6 +30,8 @@ export class Blog {
   user: User;
   @OneToMany(() => BannedBlogUser, (u) => u.blog)
   bannedUsers: BannedBlogUser[];
+  @OneToMany(() => Post, (u) => u.blog)
+  posts: Post[];
 
   constructor(
     userId: string,
@@ -43,6 +47,7 @@ export class Blog {
     this.description = description;
     this.websiteUrl = websiteUrl;
     this.createdAt = new Date().toISOString();
+    this.user = user;
   }
 
   static createBlog(
