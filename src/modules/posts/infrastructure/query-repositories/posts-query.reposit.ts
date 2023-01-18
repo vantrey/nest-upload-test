@@ -1,35 +1,28 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import {  Model } from "mongoose";
-import { Post, PostDocument } from "../../domain/post-schema-Model";
-import { PaginationDto } from "../../../blogs/api/input-Dtos/pagination-Dto-Model";
-import { PostViewModel } from "./post-View-Model";
-import {
-  LikePost,
-  LikePostDocument,
-  LikeStatusType
-} from "../../domain/likePost-schema-Model";
-import {
-  ExtendedLikesInfoViewModel,
-  LikeDetailsViewModel
-} from "./likes-Info-View-Model";
-import { PaginationViewModel } from "../../../blogs/infrastructure/query-repository/pagination-View-Model";
-import { ObjectId } from "mongodb";
-import { NotFoundExceptionMY } from "../../../../helpers/My-HttpExceptionFilter";
-import {
-  Comment,
-  CommentDocument
-} from "../../../comments/domain/comments-schema-Model";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Post, PostDocument } from '../../domain/post-schema-Model';
+import { PaginationDto } from '../../../blogs/api/input-Dtos/pagination-Dto-Model';
+import { PostViewModel } from './post-View-Model';
+import { LikePost, LikePostDocument, LikeStatusType } from '../../domain/likePost-schema-Model';
+import { ExtendedLikesInfoViewModel, LikeDetailsViewModel } from './likes-Info-View-Model';
+import { PaginationViewModel } from '../../../blogs/infrastructure/query-repository/pagination-View-Model';
+import { ObjectId } from 'mongodb';
+import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
+import { Comment, CommentDocument } from '../../../comments/domain/comments-schema-Model';
 import {
   LikeComment,
-  LikeCommentDocument
-} from "../../../comments/domain/likeComment-schema-Model";
+  LikeCommentDocument,
+} from '../../../comments/domain/likeComment-schema-Model';
 import {
-  BloggerCommentsViewType, CommentatorInfoModel,
+  BloggerCommentsViewType,
+  CommentatorInfoModel,
   CommentsViewType,
-  LikesInfoViewModel, PostInfoModel
-} from "../../../comments/infrastructure/query-repository/comments-View-Model";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../../blogger/domain/ban-user-for-current-blog-schema-Model";
+  LikesInfoViewModel,
+  PostInfoModel,
+} from '../../../comments/infrastructure/query-repository/comments-View-Model';
+import { BlogBanInfoDocument } from '../../../blogger/domain/ban-user-for-current-blog-schema-Model';
+import { BannedBlogUser } from '../../../../entities/banned-blog-user.entity';
 
 @Injectable()
 export class PostsQueryRepositories {
@@ -38,24 +31,22 @@ export class PostsQueryRepositories {
     @InjectModel(Comment.name) private readonly commentModel: Model<CommentDocument>,
     @InjectModel(LikeComment.name) private readonly likeCommentModel: Model<LikeCommentDocument>,
     @InjectModel(LikePost.name) private readonly likePostModel: Model<LikePostDocument>,
-    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
-  ) {
-  }
+    @InjectModel(BannedBlogUser.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>,
+  ) {}
 
   private LikeDetailsView(object: LikePostDocument): LikeDetailsViewModel {
-    return new LikeDetailsViewModel(
-      object.addedAt,
-      object.userId,
-      object.login
-    );
+    return new LikeDetailsViewModel(object.addedAt, object.userId, object.login);
   }
 
-  private async commentWithNewId(comment: CommentDocument, userId: string | null): Promise<CommentsViewType> {
+  private async commentWithNewId(
+    comment: CommentDocument,
+    userId: string | null,
+  ): Promise<CommentsViewType> {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
       const result = await this.likeCommentModel.findOne({
         userId: userId,
-        parentId: comment._id
+        parentId: comment._id,
       });
       if (result) {
         myStatus = result.likeStatus;
@@ -63,26 +54,22 @@ export class PostsQueryRepositories {
     }
     const totalCountLike = await this.likeCommentModel.countDocuments({
       parentId: comment._id,
-      likeStatus: "Like",
-      isBanned: false
+      likeStatus: 'Like',
+      isBanned: false,
     });
     const totalCountDislike = await this.likeCommentModel.countDocuments({
       parentId: comment._id,
-      likeStatus: "Dislike",
-      isBanned: false
+      likeStatus: 'Dislike',
+      isBanned: false,
     });
-    const likesInfo = new LikesInfoViewModel(
-      totalCountLike,
-      totalCountDislike,
-      myStatus
-    );
+    const likesInfo = new LikesInfoViewModel(totalCountLike, totalCountDislike, myStatus);
     return new CommentsViewType(
       comment.id,
       comment.content,
       comment.userId,
       comment.userLogin,
       comment.createdAt,
-      likesInfo
+      likesInfo,
     );
   }
 
@@ -93,7 +80,7 @@ export class PostsQueryRepositories {
       const result = await this.likePostModel.findOne({
         userId: userId,
         parentId: post._id,
-        isBanned: false
+        isBanned: false,
       });
       if (result) {
         myStatus = result.likeStatus;
@@ -101,33 +88,31 @@ export class PostsQueryRepositories {
     }
     const totalCountLike = await this.likePostModel.countDocuments({
       parentId: post._id,
-      likeStatus: "Like",
-      isBanned: false
+      likeStatus: 'Like',
+      isBanned: false,
     });
     const totalCountDislike = await this.likePostModel.countDocuments({
       parentId: post._id,
-      likeStatus: "Dislike",
-      isBanned: false
+      likeStatus: 'Dislike',
+      isBanned: false,
     });
     //finding the newest likes
     const newestLikes = await this.likePostModel
       .find({
         parentId: post.id,
-        likeStatus: "Like",
-        isBanned: false
+        likeStatus: 'Like',
+        isBanned: false,
       })
-      .sort({ addedAt: "desc" })
+      .sort({ addedAt: 'desc' })
       .limit(3);
     //mapped the newest likes for View
-    const mappedNewestLikes = newestLikes.map((like) =>
-      this.LikeDetailsView(like)
-    );
+    const mappedNewestLikes = newestLikes.map((like) => this.LikeDetailsView(like));
     //const itemsLikes = await Promise.all(mappedNewestLikes);
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(
       totalCountLike,
       totalCountDislike,
       myStatus,
-      mappedNewestLikes
+      mappedNewestLikes,
     );
     return new PostViewModel(
       post.id,
@@ -137,11 +122,15 @@ export class PostsQueryRepositories {
       post.blogId,
       post.blogName,
       post.createdAt,
-      extendedLikesInfo
+      extendedLikesInfo,
     );
   }
 
-  async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
+  async findPosts(
+    data: PaginationDto,
+    userId: string | null,
+    blogId?: string,
+  ): Promise<PaginationViewModel<PostViewModel[]>> {
     //search all posts with pagination by blogId
     const filter = blogId ? { blogId, isBanned: false } : { isBanned: false };
     const foundPosts = await this.postModel
@@ -150,9 +139,7 @@ export class PostsQueryRepositories {
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection });
     //mapped posts for view
-    const mappedPosts = foundPosts.map((post) =>
-      this.postForView(post, userId)
-    );
+    const mappedPosts = foundPosts.map((post) => this.postForView(post, userId));
     const itemsPosts = await Promise.all(mappedPosts);
     //counting posts for blogId
     const totalCount = await this.postModel.countDocuments(filter);
@@ -164,7 +151,7 @@ export class PostsQueryRepositories {
       data.pageNumber,
       data.pageSize,
       totalCount,
-      itemsPosts
+      itemsPosts,
     );
   }
 
@@ -172,7 +159,7 @@ export class PostsQueryRepositories {
     //find post by id from uri params
     const post = await this.postModel.findOne({
       _id: new ObjectId(id),
-      isBanned: false
+      isBanned: false,
     });
 
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
@@ -180,7 +167,11 @@ export class PostsQueryRepositories {
     return this.postForView(post, userId);
   }
 
-  async findCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>> {
+  async findCommentsByIdPost(
+    postId: string,
+    data: PaginationDto,
+    userId: string | null,
+  ): Promise<PaginationViewModel<CommentsViewType[]>> {
     const filter = { postId: postId, isBanned: false };
     //find post by postId and userId
     const post = await this.findPost(postId, userId);
@@ -191,13 +182,11 @@ export class PostsQueryRepositories {
       .skip((data.pageNumber - 1) * data.pageSize)
       .limit(data.pageSize)
       .sort({ [data.sortBy]: data.sortDirection });
-    const mappedComments = comments.map((comment) =>
-      this.commentWithNewId(comment, userId)
-    );
+    const mappedComments = comments.map((comment) => this.commentWithNewId(comment, userId));
     const itemsComments = await Promise.all(mappedComments);
     //counting comments
     const totalCountComments = await this.commentModel.countDocuments(
-      postId ? { postId, isBanned: false } : { isBanned: false }
+      postId ? { postId, isBanned: false } : { isBanned: false },
     );
     const pagesCountRes = Math.ceil(totalCountComments / data.pageSize);
     //returning comment with pagination
@@ -206,25 +195,23 @@ export class PostsQueryRepositories {
       data.pageNumber,
       data.pageSize,
       totalCountComments,
-      itemsComments
+      itemsComments,
     );
   }
 
   async createPostForView(post: PostDocument): Promise<PostViewModel> {
     const postId = post.id;
     const newestLikes = await this.likePostModel
-      .find({ parentId: postId, likeStatus: "Like", isBanned: false })
-      .sort({ addedAt: "desc" })
+      .find({ parentId: postId, likeStatus: 'Like', isBanned: false })
+      .sort({ addedAt: 'desc' })
       .limit(3);
-    const mappedNewestLikes = newestLikes.map((like) =>
-      this.LikeDetailsView(like)
-    );
+    const mappedNewestLikes = newestLikes.map((like) => this.LikeDetailsView(like));
     //const itemsLikes = await Promise.all(mappedNewestLikes);
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(
       0,
       0,
       LikeStatusType.None,
-      mappedNewestLikes
+      mappedNewestLikes,
     );
     //returning created post with extended likes info for View
     return new PostViewModel(
@@ -235,75 +222,63 @@ export class PostsQueryRepositories {
       post.blogId,
       post.blogName,
       post.createdAt,
-      extendedLikesInfo
+      extendedLikesInfo,
     );
   }
 
   async findCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto) {
     const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
     //search all comments with pagination
-    const foundComments = await this.commentModel.find({ ownerId: userId })
+    const foundComments = await this.commentModel
+      .find({ ownerId: userId })
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize)
       .sort({ [sortBy]: sortDirection });
     //mapped posts for view
-    const mappedPosts = foundComments.map((comment) => this.bloggerCommentViewModel(comment, userId));
+    const mappedPosts = foundComments.map((comment) =>
+      this.bloggerCommentViewModel(comment, userId),
+    );
     const items = await Promise.all(mappedPosts);
     const totalCount = await this.commentModel.countDocuments({ ownerId: userId });
     //pages count
     const pagesCountRes = Math.ceil(totalCount / pageSize);
     // Found posts with pagination
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      totalCount,
-      items
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, totalCount, items);
   }
 
   private async bloggerCommentViewModel(comment: CommentDocument, userId: string | null) {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
-      const result = await this.likeCommentModel.findOne({ userId: userId, parentId: comment._id.toString() });
+      const result = await this.likeCommentModel.findOne({
+        userId: userId,
+        parentId: comment._id.toString(),
+      });
       if (result) {
         myStatus = result.likeStatus;
       }
     }
     const totalCountLike = await this.likeCommentModel.countDocuments({
       parentId: comment.id,
-      likeStatus: "Like",
-      isBanned: false
+      likeStatus: 'Like',
+      isBanned: false,
     });
     const totalCountDislike = await this.likeCommentModel.countDocuments({
       parentId: comment.id,
-      likeStatus: "Dislike",
-      isBanned: false
+      likeStatus: 'Dislike',
+      isBanned: false,
     });
-    const likesInfo = new LikesInfoViewModel(
-      totalCountLike,
-      totalCountDislike,
-      myStatus
-    );
+    const likesInfo = new LikesInfoViewModel(totalCountLike, totalCountDislike, myStatus);
 
     const post = await this.postModel.findOne({ _id: new Object(comment.postId) });
-    const commentatorInfo = new CommentatorInfoModel(
-      comment.userId,
-      comment.userLogin
-    );
-    const postInfo = new PostInfoModel(
-      post.id,
-      post.title,
-      post.blogId,
-      post.blogName
-    );
+    const commentatorInfo = new CommentatorInfoModel(comment.userId, comment.userLogin);
+    const postInfo = new PostInfoModel(post.id, post.title, post.blogId, post.blogName);
     return new BloggerCommentsViewType(
       comment.id,
       comment.content,
       comment.createdAt,
       likesInfo,
       commentatorInfo,
-      postInfo
+      postInfo,
     );
   }
 }

@@ -1,102 +1,56 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { BlogDocument, Blog } from "../../blogger/domain/blog-schema-Model";
-import { BlogBanInfo, BlogBanInfoDocument } from "../../blogger/domain/ban-user-for-current-blog-schema-Model";
+import { Injectable } from '@nestjs/common';
+import { Blog } from '../../../entities/blog.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BannedBlogUser } from '../../../entities/banned-blog-user.entity';
 
 @Injectable()
 export class BlogsRepositories {
   constructor(
-    @InjectModel(Blog.name) private readonly blogsModel: Model<BlogDocument>,
-    @InjectModel(BlogBanInfo.name) private readonly blogBanInfoModel: Model<BlogBanInfoDocument>
-  ) {
+    @InjectRepository(Blog) private readonly blogRepo: Repository<Blog>,
+    @InjectRepository(BannedBlogUser)
+    private readonly bannedBlogUserRepo: Repository<BannedBlogUser>,
+  ) {}
+
+  async saveBlog(blog: Blog): Promise<Blog> {
+    return this.blogRepo.save(blog);
   }
 
   async deleteBlog(id: string, userId: string): Promise<boolean> {
-    const result = await this.blogsModel
-      .deleteOne({ id, userId: userId })
-      .exec();
-    return result.deletedCount === 1;
+    await this.blogRepo.manager.connection
+      .transaction(async (manager) => {
+        await manager.delete(Blog, { userId: userId });
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+    return true;
   }
 
-  async findBlog(id: string): Promise<BlogDocument> {
-    const blog = await this.blogsModel.findOne({ _id: new Object(id) });
-    if (!blog) return null;
-    return blog;
+  async findBlog(id: string): Promise<Blog> {
+    return await this.blogRepo.findOneBy({ blogId: id }).catch((e) => {
+      console.log(e);
+      return null;
+    });
   }
 
-  async findStatusBan(userId: string, blogId: string): Promise<BlogBanInfoDocument> {
+  async findStatusBan(userId: string, blogId: string): Promise<BannedBlogUser> {
     const statusBan = await this.blogBanInfoModel.findOne({ blogId: blogId, userId: userId });
     if (!statusBan) return null;
     return statusBan;
   }
 
-  async findStatusBanBy(userId: string, blogId: string): Promise<BlogBanInfoDocument> {
-    const statusBan = await this.blogBanInfoModel.findOne({ blogId: blogId, ownerId: userId });
+  async findStatusBanBy(userId: string, blogId: string): Promise<BannedBlogUser> {
+    const statusBan = await this.bannedBlogUserRepo.findOneBy({
+      blogId: blogId,
+      userId: userId,
+    });
     if (!statusBan) return null;
     return statusBan;
   }
 
-  async saveBlog(blog: BlogDocument): Promise<BlogDocument> {
-    return blog.save();
-  }
-
-  async saveBanStatus(banStatus: BlogBanInfoDocument): Promise<BlogBanInfoDocument> {
-    return await banStatus.save();
+  async saveBanStatus(banStatus: BannedBlogUser): Promise<BannedBlogUser> {
+    return await this.bannedBlogUserRepo.save(banStatus);
   }
 }
-
-
-/*async createBlog(newBlog: PreparationBlogForDB): Promise<string> {
-  const smartBlog = new this.blogsModel(newBlog);
-  const blog = await smartBlog.save();
-  return blog.id;
-}
-
-async updateBlog(id: string, userId: string, data: UpdateBlogDto): Promise<boolean> {
-  const result = await this.blogsModel.updateOne(
-    { id, userId: userId },
-    {
-      $set: {
-        name: data.name,
-        description: data.description,
-        websiteUrl: data.websiteUrl
-      }
-    }
-  );
-  return result.matchedCount === 1;
-}
-
-async updateOwnerBlog(id: string, userId: string): Promise<boolean> {
-  const result = await this.blogsModel.updateOne(
-    { id },
-    { $set: { userId: userId } }
-  );
-  return result.matchedCount === 1;
-}
-
-async updateBanStatusForBlog(blogId: string, isBanned: boolean): Promise<boolean> {
-  const result = await this.blogsModel.updateOne({ _id: new Object(blogId) }, {
-    $set: {
-      isBanned,
-      banDate: new Date().toISOString()
-    }
-  });
-  return result.matchedCount === 1;
-
-
-    async createBanStatus(banStatus: BanUserForBlogPreparationForDB) {
-    const smartBanStatus = new this.blogBanInfoModel(banStatus);
-    const banStatusInfo = await smartBanStatus.save();
-    return banStatusInfo.id;
-  }
-
-  async updateBanStatus(banStatus: BanUserForBlogPreparationForDB): Promise<boolean> {
-    const { blogId, isBanned, banReason, banDate, userId, login, ownerId, email, createdAt } = banStatus;
-    const result = await this.blogBanInfoModel.updateOne(
-      { blogId, userId },
-      { $set: { isBanned, banReason, banDate, login, ownerId, email, createdAt } }
-    );
-    return result.matchedCount === 1;
-  }
-}*/

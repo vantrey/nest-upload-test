@@ -3,6 +3,8 @@ import { User } from '../../entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Device } from '../../entities/device.entity';
+import { Blog } from '../../entities/blog.entity';
+import { BannedBlogUser } from '../../entities/banned-blog-user.entity';
 
 @Injectable()
 export class TestingService {
@@ -24,6 +26,8 @@ export class TestingService {
       .transaction(async (manager) => {
         await manager.delete(User, {});
         await manager.delete(Device, {});
+        await manager.delete(Blog, {});
+        await manager.delete(BannedBlogUser, {});
       })
       .catch((e) => {
         return console.log(e);

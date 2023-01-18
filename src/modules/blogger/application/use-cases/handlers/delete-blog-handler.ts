@@ -1,23 +1,21 @@
-import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
-import { BlogsRepositories } from "../../../../blogs/infrastructure/blogs.repositories";
-import { DeleteBlogCommand } from "../delete-blog-command";
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
+import { DeleteBlogCommand } from '../delete-blog-command';
 import {
   ForbiddenExceptionMY,
-  NotFoundExceptionMY
-} from "../../../../../helpers/My-HttpExceptionFilter";
+  NotFoundExceptionMY,
+} from '../../../../../helpers/My-HttpExceptionFilter';
 
 @CommandHandler(DeleteBlogCommand)
 export class DeleteBlogHandler implements ICommandHandler<DeleteBlogCommand> {
-  constructor(private readonly blogsRepositories: BlogsRepositories) {
-  }
+  constructor(private readonly blogsRepo: BlogsRepositories) {}
 
   async execute(command: DeleteBlogCommand): Promise<boolean> {
     const { blogId, userId } = command;
-    const blog = await this.blogsRepositories.findBlog(blogId);
-    if (!blog)
-      throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
+    const blog = await this.blogsRepo.findBlog(blogId);
+    if (!blog) throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
     if (blog.checkOwner(userId)) {
-      const result = await this.blogsRepositories.deleteBlog(blogId, userId);
+      const result = await this.blogsRepo.deleteBlog(blogId, userId);
       if (!result) throw new NotFoundExceptionMY(`Not found for id: ${blogId}`);
       return true;
     }

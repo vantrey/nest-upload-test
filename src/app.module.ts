@@ -34,11 +34,6 @@ import { BindBlogHandler } from './modules/sa/application/use-cases/handlers/bin
 import { UpdateBanInfoForBlogHandler } from './modules/sa/application/use-cases/handlers/update-ban-info-for-blog-handler';
 import { BlogsQueryRepositories } from './modules/blogs/infrastructure/query-repository/blogs-query.repositories';
 import { BlogsRepositories } from './modules/blogs/infrastructure/blogs.repositories';
-import { Blog, BlogSchema } from './modules/blogger/domain/blog-schema-Model';
-import {
-  BlogBanInfo,
-  BlogBanInfoSchema,
-} from './modules/blogger/domain/ban-user-for-current-blog-schema-Model';
 import { SaController } from './modules/sa/api/sa.controller';
 import { SaService } from './modules/sa/domain/sa.service';
 import { CreateCommentHandler } from './modules/posts/application/use-cases/handlers/create-comment-handler';
@@ -78,6 +73,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthController } from './modules/auth/api/auth.controller';
 import { User } from './entities/user.entity';
 import { Device } from './entities/device.entity';
+import { Blog } from './entities/blog.entity';
+import { BannedBlogUser } from './entities/banned-blog-user.entity';
 
 const controllers = [
   AuthController,
@@ -149,6 +146,7 @@ const handlers = [
   UpdatePostHandler,
   UpdateBanUserForCurrentBlogHandler,
 ];
+const entities = [User, Device, Blog, BannedBlogUser];
 
 @Module({
   imports: [
@@ -165,12 +163,12 @@ const handlers = [
       },
     }),
     MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
+      // { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: LikePost.name, schema: LikePostSchema },
       { name: LikeComment.name, schema: LikeCommentSchema },
-      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
+      // { name: BannedBlogUser.name, schema: BlogBanInfoSchema },
     ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -178,7 +176,7 @@ const handlers = [
         const database = configService.get('database', { infer: true });
         return {
           type: 'postgres',
-          entities: [User, Device],
+          entities: [...entities],
           url: database.PGSQL_URL,
           autoLoadEntities: true,
           synchronize: true,
@@ -186,7 +184,7 @@ const handlers = [
         };
       },
     }),
-    TypeOrmModule.forFeature([User, Device]),
+    TypeOrmModule.forFeature([...entities]),
     MailModule,
     CqrsModule,
     TestingModule,
