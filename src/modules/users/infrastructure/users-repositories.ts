@@ -1,56 +1,79 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { User, UserDocument } from "../domain/users-schema-Model";
-import { ObjectId } from "mongodb";
+import { Injectable } from '@nestjs/common';
+import { User } from '../../../entities/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersRepositories {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>
-  ) {
-  }
+    @InjectRepository(User)
+    private readonly userRepo: Repository<User>,
+  ) {}
 
-  async saveUser(createdUser: UserDocument): Promise<string> {
-    const user = await createdUser.save();
-    return user.id;
+  async saveUser(createdUser: User): Promise<string> {
+    const user = await this.userRepo.save(createdUser);
+    return user.userId;
   }
 
   async deleteUser(id: string): Promise<boolean> {
-    const result = await this.userModel.deleteOne({ _id: new ObjectId(id) });
-    return result.deletedCount === 1;
+    await this.userRepo.manager.connection
+      .transaction(async (manager) => {
+        await manager
+          .createQueryBuilder()
+          .delete()
+          .from('user')
+          .where('userId = :id', { id })
+          .execute();
+        // await manager.createQueryBuilder()
+        //   .delete()
+        //   .from("email_confirmation")
+        //   .where("userId = :id", { id })
+        //   .execute();
+        // await manager.createQueryBuilder()
+        //   .delete()
+        //   .from("email_recovery")
+        //   .where("userId = :id", { id })
+        //   .execute();
+      })
+      .catch((e) => {
+        return console.log(e);
+      });
+    return true;
   }
 
-  async findByLoginOrEmail(loginOrEmail: string): Promise<UserDocument> {
-    return this.userModel.findOne({
-      $or: [
-        { "accountData.email": loginOrEmail },
-        { "accountData.login": loginOrEmail }
-      ]
-    });
+  // async findByLoginOrEmail(loginOrEmail: string): Promise<User> {
+  //   return this.userModel.findOne({
+  //     $or: [{ 'accountData.email': loginOrEmail }, { 'accountData.login': loginOrEmail }],
+  //   });
+  // }
+  async findByLoginOrEmail(loginOrEmail: string): Promise<User> {
+    return this.userRepo.findOneBy([{ login: loginOrEmail }, { email: loginOrEmail }]);
   }
 
-  async findUserByConfirmationCode(confirmationCode: string): Promise<UserDocument> {
-    return this.userModel.findOne({
-      "emailConfirmation.confirmationCode": confirmationCode
-    });
+  // async findUserByConfirmationCode(confirmationCode: string): Promise<UserDocument> {
+  //   return this.userModel.findOne({
+  //     'emailConfirmation.confirmationCode': confirmationCode,
+  //   });
+  // }
+  async findUserByConfirmationCode(confirmationCode: string): Promise<User> {
+    return this.userRepo.findOneBy({ confirmationCode: confirmationCode });
   }
 
-  async findUserByRecoveryCode(recoveryCode: string): Promise<UserDocument> {
-    return this.userModel.findOne({
-      "emailRecovery.recoveryCode": recoveryCode
-    });
+  // async findUserByRecoveryCode(recoveryCode: string): Promise<UserDocument> {
+  //   return this.userModel.findOne({
+  //     'emailRecovery.recoveryCode': recoveryCode,
+  //   });
+  // }
+  async findUserByRecoveryCode(recoveryCode: string): Promise<User> {
+    return await this.userRepo.findOneBy({ recoveryCode: recoveryCode });
   }
 
-  async findUserByIdWithMapped(userId: string): Promise<UserDocument> {
-    // return new UserForBan(user, userPostsDocs, ..., )
-    const user = await this.userModel.findOne({ _id: new Object(userId) });
+  async findUserByIdWithMapped(userId: string): Promise<User> {
+    const user = await this.userRepo.findOneBy({ userId: userId });
     if (!user) return null;
     return user;
   }
-
 }
-
 
 /* async updateConfirmation(_id: ObjectId): Promise<boolean> {
    const result = await this.userModel.updateOne(
