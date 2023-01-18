@@ -1,31 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Device, DeviceDocument } from '../../domain/device-schema-Model';
 import { DeviceViewModel } from './device-View-Model';
+import { Device } from '../../../../entities/device.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class DeviceQueryRepositories {
   constructor(
-    @InjectModel(Device.name)
-    private readonly deviceModel: Model<DeviceDocument>,
+    @InjectRepository(Device)
+    private readonly deviceRepo: Repository<Device>,
   ) {}
 
-  private deviceForView(object: DeviceDocument): DeviceViewModel {
-    return new DeviceViewModel(
-      object.ip,
-      object.title,
-      object.lastActiveDate,
-      object.deviceId,
-    );
-  }
+  // private deviceForView(object: Device): DeviceViewModel {
+  //   return new DeviceViewModel(object.ip, object.title, object.lastActiveDate, object.deviceId);
+  // }
 
+  // async findDevices(userId: string): Promise<DeviceViewModel[]> {
+  //   const devices = await this.deviceModel.find({ userId: userId });
+  //   if (!devices) {
+  //     throw new Error('server all');
+  //   } else {
+  //     return devices.map((device) => this.deviceForView(device));
+  //   }
+  // }
   async findDevices(userId: string): Promise<DeviceViewModel[]> {
-    const devices = await this.deviceModel.find({ userId: userId })
-    if (!devices) {
-      throw new Error('server all');
-    } else {
-      return devices.map((device) => this.deviceForView(device));
-    }
+    return await this.deviceRepo.find({
+      select: ['ip', 'title', 'lastActiveDate', 'deviceId'],
+      where: { userId: userId },
+    });
   }
 }

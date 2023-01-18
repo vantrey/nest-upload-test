@@ -5,18 +5,14 @@ import { LoginCommand } from '../login-command';
 import { JwtService, TokensType } from '../../jwt.service';
 import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
 import { randomUUID } from 'crypto';
-import { Device, DeviceDocument } from '../../../../security/domain/device-schema-Model';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Device } from '../../../../../entities/device.entity';
 
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
   constructor(
-    @InjectModel(Device.name)
-    private readonly deviceModel: Model<DeviceDocument>,
     private readonly jwtService: JwtService,
-    private readonly deviceRepositories: DeviceRepositories,
-    private readonly usersRepositories: UsersRepositories,
+    private readonly deviceRepo: DeviceRepositories,
+    private readonly usersRepo: UsersRepositories,
   ) {}
 
   async execute(command: LoginCommand): Promise<TokensType> {
@@ -24,13 +20,13 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
     const ipAddress = command.ip;
     const deviceName = command.deviceName;
     //validate user by login or email
-    const user = await this.usersRepositories.findByLoginOrEmail(loginOrEmail);
+    const user = await this.usersRepo.findByLoginOrEmail(loginOrEmail);
     if (!user) throw new UnauthorizedExceptionMY(`User '${loginOrEmail}' is not authorized `);
     //check passwordHash
     if (await user.comparePassword(password)) {
       if (user.checkStatusBan()) {
         //deleting a devices-sessions if the user is banned
-        await this.deviceRepositories.deleteDevicesForBannedUser(user.userId);
+        await this.deviceRepo.deleteDevicesForBannedUser(user.userId);
         throw new UnauthorizedExceptionMY(`Did you get a ban!`);
       }
       //preparation data for token
@@ -49,10 +45,10 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
         dateCreatedToken,
         dateExpiredToken,
         deviceId,
+        user,
       );
-      //create instance
-      const device = new this.deviceModel(newDevice);
-      await this.deviceRepositories.saveDevice(device);
+      //save
+      await this.deviceRepo.saveDevice(newDevice);
       return token;
     }
     throw new UnauthorizedExceptionMY(`Incorrect password --sa-`);

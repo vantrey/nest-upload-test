@@ -5,23 +5,20 @@ import { DeviceRepositories } from '../../../../security/infrastructure/device-r
 
 @CommandHandler(LogoutCommand)
 export class LogoutHandler implements ICommandHandler<LogoutCommand> {
-  constructor(private readonly deviceRepositories: DeviceRepositories) {}
+  constructor(private readonly deviceRepo: DeviceRepositories) {}
 
   async execute(command: LogoutCommand): Promise<boolean> {
     const { userId, deviceId, iat } = command.payloadRefresh;
     const dateCreatedToken = new Date(iat * 1000).toISOString();
     //search device
-    const foundDevice = await this.deviceRepositories.findDeviceForDelete(
+    const foundDevice = await this.deviceRepo.findDeviceForDelete(
       userId,
       deviceId,
       dateCreatedToken,
     );
     if (!foundDevice) throw new UnauthorizedExceptionMY('not today sorry man');
     //removing device
-    const isDeleted = await this.deviceRepositories.deleteDevice(
-      userId,
-      deviceId,
-    );
+    const isDeleted = await this.deviceRepo.deleteDevice(userId, deviceId);
     if (!isDeleted) throw new UnauthorizedExceptionMY('not today');
     return true;
   }

@@ -22,7 +22,6 @@ import { CommentsRepositories } from './modules/comments/infrastructure/comments
 import { BasicAuthGuard } from './guards/basic-auth.guard';
 import { UsersService } from './modules/users/domain/users.service';
 import { CqrsModule } from '@nestjs/cqrs';
-import { Device, DeviceSchema } from './modules/security/domain/device-schema-Model';
 import { Post, PostSchema } from './modules/posts/domain/post-schema-Model';
 import { Comment, CommentSchema } from './modules/comments/domain/comments-schema-Model';
 import { LikeComment, LikeCommentSchema } from './modules/comments/domain/likeComment-schema-Model';
@@ -78,6 +77,7 @@ import { RefreshHandler } from './modules/auth/application/use-cases/handlers/re
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthController } from './modules/auth/api/auth.controller';
 import { User } from './entities/user.entity';
+import { Device } from './entities/device.entity';
 
 const controllers = [
   AuthController,
@@ -165,13 +165,11 @@ const handlers = [
       },
     }),
     MongooseModule.forFeature([
-      // { name: User.name, schema: UserSchema },
       { name: Blog.name, schema: BlogSchema },
       { name: Post.name, schema: PostSchema },
       { name: Comment.name, schema: CommentSchema },
       { name: LikePost.name, schema: LikePostSchema },
       { name: LikeComment.name, schema: LikeCommentSchema },
-      { name: Device.name, schema: DeviceSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
     TypeOrmModule.forRootAsync({
@@ -180,7 +178,7 @@ const handlers = [
         const database = configService.get('database', { infer: true });
         return {
           type: 'postgres',
-          entities: [User],
+          entities: [User, Device],
           url: database.PGSQL_URL,
           autoLoadEntities: true,
           synchronize: true,
@@ -188,7 +186,7 @@ const handlers = [
         };
       },
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Device]),
     MailModule,
     CqrsModule,
     TestingModule,

@@ -1,68 +1,89 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { Device, DeviceDocument } from "../domain/device-schema-Model";
+import { Injectable } from '@nestjs/common';
+import { Device } from '../../../entities/device.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class DeviceRepositories {
   constructor(
-    @InjectModel(Device.name)
-    private readonly deviceModel: Model<DeviceDocument>
-  ) {
-  }
+    @InjectRepository(Device)
+    private readonly deviceRepo: Repository<Device>,
+  ) {}
 
-  async saveDevice(device: DeviceDocument) {
-    const createdDevice = await device.save();
-    return createdDevice.id;
+  async saveDevice(device: Device) {
+    const createdDevice = await this.deviceRepo.save(device);
+    return createdDevice.deviceId;
   }
 
   async deleteDevice(userId: string, deviceId: string): Promise<boolean> {
-    const result = await this.deviceModel.deleteOne({
-      $and: [{ userId: { $eq: userId } }, { deviceId: { $eq: deviceId } }]
+    await this.deviceRepo.delete({ userId: userId, deviceId: deviceId }).catch((e) => {
+      console.log(e);
     });
-    return result.deletedCount === 1;
+    return true;
   }
 
   async deleteDevices(userId: string, deviceId: string): Promise<boolean> {
-    const result = await this.deviceModel.deleteMany({
-      userId: userId,
-      deviceId: { $ne: deviceId }
-    });
-    return result.deletedCount === 1;
+    await this.deviceRepo.manager.connection
+      .transaction(async (manager) => {
+        await manager
+          .createQueryBuilder()
+          .delete()
+          .from(Device)
+          .where('userId = :id AND deviceId != :id2', { id: userId, id2: deviceId })
+          .execute();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    return true;
   }
 
   async deleteDevicesForBannedUser(userId: string): Promise<boolean> {
-    const result = await this.deviceModel.deleteMany({ userId: userId });
-    return result.deletedCount === 1;
+    await this.deviceRepo.delete({ userId: userId }).catch((e) => {
+      console.log(e);
+    });
+    return true;
   }
 
-  async findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<DeviceDocument> {
-    return this.deviceModel.findOne({ userId, deviceId });
+  async findByDeviceIdAndUserId(userId: string, deviceId: string): Promise<Device> {
+    return await this.deviceRepo.findOneBy({ userId: userId, deviceId: deviceId });
   }
 
   async deleteDeviceByDeviceId(deviceId: string): Promise<boolean> {
-    const result = await this.deviceModel.deleteMany({ deviceId: deviceId });
-    return result.deletedCount === 1;
+    await this.deviceRepo.manager.connection
+      .transaction(async (manager) => {
+        await manager
+          .createQueryBuilder()
+          .delete()
+          .from(Device)
+          .where('deviceId = :id', { id: deviceId })
+          .execute();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+    return true;
   }
 
-  async findDeviceForValid(userId: string, deviceId: string, iat: number): Promise<DeviceDocument> {
-    const dateCreateToken = new Date(iat * 1000).toISOString();
-    const device = await this.deviceModel.findOne({
-      $and: [
-        { userId: userId },
-        { deviceId: deviceId },
-        { lastActiveDate: dateCreateToken }
-      ]
+  async findDeviceForValid(userId: string, deviceId: string, iat: number): Promise<Device> {
+    let dateCreateToken = new Date(iat * 1000).toISOString();
+    const devices = await this.deviceRepo.findOneBy({
+      userId: userId,
+      deviceId: deviceId,
+      lastActiveDate: dateCreateToken,
     });
-    if (!device) {
+    if (!devices) {
       return null;
     } else {
-      return device;
+      return devices;
     }
   }
 
-  async findDeviceByDeviceId(deviceId: string): Promise<DeviceDocument> {
-    const device = await this.deviceModel.findOne({ deviceId: deviceId });
+  async findDeviceByDeviceId(deviceId: string): Promise<Device> {
+    const device = await this.deviceRepo.findOneBy({ deviceId: deviceId }).catch((e) => {
+      console.log(e);
+      return null;
+    });
     if (!device) {
       return null;
     } else {
@@ -73,59 +94,26 @@ export class DeviceRepositories {
   async findForUpdateDateDevice(
     userId: string,
     deviceId: string,
-    dateCreatedOldToken: string
-  ): Promise<DeviceDocument> {
-    const result = await this.deviceModel.findOne(
-      {
-        $and: [
-          { userId: { $eq: userId } },
-          { deviceId: { $eq: deviceId } },
-          { lastActiveDate: { $eq: dateCreatedOldToken } }
-        ]
-      },
-    );
-    return result
+    dateCreatedOldToken: string,
+  ): Promise<Device> {
+    return await this.deviceRepo.findOneBy({
+      userId: userId,
+      deviceId: deviceId,
+      lastActiveDate: dateCreatedOldToken,
+    });
   }
+
   async findDeviceForDelete(
     userId: string,
     deviceId: string,
-    dateCreatedToken: string
-  ): Promise<DeviceDocument> {
-    return this.deviceModel.findOne({
-      $and: [
-        { userId: { $eq: userId } },
-        { deviceId: { $eq: deviceId } },
-        { lastActiveDate: { $eq: dateCreatedToken } }
-      ]
+    dateCreatedToken: string,
+  ): Promise<Device> {
+    return await this.deviceRepo.findOne({
+      where: {
+        userId: userId,
+        deviceId: deviceId,
+        lastActiveDate: dateCreatedToken,
+      },
     });
   }
 }
-
-/*    async createDevice(device: PreparationDeviceForDB) {
-    return await this.deviceModel.create(device);
-  }
-
-  async updateDateDevice(
-    userId: string,
-    deviceId: string,
-    dateCreateToken: string,
-    dateExpiredToken: string,
-    dateCreatedOldToken: string
-  ): Promise<boolean> {
-    const result = await this.deviceModel.updateOne(
-      {
-        $and: [
-          { userId: { $eq: userId } },
-          { deviceId: { $eq: deviceId } },
-          { lastActiveDate: { $eq: dateCreatedOldToken } }
-        ]
-      },
-      {
-        $set: {
-          lastActiveDate: dateCreateToken,
-          expiredDate: dateExpiredToken
-        }
-      }
-    );
-    return result.modifiedCount === 1;
-  }*/

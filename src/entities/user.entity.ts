@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 import * as bcrypt from 'bcrypt';
+import { Device } from './device.entity';
 
 @Entity()
 export class User {
@@ -35,6 +36,9 @@ export class User {
   expirationDateR: Date;
   @Column('boolean', { default: false })
   isConfirmationR: boolean;
+  //-------
+  @OneToMany(() => Device, (d) => d.user)
+  device: Device[];
 
   constructor(login: string, email: string, passwordHash: string, isConfirmation: boolean) {
     this.login = login;

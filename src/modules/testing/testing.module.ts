@@ -5,7 +5,6 @@ import { Post, PostSchema } from '../posts/domain/post-schema-Model';
 import { TestingController } from './testins.controller';
 import { Comment, CommentSchema } from '../comments/domain/comments-schema-Model';
 import { TestingService } from './testing.service';
-import { Device, DeviceSchema } from '../security/domain/device-schema-Model';
 import { LikeComment, LikeCommentSchema } from '../comments/domain/likeComment-schema-Model';
 import { LikePost, LikePostSchema } from '../posts/domain/likePost-schema-Model';
 import {
@@ -14,6 +13,7 @@ import {
 } from '../blogger/domain/ban-user-for-current-blog-schema-Model';
 import { User } from '../../entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Device } from '../../entities/device.entity';
 
 @Module({
   imports: [
@@ -22,12 +22,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       { name: Post.name, schema: PostSchema },
       // { name: User.name, schema: UserSchema },
       { name: Comment.name, schema: CommentSchema },
-      { name: Device.name, schema: DeviceSchema },
+      // { name: Device.name, schema: DeviceSchema },
       { name: LikeComment.name, schema: LikeCommentSchema },
       { name: LikePost.name, schema: LikePostSchema },
       { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
     ]),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Device]),
   ],
 
   controllers: [TestingController],

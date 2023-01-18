@@ -8,14 +8,14 @@ import { RecoveryCommand } from '../recovery-command';
 @CommandHandler(RecoveryCommand)
 export class RecoveryHandler implements ICommandHandler<RecoveryCommand> {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
+    private readonly usersRepo: UsersRepositories,
     private readonly mailService: MailService,
   ) {}
 
   async execute(command: RecoveryCommand): Promise<boolean> {
     const { email } = command.emailInputModel;
     //search user by login or email
-    const user = await this.usersRepositories.findByLoginOrEmail(email);
+    const user = await this.usersRepo.findByLoginOrEmail(email);
     if (!user)
       throw new BadRequestExceptionMY({
         message: `${email} has invalid`,
@@ -26,7 +26,7 @@ export class RecoveryHandler implements ICommandHandler<RecoveryCommand> {
       //generate new code
       user.updateRecoveryCode();
       //save updated code recovery
-      await this.usersRepositories.saveUser(user);
+      await this.usersRepo.saveUser(user);
       try {
         await this.mailService.sendPasswordRecoveryMessage(user.email, user.recoveryCode);
       } catch (error) {

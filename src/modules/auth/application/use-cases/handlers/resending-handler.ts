@@ -8,14 +8,14 @@ import { MailService } from '../../../../mail/mail.service';
 @CommandHandler(ResendingCommand)
 export class ResendingHandler implements ICommandHandler<ResendingCommand> {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
+    private readonly usersRepo: UsersRepositories,
     private readonly mailService: MailService,
   ) {}
 
   async execute(command: ResendingCommand): Promise<boolean> {
     const { email } = command.resendingInputModel;
     //search user by email
-    const user = await this.usersRepositories.findByLoginOrEmail(email);
+    const user = await this.usersRepo.findByLoginOrEmail(email);
     if (!user)
       throw new BadRequestExceptionMY({
         message: `Incorrect input data`,
@@ -26,7 +26,7 @@ export class ResendingHandler implements ICommandHandler<ResendingCommand> {
       //generation a new code
       user.updateConfirmCode();
       //save updated code confirmation
-      await this.usersRepositories.saveUser(user);
+      await this.usersRepo.saveUser(user);
       try {
         //sending code to email
         await this.mailService.sendEmailRecoveryMessage(user.email, user.confirmationCode);

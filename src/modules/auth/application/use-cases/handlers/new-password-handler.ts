@@ -7,14 +7,14 @@ import { UsersService } from '../../../../users/domain/users.service';
 @CommandHandler(NewPasswordCommand)
 export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
+    private readonly usersRepo: UsersRepositories,
     private readonly usersService: UsersService,
   ) {}
 
   async execute(command: NewPasswordCommand): Promise<boolean> {
     const { newPassword, recoveryCode } = command.newPasswordInputModel;
     //search user by code
-    const user = await this.usersRepositories.findUserByRecoveryCode(recoveryCode);
+    const user = await this.usersRepo.findUserByRecoveryCode(recoveryCode);
     if (!user)
       throw new BadRequestExceptionMY({
         message: `Incorrect input data`,
@@ -27,7 +27,7 @@ export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
       //update password
       user.updatePassword(passwordHash);
       //saved updated password
-      await this.usersRepositories.saveUser(user);
+      await this.usersRepo.saveUser(user);
       return true;
     }
     throw new BadRequestExceptionMY({
