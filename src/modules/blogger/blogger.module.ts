@@ -32,42 +32,42 @@ import {
 import { UsersRepositories } from "../users/infrastructure/users-repositories";
 import { BlogIdValidator } from "../../validators/is-mongo-id-validator.service";
 
-const handlers = [
-  CreateBlogHandler,
-  DeleteBlogHandler,
-  UpdateBlogHandler,
-  CreatePostHandler,
-  DeletePostHandler,
-  UpdatePostHandler,
-  UpdateBanUserForCurrentBlogHandler
-];
-const adapters = [
-  BlogsRepositories,
-  BlogsQueryRepositories,
-  PostsRepositories,
-  PostsQueryRepositories,
-  UsersRepositories,
-  UsersQueryRepositories,
-  JwtService
-];
-const guards = [JwtAuthGuard];
+// const handlers = [
+//   CreateBlogHandler,
+//   DeleteBlogHandler,
+//   UpdateBlogHandler,
+//   CreatePostHandler,
+//   DeletePostHandler,
+//   UpdatePostHandler,
+//   UpdateBanUserForCurrentBlogHandler
+// ];
+// const adapters = [
+//   BlogsRepositories,
+//   BlogsQueryRepositories,
+//   PostsRepositories,
+//   PostsQueryRepositories,
+//   UsersRepositories,
+//   UsersQueryRepositories,
+//   JwtService
+// ];
+// const guards = [JwtAuthGuard];
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: LikeComment.name, schema: LikeCommentSchema },
-      { name: LikePost.name, schema: LikePostSchema },
-      { name: User.name, schema: UserSchema },
-      //{ name: UserBanInfo.name, schema: UserBanInfoSchema },
-      { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
-    ]),
-    CqrsModule
-  ],
-  controllers: [BloggersController],
-  providers: [BloggersService, ...guards, ...handlers, ...adapters, BlogIdValidator]
+  // imports: [
+  //   MongooseModule.forFeature([
+  //     { name: Blog.name, schema: BlogSchema },
+  //     { name: Post.name, schema: PostSchema },
+  //     { name: Comment.name, schema: CommentSchema },
+  //     { name: LikeComment.name, schema: LikeCommentSchema },
+  //     { name: LikePost.name, schema: LikePostSchema },
+  //     { name: User.name, schema: UserSchema },
+  //     //{ name: UserBanInfo.name, schema: UserBanInfoSchema },
+  //     { name: BlogBanInfo.name, schema: BlogBanInfoSchema }
+  //   ]),
+  //   CqrsModule
+  // ],
+  // controllers: [BloggersController],
+  // providers: [BloggersService, ...guards, ...handlers, ...adapters, BlogIdValidator]
 })
 export class BloggerModule {
 }

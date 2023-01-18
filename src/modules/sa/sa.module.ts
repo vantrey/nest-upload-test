@@ -19,18 +19,18 @@ const adapters = [BlogsQueryRepositories, BlogsRepositories, PostsRepositories];
 const guards = [BasicAuthGuard];
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
-      { name: Post.name, schema: PostSchema },
-      //{ name: Comment.name, schema: CommentSchema },
-      //{ name: LikesStatus.name, schema: LikesStatusSchema },
-       { name: LikePost.name, schema: LikePostSchema }
-    ]),
-    CqrsModule,
-  ],
-  controllers: [SaController],
-  providers: [SaService, ...guards, ...handlers, ...adapters],
+  // imports: [
+  //   MongooseModule.forFeature([
+  //     { name: Blog.name, schema: BlogSchema },
+  //     { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
+  //     { name: Post.name, schema: PostSchema },
+  //     //{ name: Comment.name, schema: CommentSchema },
+  //     //{ name: LikesStatus.name, schema: LikesStatusSchema },
+  //      { name: LikePost.name, schema: LikePostSchema }
+  //   ]),
+  //   CqrsModule,
+  // ],
+  // controllers: [SaController],
+  // providers: [SaService, ...guards, ...handlers, ...adapters],
 })
 export class SaModule {}

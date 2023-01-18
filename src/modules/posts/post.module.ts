@@ -49,24 +49,24 @@ const adapters = [
 const guards = [JwtAuthGuard, BasicAuthGuard, JwtForGetGuard];
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: LikePost.name, schema: LikePostSchema },
-      { name: LikeComment.name, schema: LikeCommentSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: User.name, schema: UserSchema },
-      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
-    ]),
-    CqrsModule,
-  ],
-  controllers: [PostsController],
-  providers: [
-    PostsService,
-    ...guards,
-    ...adapters,
-    ...handlers,
-  ],
+  // imports: [
+  //   MongooseModule.forFeature([
+  //     { name: Blog.name, schema: BlogSchema },
+  //     { name: Post.name, schema: PostSchema },
+  //     { name: LikePost.name, schema: LikePostSchema },
+  //     { name: LikeComment.name, schema: LikeCommentSchema },
+  //     { name: Comment.name, schema: CommentSchema },
+  //     { name: User.name, schema: UserSchema },
+  //     { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
+  //   ]),
+  //   CqrsModule,
+  // ],
+  // controllers: [PostsController],
+  // providers: [
+  //   PostsService,
+  //   ...guards,
+  //   ...adapters,
+  //   ...handlers,
+  // ],
 })
 export class PostModule {}

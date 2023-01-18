@@ -47,25 +47,25 @@ const adapters = [
   DeviceRepositories,
   CommentsRepositories
 ];
-const guards = [BasicAuthGuard];
+// const guards = [BasicAuthGuard];
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Device.name, schema: DeviceSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: LikeComment.name, schema: LikeCommentSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: LikePost.name, schema: LikePostSchema }
-    ]),
-    MailModule,
-    CqrsModule
-  ],
-
-  controllers: [UsersController],
-  providers: [UsersService, ...guards, ...adapters, ...handlers]
+  // imports: [
+  //   MongooseModule.forFeature([
+  //     { name: User.name, schema: UserSchema },
+  //     { name: Device.name, schema: DeviceSchema },
+  //     { name: Post.name, schema: PostSchema },
+  //     { name: Comment.name, schema: CommentSchema },
+  //     { name: LikeComment.name, schema: LikeCommentSchema },
+  //     { name: Post.name, schema: PostSchema },
+  //     { name: LikePost.name, schema: LikePostSchema }
+  //   ]),
+  //   MailModule,
+  //   CqrsModule
+  // ],
+  //
+  // controllers: [UsersController],
+  // providers: [UsersService, ...guards, ...adapters, ...handlers]
 })
 export class UsersModule {
 }

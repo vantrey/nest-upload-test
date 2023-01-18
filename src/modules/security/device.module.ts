@@ -11,15 +11,15 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteDevicesHandler } from './application/use-cases/handlers/delete-devices-handler';
 import { DeleteDeviceByIdHandler } from './application/use-cases/handlers/delete-device-by-id-handler';
 
-const handlers = [DeleteDevicesHandler, DeleteDeviceByIdHandler];
-const adapters = [DeviceRepositories, DeviceQueryRepositories, JwtService];
+// const handlers = [DeleteDevicesHandler, DeleteDeviceByIdHandler];
+// const adapters = [DeviceRepositories, DeviceQueryRepositories, JwtService];
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
-    CqrsModule,
-  ],
-  controllers: [DevicesController],
-  providers: [DevicesService, RefreshGuard, ...adapters, ...handlers],
+  // imports: [
+  //   MongooseModule.forFeature([{ name: Device.name, schema: DeviceSchema }]),
+  //   CqrsModule,
+  // ],
+  // controllers: [DevicesController],
+  // providers: [DevicesService, RefreshGuard, ...adapters, ...handlers],
 })
 export class DeviceModule {}

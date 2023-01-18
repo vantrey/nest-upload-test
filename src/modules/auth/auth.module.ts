@@ -24,46 +24,46 @@ import { LoginHandler } from "./application/use-cases/handlers/login-handler";
 import { RefreshHandler } from "./application/use-cases/handlers/refresh-handler";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
-const handlers = [
-  CreateUserHandler,
-  LogoutHandler,
-  ResendingHandler,
-  ConfirmByCodeHandler,
-  NewPasswordHandler,
-  RecoveryHandler,
-  LoginHandler,
-  RefreshHandler
-];
-const adapters = [
-  JwtService,
-  DeviceRepositories,
-  UsersRepositories,
-  UsersQueryRepositories
-];
-const guards = [RefreshGuard, JwtAuthGuard];
+// const handlers = [
+//   CreateUserHandler,
+//   LogoutHandler,
+//   ResendingHandler,
+//   ConfirmByCodeHandler,
+//   NewPasswordHandler,
+//   RecoveryHandler,
+//   LoginHandler,
+//   RefreshHandler
+// ];
+// const adapters = [
+//   JwtService,
+//   DeviceRepositories,
+//   UsersRepositories,
+//   UsersQueryRepositories
+// ];
+// const guards = [RefreshGuard, JwtAuthGuard];
 
 @Module({
-  imports: [
-    ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 5
-    }),
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: Device.name, schema: DeviceSchema },
-    ]),
-    /*    JwtModule.register({
-          secret: settings.ACCESS_TOKEN_SECRET,
-          signOptions: { expiresIn: '15m' },
-        }),*/
-    MailModule,
-    CqrsModule,
-    UsersModule
-
-  ],
-  controllers: [AuthController],
-  providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers, ThrottlerGuard],
-  exports: [JwtService]
+  // imports: [
+  //   ThrottlerModule.forRoot({
+  //     ttl: 10,
+  //     limit: 5
+  //   }),
+  //   MongooseModule.forFeature([
+  //     { name: User.name, schema: UserSchema },
+  //     { name: Device.name, schema: DeviceSchema },
+  //   ]),
+  //   /*    JwtModule.register({
+  //         secret: settings.ACCESS_TOKEN_SECRET,
+  //         signOptions: { expiresIn: '15m' },
+  //       }),*/
+  //   MailModule,
+  //   CqrsModule,
+  //   UsersModule
+  //
+  // ],
+  // controllers: [AuthController],
+  // providers: [UsersService, AuthService, ...adapters, ...guards, ...handlers, ThrottlerGuard],
+  // exports: [JwtService]
 })
 export class AuthModule {
 }

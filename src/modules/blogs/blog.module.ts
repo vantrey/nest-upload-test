@@ -25,27 +25,27 @@ import {
 import { BlogBanInfo, BlogBanInfoSchema } from "../blogger/domain/ban-user-for-current-blog-schema-Model";
 
 const handlers = [];
-const adapters = [BlogsQueryRepositories, PostsQueryRepositories, JwtService];
+// const adapters = [BlogsQueryRepositories, PostsQueryRepositories, JwtService];
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Blog.name, schema: BlogSchema },
-      { name: Post.name, schema: PostSchema },
-      { name: Comment.name, schema: CommentSchema },
-      { name: LikeComment.name, schema: LikeCommentSchema },
-      { name: LikePost.name, schema: LikePostSchema },
-      { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
-    ]),
-    CqrsModule,
-  ],
-  controllers: [BlogsController],
-  providers: [
-    BlogsService,
-    BasicStrategy,
-    JwtForGetGuard,
-    ...handlers,
-    ...adapters,
-  ],
+  // imports: [
+  //   MongooseModule.forFeature([
+  //     { name: Blog.name, schema: BlogSchema },
+  //     { name: Post.name, schema: PostSchema },
+  //     { name: Comment.name, schema: CommentSchema },
+  //     { name: LikeComment.name, schema: LikeCommentSchema },
+  //     { name: LikePost.name, schema: LikePostSchema },
+  //     { name: BlogBanInfo.name, schema: BlogBanInfoSchema },
+  //   ]),
+  //   CqrsModule,
+  // ],
+  // controllers: [BlogsController],
+  // providers: [
+  //   BlogsService,
+  //   BasicStrategy,
+  //   JwtForGetGuard,
+  //   ...handlers,
+  //   ...adapters,
+  // ],
 })
 export class BlogModule {}

@@ -26,14 +26,14 @@ const adapters = [CommentsQueryRepositories, CommentsRepositories, JwtService];
 const guards = [JwtAuthGuard, JwtForGetGuard];
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      { name: Comment.name, schema: CommentSchema },
-      { name: LikeComment.name, schema: LikeCommentSchema },
-    ]),
-    CqrsModule,
-  ],
-  controllers: [CommentsController],
-  providers: [CommentsService, ...handlers, ...adapters, ...guards],
+  // imports: [
+  //   MongooseModule.forFeature([
+  //     { name: Comment.name, schema: CommentSchema },
+  //     { name: LikeComment.name, schema: LikeCommentSchema },
+  //   ]),
+  //   CqrsModule,
+  // ],
+  // controllers: [CommentsController],
+  // providers: [CommentsService, ...handlers, ...adapters, ...guards],
 })
 export class CommentModule {}
