@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  Param,
-  Post,
-  Put,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CreatePostDto } from '../../posts/api/input-Dtos/create-Post-Dto-Model';
 import { IdValidationPipe } from '../../../validators/id-validation-pipe';
 import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-View-Model';
@@ -38,20 +27,14 @@ import { PaginationUsersDto } from '../../users/api/input-Dto/pagination-Users-D
 @Controller(`blogger`)
 export class BloggersController {
   constructor(
-    private readonly blogsQueryRepositories: BlogsQueryRepositories,
-    private readonly postsQueryRepositories: PostsQueryRepositories,
+    private readonly blogsQueryRepo: BlogsQueryRepositories,
+    private readonly postsQueryRepo: PostsQueryRepositories,
     private commandBus: CommandBus,
   ) {}
 
   @Get(`blogs/comments`)
-  async getComments(
-    @CurrentUserIdBlogger() userId: string,
-    @Query() paginationInputModel: PaginationDto,
-  ) {
-    return await this.postsQueryRepositories.findCommentsBloggerForPosts(
-      userId,
-      paginationInputModel,
-    );
+  async getComments(@CurrentUserIdBlogger() userId: string, @Query() paginationInputModel: PaginationDto) {
+    return await this.postsQueryRepo.getCommentsBloggerForPosts(userId, paginationInputModel);
   }
 
   @HttpCode(204)
@@ -90,9 +73,7 @@ export class BloggersController {
     @Param(`postId`, IdValidationPipe) postId: string,
     @Body() postInputModel: CreatePostDto,
   ): Promise<boolean> {
-    return await this.commandBus.execute(
-      new UpdatePostCommand(userId, blogId, postId, postInputModel),
-    );
+    return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel));
   }
 
   @Delete(`blogs/:blogId/posts/:postId`)
@@ -111,7 +92,7 @@ export class BloggersController {
     @Body() blogInputModel: CreateBlogDto,
   ): Promise<BlogViewModel> {
     const blogId = await this.commandBus.execute(new CreateBlogCommand(userId, blogInputModel));
-    return this.blogsQueryRepositories.findBlog(blogId);
+    return this.blogsQueryRepo.findBlog(blogId);
   }
 
   @Get(`blogs`)
@@ -119,10 +100,7 @@ export class BloggersController {
     @CurrentUserIdBlogger() userId: string,
     @Query() paginationInputModel: PaginationDto,
   ): Promise<PaginationViewModel<BlogViewModel[]>> {
-    return await this.blogsQueryRepositories.findBlogsForCurrentBlogger(
-      paginationInputModel,
-      userId,
-    );
+    return await this.blogsQueryRepo.findBlogsForCurrentBlogger(paginationInputModel, userId);
   }
 
   @HttpCode(204)
@@ -143,8 +121,8 @@ export class BloggersController {
     @Param(`id`, IdValidationPipe) id: string,
     @Query() paginationInputModel: PaginationUsersDto,
   ) {
-    const blog = await this.blogsQueryRepositories.findBlogWithMap(id);
+    const blog = await this.blogsQueryRepo.findBlogWithMap(id);
     if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
-    return await this.blogsQueryRepositories.getBannedUsersForBlog(id, paginationInputModel);
+    return await this.blogsQueryRepo.getBannedUsersForBlog(id, paginationInputModel);
   }
 }

@@ -1,17 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-  BanInfoForBlogType,
-  BlogOwnerInfoType,
-  BlogViewForSaModel,
-  BlogViewModel,
-} from './blog-View-Model';
+import { BanInfoForBlogType, BlogOwnerInfoType, BlogViewForSaModel, BlogViewModel } from './blog-View-Model';
 import { PaginationViewModel } from './pagination-View-Model';
 import { PaginationDto } from '../../api/input-Dtos/pagination-Dto-Model';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
-import {
-  BanInfoType,
-  UsersForBanBlogViewType,
-} from '../../../users/infrastructure/query-reposirory/user-View-Model';
+import { BanInfoType, UsersForBanBlogViewType } from '../../../users/infrastructure/query-reposirory/user-View-Model';
 import { Blog } from '../../../../entities/blog.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
@@ -24,7 +16,7 @@ export class BlogsQueryRepositories {
     @InjectRepository(Blog)
     private readonly blogRepo: Repository<Blog>,
     @InjectRepository(BannedBlogUser)
-    private readonly bannedBlogUserRepository: Repository<BannedBlogUser>,
+    private readonly bannedBlogUserRepo: Repository<BannedBlogUser>,
   ) {}
 
   private mapperBlogForSaView(object: Blog): BlogViewForSaModel {
@@ -110,10 +102,7 @@ export class BlogsQueryRepositories {
     return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
   }
 
-  async findBlogsForCurrentBlogger(
-    data: PaginationDto,
-    userId: string,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async findBlogsForCurrentBlogger(data: PaginationDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -150,13 +139,7 @@ export class BlogsQueryRepositories {
   async findBlog(id: string): Promise<BlogViewModel> {
     const blog = await this.blogRepo.findOneBy({ blogId: id, isBanned: false });
     if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
-    return new BlogViewModel(
-      blog.blogId,
-      blog.name,
-      blog.description,
-      blog.websiteUrl,
-      blog.createdAt,
-    );
+    return new BlogViewModel(blog.blogId, blog.name, blog.description, blog.websiteUrl, blog.createdAt);
   }
 
   async findBlogWithMap(id: string): Promise<Blog> {
@@ -182,14 +165,14 @@ export class BlogsQueryRepositories {
     }
     //search all blogs for current user
     const [blogs, count] = await Promise.all([
-      this.bannedBlogUserRepository.find({
+      this.bannedBlogUserRepo.find({
         select: ['isBanned', 'banReason', 'banDate', 'userId', 'login'],
         where: filter,
         order: { [sortBy]: order },
         skip: (pageNumber - 1) * pageSize,
         take: pageSize,
       }),
-      this.bannedBlogUserRepository.count({ where: filter }),
+      this.bannedBlogUserRepo.count({ where: filter }),
     ]);
     //mapped for View
     const mappedBlogs = blogs.map((blog) => this.mapperBanInfo(blog));

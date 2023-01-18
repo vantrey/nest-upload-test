@@ -26,14 +26,7 @@ export class BannedBlogUser {
   @ManyToOne(() => Blog, (u) => u.bannedUsers)
   blog: Blog;
 
-  constructor(
-    blogId: string,
-    ownerId: string,
-    userId: string,
-    login: string,
-    email: string,
-    blog: Blog,
-  ) {
+  constructor(blogId: string, ownerId: string, userId: string, login: string, email: string, blog: Blog) {
     this.blogId = blogId;
     this.ownerId = ownerId;
     this.userId = userId;
@@ -43,14 +36,7 @@ export class BannedBlogUser {
     this.blog = blog;
   }
 
-  static createBan(
-    blogId: string,
-    ownerId: string,
-    userId: string,
-    login: string,
-    email: string,
-    blog: Blog,
-  ) {
+  static createBan(blogId: string, ownerId: string, userId: string, login: string, email: string, blog: Blog) {
     return new BannedBlogUser(blogId, ownerId, userId, login, email, blog);
   }
 

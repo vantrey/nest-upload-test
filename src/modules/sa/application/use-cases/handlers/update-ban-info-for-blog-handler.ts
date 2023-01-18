@@ -8,7 +8,7 @@ import { PostsRepositories } from '../../../../posts/infrastructure/posts-reposi
 export class UpdateBanInfoForBlogHandler implements ICommandHandler<UpdateBanInfoForBlogCommand> {
   constructor(
     private readonly blogsRepo: BlogsRepositories,
-    private readonly postsRepositories: PostsRepositories,
+    private readonly postsRepo: PostsRepositories,
   ) {}
 
   async execute(command: UpdateBanInfoForBlogCommand): Promise<boolean> {
@@ -21,7 +21,7 @@ export class UpdateBanInfoForBlogHandler implements ICommandHandler<UpdateBanInf
     foundBlog.updateBanStatus(isBanned);
     //save updated status for blog
     await this.blogsRepo.saveBlog(foundBlog);
-    await this.postsRepositories.updateStatusBanPostForBlogger(blogId, isBanned);
+    await this.postsRepo.updateStatusBanPostForBlogger(blogId, isBanned);
     return true;
   }
 }

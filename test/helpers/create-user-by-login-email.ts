@@ -1,14 +1,19 @@
-import { INestApplication } from "@nestjs/common";
-import { UsersViewType } from "../../src/modules/users/infrastructure/query-reposirory/user-View-Model";
-import request from "supertest";
-import { LikeStatusType } from "../../src/modules/posts/domain/likePost-schema-Model";
+import { INestApplication } from '@nestjs/common';
+import { UsersViewType } from '../../src/modules/users/infrastructure/query-reposirory/user-View-Model';
+import request from 'supertest';
+import { LikeStatusType } from '../../src/entities/like-post.entity';
 
 export const createUserByLoginEmail = async (count: number, app: INestApplication) => {
-  const result: { userId: string, user: UsersViewType, accessToken: string, refreshToken: string }[] = [];
+  const result: {
+    userId: string;
+    user: UsersViewType;
+    accessToken: string;
+    refreshToken: string;
+  }[] = [];
   for (let i = 0; i < count; i++) {
     const response00 = await request(app.getHttpServer())
       .post(`/sa/users`)
-      .auth(`admin`, `qwerty`, { type: "basic" })
+      .auth(`admin`, `qwerty`, { type: 'basic' })
       .send({ login: `asirius-${i}`, password: `asirius-12${i}`, email: `asirius${i}@jive.com` })
       .expect(201);
 
@@ -21,17 +26,26 @@ export const createUserByLoginEmail = async (count: number, app: INestApplicatio
       userId: response00.body.id,
       user: response00.body,
       accessToken: responseToken.body.accessToken,
-      refreshToken: responseToken.headers["set-cookie"]
+      refreshToken: responseToken.headers['set-cookie'],
     });
   }
   return result;
 };
-export const createUniqUserByLoginEmail = async (count: number, uniq: string, app: INestApplication) => {
-  const result: { userId: string, user: UsersViewType, accessToken: string, refreshToken: string }[] = [];
+export const createUniqUserByLoginEmail = async (
+  count: number,
+  uniq: string,
+  app: INestApplication,
+) => {
+  const result: {
+    userId: string;
+    user: UsersViewType;
+    accessToken: string;
+    refreshToken: string;
+  }[] = [];
   for (let i = 0; i < count; i++) {
     const response00 = await request(app.getHttpServer())
       .post(`/sa/users`)
-      .auth(`admin`, `qwerty`, { type: "basic" })
+      .auth(`admin`, `qwerty`, { type: 'basic' })
       .send({ login: `log${uniq}-${i}`, password: `asirius-12${i}`, email: `asirius${i}@jive.com` })
       .expect(201);
 
@@ -44,7 +58,7 @@ export const createUniqUserByLoginEmail = async (count: number, uniq: string, ap
       userId: response00.body.id,
       user: response00.body,
       accessToken: responseToken.body.accessToken,
-      refreshToken: responseToken.headers["set-cookie"]
+      refreshToken: responseToken.headers['set-cookie'],
     });
   }
   return result;
@@ -55,7 +69,11 @@ export const userTestSchema = {
   login: expect.any(String),
   email: expect.any(String),
   createdAt: expect.any(String),
-  banInfo: { isBanned: expect.any(Boolean), banDate: expect.any(String), banReason: expect.any(String) }
+  banInfo: {
+    isBanned: expect.any(Boolean),
+    banDate: expect.any(String),
+    banReason: expect.any(String),
+  },
 };
 
 export const commentTestSchema = {
@@ -64,7 +82,11 @@ export const commentTestSchema = {
   userId: expect.any(String),
   userLogin: expect.any(String),
   createdAt: expect.any(String),
-  likesInfo: { likesCount: expect.any(Number), dislikesCount: expect.any(Number), myStatus: LikeStatusType.None }
+  likesInfo: {
+    likesCount: expect.any(Number),
+    dislikesCount: expect.any(Number),
+    myStatus: LikeStatusType.None,
+  },
 };
 
 export const postTestSchema = {
@@ -79,6 +101,6 @@ export const postTestSchema = {
     likesCount: expect.any(Number),
     dislikesCount: expect.any(Number),
     myStatus: expect.any(String),
-    newestLikes: expect.any(Array)
-  }
+    newestLikes: expect.any(Array),
+  },
 };

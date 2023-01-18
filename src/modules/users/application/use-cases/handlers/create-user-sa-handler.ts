@@ -11,8 +11,8 @@ import { User } from '../../../../../entities/user.entity';
 @CommandHandler(CreateUserSaCommand)
 export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand> {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
-    private readonly usersQueryRepositories: UsersQueryRepositories,
+    private readonly usersRepo: UsersRepositories,
+    private readonly usersQueryRepo: UsersQueryRepositories,
     private readonly usersService: UsersService,
   ) {}
 
@@ -25,21 +25,21 @@ export class CreateUserSaHandler implements ICommandHandler<CreateUserSaCommand>
     // preparation data User for DB
     const newUser = User.createUser(login, email, passwordHash, true);
     //saving created instance user
-    const userId = await this.usersRepositories.saveUser(newUser);
+    const userId = await this.usersRepo.saveUser(newUser);
     //finding user for View
-    return await this.usersQueryRepositories.findUser(userId);
+    return await this.usersQueryRepo.findUser(userId);
   }
 
   private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
     const { login, email } = userInputModel;
     //finding user
-    const checkLogin = await this.usersRepositories.findByLoginOrEmail(login);
+    const checkLogin = await this.usersRepo.findByLoginOrEmail(login);
     if (checkLogin)
       throw new BadRequestExceptionMY({
         message: `Login or Email already in use, do you need choose new data`,
         field: `login`,
       });
-    const checkEmail = await this.usersRepositories.findByLoginOrEmail(email);
+    const checkEmail = await this.usersRepo.findByLoginOrEmail(email);
     if (checkEmail)
       throw new BadRequestExceptionMY({
         message: `Login or Email already in use, do you need choose new data`,

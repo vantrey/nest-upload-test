@@ -5,15 +5,15 @@ import { DeleteUserCommand } from '../delete-user-command';
 
 @CommandHandler(DeleteUserCommand)
 export class DeleteUserHandler implements ICommandHandler<DeleteUserCommand> {
-  constructor(private readonly usersRepositories: UsersRepositories) {}
+  constructor(private readonly usersRepo: UsersRepositories) {}
 
   async execute(command: DeleteUserCommand): Promise<boolean> {
     const { userId } = command;
-    const user = await this.usersRepositories.findUserByIdWithMapped(userId);
+    const user = await this.usersRepo.findUserByIdWithMapped(userId);
     if (!user) {
       throw new NotFoundExceptionMY(`Not found for id: ${userId}`);
     }
-    await this.usersRepositories.deleteUser(userId);
+    await this.usersRepo.deleteUser(userId);
     return true;
   }
 }

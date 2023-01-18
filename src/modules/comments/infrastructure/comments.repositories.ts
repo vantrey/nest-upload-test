@@ -1,96 +1,57 @@
-import { Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { Comment, CommentDocument } from "../domain/comments-schema-Model";
-import { ObjectId } from "mongodb";
-import { LikeStatusType } from "../../posts/domain/likePost-schema-Model";
-import {
-  LikeComment,
-  LikeCommentDocument
-} from "../domain/likeComment-schema-Model";
-import { CommentsViewType, LikesInfoViewModel } from "./query-repository/comments-View-Model";
+import { Injectable } from '@nestjs/common';
+import { CommentsViewType, LikesInfoViewModel } from './query-repository/comments-View-Model';
+import { Comment } from '../../../entities/comment.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { LikeStatusType } from '../../../entities/like-post.entity';
+import { LikeComment } from '../../../entities/like-comment.entity';
 
 @Injectable()
 export class CommentsRepositories {
   constructor(
-    @InjectModel(Comment.name)
-    private readonly commentsModel: Model<CommentDocument>,
-    @InjectModel(LikeComment.name)
-    private readonly likeCommentModel: Model<LikeCommentDocument>
-  ) {
-  }
+    @InjectRepository(Comment)
+    private readonly commentRepo: Repository<Comment>,
+    @InjectRepository(LikeComment)
+    private readonly likeCommentRepo: Repository<LikeComment>,
+  ) {}
 
-  async saveComment(newComment: CommentDocument): Promise<CommentsViewType> {
+  async saveComment(newComment: Comment): Promise<CommentsViewType> {
     // const createComment = await this.commentsModel.create(newComment);
-    const createdComment = await newComment.save();
+    const createdComment = await this.commentRepo.save(newComment);
     //default items
     const likesInfo = new LikesInfoViewModel(0, 0, LikeStatusType.None);
     //returning comment for View
     return new CommentsViewType(
-      createdComment.id,
+      createdComment.commentId,
       newComment.content,
       newComment.userId,
       newComment.userLogin,
       newComment.createdAt,
-      likesInfo
+      likesInfo,
     );
   }
 
-  async saveLikeComment(newLikeComment: LikeCommentDocument): Promise<LikeCommentDocument> {
-    return await newLikeComment.save();
+  async saveLikeComment(newLikeComment: LikeComment): Promise<LikeComment> {
+    return this.likeCommentRepo.save(newLikeComment);
   }
 
-  async findCommentsById(id: string): Promise<CommentDocument> {
-    return this.commentsModel.findOne({ _id: new ObjectId(id) });
+  async findCommentsById(id: string): Promise<Comment> {
+    return this.commentRepo.findOneBy({ commentId: id });
   }
 
   async deleteCommentsById(id: string): Promise<boolean> {
-    const result = await this.commentsModel.deleteOne({
-      _id: new ObjectId(id)
-    });
-    return result.deletedCount === 1;
+    await this.commentRepo.manager.connection
+      .transaction(async (manager) => {
+        await manager.delete(Comment, { commentId: id });
+      })
+      .catch((e) => {
+        console.log(e);
+        return false;
+      });
+    return true;
   }
 
-  async updateStatusBanComments(userId: string, isBanned: boolean): Promise<boolean> {
-    const result = await this.commentsModel.updateMany(
-      { userId: userId },
-      { $set: { isBanned: isBanned } }
-    );
-    return result.matchedCount === 1;
+  async findLikeComment(id: string, userId: string): Promise<LikeComment> {
+    return this.likeCommentRepo.findOneBy({ userId: userId, parentId: id });
   }
-
-  async findLikeComment(id: string, userId: string): Promise<LikeCommentDocument> {
-    return this.likeCommentModel.findOne({ userId: userId, parentId: id });
-  }
-
-  async updateStatusBanLike(userId: string, isBanned: boolean): Promise<boolean> {
-    const result = await this.likeCommentModel.updateMany(
-      { userId: userId },
-      { $set: { isBanned: isBanned } }
-    );
-    return result.matchedCount === 1;
-  }
-
 }
-
-/*async updateLikeStatusForComment(id: string, userId: string, likeStatus: LikeStatusType): Promise<boolean> {
-    try {
-      await this.likeCommentModel.updateOne(
-        { userId: userId, parentId: id },
-        { $set: { likeStatus, isBanned: false } },
-        { upsert: true }
-      );
-      return true;
-    } catch (error) {
-      throw new Error(`not today - ! :-(`);
-    }
-  }
-
-  async updateCommentsById(id: string, content: string): Promise<boolean> {
-    const result = await this.commentsModel.updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { content: content } }
-    );
-    return result.matchedCount === 1;
-  }
-*/

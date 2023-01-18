@@ -35,12 +35,6 @@ export class BlogsRepositories {
     });
   }
 
-  async findStatusBan(userId: string, blogId: string): Promise<BannedBlogUser> {
-    const statusBan = await this.blogBanInfoModel.findOne({ blogId: blogId, userId: userId });
-    if (!statusBan) return null;
-    return statusBan;
-  }
-
   async findStatusBanBy(userId: string, blogId: string): Promise<BannedBlogUser> {
     const statusBan = await this.bannedBlogUserRepo.findOneBy({
       blogId: blogId,

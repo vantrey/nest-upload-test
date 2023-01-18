@@ -13,8 +13,8 @@ import { User } from '../../../../../entities/user.entity';
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
-    private readonly usersRepositories: UsersRepositories,
-    private readonly usersQueryRepositories: UsersQueryRepositories,
+    private readonly usersRepo: UsersRepositories,
+    private readonly usersQueryRepo: UsersQueryRepositories,
     private readonly usersService: UsersService,
     private readonly mailService: MailService,
   ) {}
@@ -28,16 +28,14 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     // preparation data User for DB
     const user = User.createUser(login, email, passwordHash, false);
     //saving created instance user
-    const userId = await this.usersRepositories.saveUser(user);
+    const userId = await this.usersRepo.saveUser(user);
     //finding user for View
-    const viewUser = await this.usersQueryRepositories.findUser(userId);
+    const viewUser = await this.usersQueryRepo.findUser(userId);
     try {
       //send mail for confirmation
       await this.mailService.sendUserConfirmation(user.email, user.confirmationCode);
     } catch (error) {
       console.error(error);
-      //if not saved user - him need remove ??
-      //await this.usersRepositories.deleteUser(userId);
       throw new HttpException(
         'Service is unavailable. Please try again later. We need saved User',
         421,
@@ -49,14 +47,14 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   private async validateUser(userInputModel: CreateUserDto): Promise<boolean> {
     const { login, email } = userInputModel;
     //find user
-    const checkEmail = await this.usersRepositories.findByLoginOrEmail(email);
+    const checkEmail = await this.usersRepo.findByLoginOrEmail(email);
     if (checkEmail)
       throw new BadRequestExceptionMY({
         message: `${email}  already in use, do you need choose new data`,
         field: `email`,
       });
     ``;
-    const checkLogin = await this.usersRepositories.findByLoginOrEmail(login);
+    const checkLogin = await this.usersRepo.findByLoginOrEmail(login);
     if (checkLogin)
       throw new BadRequestExceptionMY({
         message: `${login}  already in use, do you need choose new data`,

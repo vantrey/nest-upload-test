@@ -6,6 +6,9 @@ import { Device } from '../../entities/device.entity';
 import { Blog } from '../../entities/blog.entity';
 import { BannedBlogUser } from '../../entities/banned-blog-user.entity';
 import { Post } from '../../entities/post.entity';
+import { Comment } from '../../entities/comment.entity';
+import { LikePost } from '../../entities/like-post.entity';
+import { LikeComment } from '../../entities/like-comment.entity';
 
 @Injectable()
 export class TestingService {
@@ -15,20 +18,15 @@ export class TestingService {
   ) {}
 
   async deleteAll() {
-    // await this.blogsModel.deleteMany();
-    // await this.postModel.deleteMany();
-    // await this.userModel.deleteMany();
-    // await this.commentsModel.deleteMany();
-    // await this.deviceModel.deleteMany();
-    // await this.likesStatusModel.deleteMany();
-    // await this.likesPostsStatusModel.deleteMany();
-    // await this.blogBanInfoModel.deleteMany();
     await this.userRepo.manager.connection
       .transaction(async (manager) => {
         await manager.delete(User, {});
         await manager.delete(Device, {});
         await manager.delete(Blog, {});
         await manager.delete(Post, {});
+        await manager.delete(Comment, {});
+        await manager.delete(LikePost, {});
+        await manager.delete(LikeComment, {});
         await manager.delete(BannedBlogUser, {});
       })
       .catch((e) => {

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { MongooseModule } from '@nestjs/mongoose';
 import { MailModule } from './modules/mail/mail.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TestingModule } from './modules/testing/testing.module';
@@ -22,9 +21,6 @@ import { CommentsRepositories } from './modules/comments/infrastructure/comments
 import { BasicAuthGuard } from './guards/basic-auth.guard';
 import { UsersService } from './modules/users/domain/users.service';
 import { CqrsModule } from '@nestjs/cqrs';
-import { Comment, CommentSchema } from './modules/comments/domain/comments-schema-Model';
-import { LikeComment, LikeCommentSchema } from './modules/comments/domain/likeComment-schema-Model';
-import { LikePost, LikePostSchema } from './modules/posts/domain/likePost-schema-Model';
 import { DeleteDevicesHandler } from './modules/security/application/use-cases/handlers/delete-devices-handler';
 import { DeleteDeviceByIdHandler } from './modules/security/application/use-cases/handlers/delete-device-by-id-handler';
 import { DevicesController } from './modules/security/api/devices.controller';
@@ -36,7 +32,7 @@ import { BlogsRepositories } from './modules/blogs/infrastructure/blogs.reposito
 import { SaController } from './modules/sa/api/sa.controller';
 import { SaService } from './modules/sa/domain/sa.service';
 import { CreateCommentHandler } from './modules/posts/application/use-cases/handlers/create-comment-handler';
-import { UpdateLikeStatusHandler } from './modules/posts/application/use-cases/handlers/update-like-status-handler';
+import { UpdateLikeStatusPostHandler } from './modules/posts/application/use-cases/handlers/update-like-status-post-handler';
 import { PostsQueryRepositories } from './modules/posts/infrastructure/query-repositories/posts-query.reposit';
 import { CommentsQueryRepositories } from './modules/comments/infrastructure/query-repository/comments-query.repositories';
 import { JwtAuthGuard } from './guards/jwt-auth-bearer.guard';
@@ -75,6 +71,9 @@ import { Device } from './entities/device.entity';
 import { Blog } from './entities/blog.entity';
 import { BannedBlogUser } from './entities/banned-blog-user.entity';
 import { Post } from './entities/post.entity';
+import { LikeComment } from './entities/like-comment.entity';
+import { LikePost } from './entities/like-post.entity';
+import { Comment } from './entities/comment.entity';
 
 const controllers = [
   AuthController,
@@ -139,14 +138,14 @@ const handlers = [
   BindBlogHandler,
   UpdateBanInfoForBlogHandler,
   UpdateBanInfoHandler,
-  UpdateLikeStatusHandler,
+  UpdateLikeStatusPostHandler,
   UpdateCommentHandler,
   UpdateLikeStatusCommentHandler,
   UpdateBlogHandler,
   UpdatePostHandler,
   UpdateBanUserForCurrentBlogHandler,
 ];
-const entities = [User, Device, Blog, BannedBlogUser, Post];
+const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, LikeComment];
 
 @Module({
   imports: [
@@ -155,19 +154,6 @@ const entities = [User, Device, Blog, BannedBlogUser, Post];
       limit: 5,
     }),
     ConfigModule.forRoot({ isGlobal: true, load: [getConfiguration] }),
-    MongooseModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<ConfigType>) => {
-        const database = configService.get('database', { infer: true });
-        return { uri: database.MONGO_URL };
-      },
-    }),
-    MongooseModule.forFeature([
-      { name: Comment.name, schema: CommentSchema },
-      { name: LikePost.name, schema: LikePostSchema },
-      { name: LikeComment.name, schema: LikeCommentSchema },
-      // { name: BannedBlogUser.name, schema: BlogBanInfoSchema },
-    ]),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigType>) => {

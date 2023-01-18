@@ -1,63 +1,47 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Comment, CommentDocument } from '../../domain/comments-schema-Model';
-import { ObjectId } from 'mongodb';
 import { CommentsViewType, LikesInfoViewModel } from './comments-View-Model';
-import { LikeStatusType } from '../../../posts/domain/likePost-schema-Model';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
-import {
-  LikeComment,
-  LikeCommentDocument,
-} from '../../domain/likeComment-schema-Model';
+import { Comment } from '../../../../entities/comment.entity';
+import { LikeStatusType } from '../../../../entities/like-post.entity';
+import { LikeComment } from '../../../../entities/like-comment.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class CommentsQueryRepositories {
   constructor(
-    @InjectModel(Comment.name)
-    private readonly commentsModel: Model<CommentDocument>,
-    @InjectModel(LikeComment.name)
-    private readonly likesStatusModel: Model<LikeCommentDocument>,
+    @InjectRepository(Comment)
+    private readonly commentRepo: Repository<Comment>,
+    @InjectRepository(LikeComment)
+    private readonly likeCommentRepo: Repository<LikeComment>,
   ) {}
 
-  async findComment(commentId: string, userId: string | null,): Promise<CommentsViewType> {
-    //finding like status by userId and commentId
+  async getComment(commentId: string, userId: string | null): Promise<CommentsViewType> {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
-      const result = await this.likesStatusModel.findOne({
+      const result = await this.likeCommentRepo.findOneBy({
         userId: userId,
         parentId: commentId,
-        isBanned: false,
       });
       if (result) {
         myStatus = result.likeStatus;
       }
     }
-    const totalCountLike = await this.likesStatusModel.countDocuments({
-      parentId: commentId,
-      likeStatus: 'Like',
-      isBanned: false,
-    });
-    const totalCountDislike = await this.likesStatusModel.countDocuments({
-      parentId: commentId,
-      likeStatus: 'Dislike',
-      isBanned: false,
-    });
-    const likesInfo = new LikesInfoViewModel(
-      totalCountLike,
-      totalCountDislike,
-      myStatus,
-    );
+    const [comment, countLike, countDislike] = await Promise.all([
+      this.commentRepo.findOneBy({ commentId: commentId, isBanned: false }),
+      this.likeCommentRepo.count({
+        where: { parentId: commentId, likeStatus: 'Like', isBanned: false },
+      }),
+      this.likeCommentRepo.count({
+        where: { parentId: commentId, likeStatus: 'Dislike', isBanned: false },
+      }),
+    ]);
     //search comment
-    const comment = await this.commentsModel.findOne({
-      _id: new ObjectId(commentId),
-      isBanned: false,
-    });
-    if (!comment)
-      throw new NotFoundExceptionMY(`Not found for commentId: ${commentId}`);
+    if (!comment) throw new NotFoundExceptionMY(`Not found for commentId: ${commentId}`);
+    const likesInfo = new LikesInfoViewModel(countLike, countDislike, myStatus);
     //returning comment for View
     return new CommentsViewType(
-      comment.id,
+      comment.commentId,
       comment.content,
       comment.userId,
       comment.userLogin,
