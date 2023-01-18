@@ -2,17 +2,9 @@ import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { MongooseModule } from "@nestjs/mongoose";
-import { BlogModule } from "./modules/blogs/blog.module";
-import { PostModule } from "./modules/posts/post.module";
-import { CommentModule } from "./modules/comments/comment.module";
-import { UsersModule } from "./modules/users/usersModule";
 import { MailModule } from "./modules/mail/mail.module";
-import { AuthModule } from "./modules/auth/auth.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TestingModule } from "./modules/testing/testing.module";
-import { DeviceModule } from "./modules/security/device.module";
-import { BloggerModule } from "./modules/blogger/blogger.module";
-import { SaModule } from "./modules/sa/sa.module";
 import { ConfigType, getConfiguration } from "./config/configuration";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UsersController } from "./modules/users/api/users.controller";
@@ -150,6 +142,22 @@ const controllers = [
   PostsController,
   CommentsController
 ];
+const providers = [
+  AppService,
+  UsersService,
+  SaService,
+  BlogsService,
+  BloggersService,
+  PostsService,
+  CommentsService,
+  BlogIdValidator,
+  BasicStrategy,
+  ThrottlerGuard
+  // {
+  //   provide: APP_GUARD,
+  //   useClass: ThrottlerGuard
+  // },
+];
 
 @Module({
   imports: [
@@ -192,19 +200,9 @@ const controllers = [
     MailModule,
     CqrsModule,
     TestingModule
-    // DeviceModule,
-    // AuthModule,
-    // BlogModule,
-    // PostModule,
-    // CommentModule,
-    // UsersModule,
-    // BloggerModule
-    // SaModule
   ],
   controllers: [AppController, ...controllers],
-  providers: [AppService, UsersService, SaService, PostsService, CommentsService, BlogsService,
-    BasicStrategy, BlogIdValidator, BloggersService, ThrottlerGuard,
-    ...guards, ...adapters, ...handlers]
+  providers: [...providers, ...guards, ...adapters, ...handlers]
 })
 export class AppModule {
 }
