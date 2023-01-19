@@ -13,7 +13,7 @@ import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
 import { UsersQueryRepositories } from '../../users/infrastructure/query-reposirory/users-query.reposit';
 import { MeViewModel } from '../infrastructure/me-View-Model';
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { SkipThrottle } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../../users/application/use-cases/create-user-command';
 import { LogoutCommand } from '../application/use-cases/logout-command';
@@ -26,7 +26,10 @@ import { RefreshCommand } from '../application/use-cases/refresh-command';
 
 @Controller(`auth`)
 export class AuthController {
-  constructor(private readonly usersQueryRepositories: UsersQueryRepositories, private commandBus: CommandBus) {}
+  constructor(
+    private readonly usersQueryRepositories: UsersQueryRepositories,
+    private commandBus: CommandBus,
+  ) {}
 
   @HttpCode(204)
   @Post(`/password-recovery`)
@@ -49,12 +52,14 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ): Promise<Pick<TokensType, 'accessToken'>> {
     const deviceName = req.headers['user-agent'];
-    const createdToken = await this.commandBus.execute(new LoginCommand(loginInputModel, ip, deviceName));
+    const createdToken = await this.commandBus.execute(
+      new LoginCommand(loginInputModel, ip, deviceName),
+    );
     res.cookie('refreshToken', createdToken.refreshToken, { httpOnly: true, secure: true });
     return { accessToken: createdToken.accessToken };
   }
 
-  @UseGuards(ThrottlerGuard)
+  @SkipThrottle()
   @HttpCode(200)
   @UseGuards(RefreshGuard)
   @Post(`refresh-token`)
@@ -86,7 +91,7 @@ export class AuthController {
     return await this.commandBus.execute(new ResendingCommand(resendingInputModel));
   }
 
-  @UseGuards(ThrottlerGuard)
+  @SkipThrottle()
   @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Post(`/logout`)
@@ -94,7 +99,7 @@ export class AuthController {
     return await this.commandBus.execute(new LogoutCommand(payloadRefresh));
   }
 
-  @UseGuards(ThrottlerGuard)
+  @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get(`me`)
   async getProfile(@CurrentUserId() userId: string): Promise<MeViewModel> {

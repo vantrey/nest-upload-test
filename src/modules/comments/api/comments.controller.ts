@@ -12,7 +12,9 @@ import { CommandBus } from '@nestjs/cqrs';
 import { DeleteCommentCommand } from '../application/use-cases/delete-comment-command';
 import { UpdateCommentCommand } from '../application/use-cases/update-comment-command';
 import { UpdateLikeStatusCommentCommand } from '../application/use-cases/update-like-status-comment-command';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller(`comments`)
 export class CommentsController {
   constructor(
@@ -29,7 +31,9 @@ export class CommentsController {
     @Param(`id`, ValidateUuidPipe) id: string,
     @Body() updateLikeStatusInputModel: UpdateLikeStatusDto,
   ): Promise<boolean> {
-    return await this.commandBus.execute(new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId));
+    return await this.commandBus.execute(
+      new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId),
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -57,7 +61,10 @@ export class CommentsController {
 
   @UseGuards(JwtForGetGuard)
   @Get(`/:id`)
-  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentsViewType> {
+  async findOne(
+    @CurrentUserId() userId: string,
+    @Param(`id`, ValidateUuidPipe) id: string,
+  ): Promise<CommentsViewType> {
     return this.commentsQueryRepo.getComment(id, userId);
   }
 }

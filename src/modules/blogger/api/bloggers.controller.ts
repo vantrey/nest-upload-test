@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CreatePostDto } from '../../posts/api/input-Dtos/create-Post-Dto-Model';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-View-Model';
@@ -22,7 +33,9 @@ import { UpdateBanUserForCurrentBlogCommand } from '../application/use-cases/upd
 import { PostsQueryRepositories } from '../../posts/infrastructure/query-repositories/posts-query.reposit';
 import { ForbiddenExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { PaginationUsersDto } from '../../users/api/input-Dto/pagination-Users-Dto-Model';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @UseGuards(JwtAuthGuard)
 @Controller(`blogger`)
 export class BloggersController {
@@ -33,7 +46,10 @@ export class BloggersController {
   ) {}
 
   @Get(`blogs/comments`)
-  async getComments(@CurrentUserIdBlogger() userId: string, @Query() paginationInputModel: PaginationDto) {
+  async getComments(
+    @CurrentUserIdBlogger() userId: string,
+    @Query() paginationInputModel: PaginationDto,
+  ) {
     return await this.postsQueryRepo.getCommentsBloggerForPosts(userId, paginationInputModel);
   }
 
@@ -73,7 +89,9 @@ export class BloggersController {
     @Param(`postId`, ValidateUuidPipe) postId: string,
     @Body() postInputModel: CreatePostDto,
   ): Promise<boolean> {
-    return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel));
+    return await this.commandBus.execute(
+      new UpdatePostCommand(userId, blogId, postId, postInputModel),
+    );
   }
 
   @Delete(`blogs/:blogId/posts/:postId`)

@@ -1,4 +1,15 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserDto } from './input-Dto/create-User-Dto-Model';
 import { UsersService } from '../domain/users.service';
 import { UsersViewType } from '../infrastructure/query-reposirory/user-View-Model';
@@ -12,7 +23,9 @@ import { DeleteUserCommand } from '../application/use-cases/delete-user-command'
 import { UpdateBanInfoDto } from './input-Dto/update-ban-info-Dto-Model';
 import { UpdateBanInfoCommand } from '../application/use-cases/updateBanInfoCommand';
 import { CreateUserSaCommand } from '../application/use-cases/create-user-sa-command';
+import { SkipThrottle } from '@nestjs/throttler';
 
+@SkipThrottle()
 @Controller(`sa/users`)
 export class UsersController {
   constructor(
@@ -39,7 +52,9 @@ export class UsersController {
 
   @UseGuards(BasicAuthGuard)
   @Get()
-  async findUsers(@Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
+  async findUsers(
+    @Query() paginationInputModel: PaginationUsersDto,
+  ): Promise<PaginationViewModel<UsersViewType[]>> {
     return this.usersQueryRepositories.findUsers(paginationInputModel);
   }
 
