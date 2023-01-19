@@ -15,10 +15,16 @@ export class JwtService {
 
   async createJwt(userId: string, deviceId: string): Promise<TokensType> {
     const secret = this.configService.get('tokens', { infer: true });
-    const accessToken = jwt.sign({ userId: userId }, secret.ACCESS_TOKEN_SECRET, { expiresIn: '5m' });
-    const refreshToken = jwt.sign({ userId: userId, deviceId: deviceId }, secret.REFRESH_TOKEN_SECRET, {
-      expiresIn: '15m',
+    const accessToken = jwt.sign({ userId: userId }, secret.ACCESS_TOKEN_SECRET, {
+      expiresIn: secret.EXPIRED_REFRESH,
     });
+    const refreshToken = jwt.sign(
+      { userId: userId, deviceId: deviceId },
+      secret.REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: secret.EXPIRED_ACCESS,
+      },
+    );
     return new TokensType(accessToken, refreshToken);
   }
 
