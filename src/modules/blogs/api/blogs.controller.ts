@@ -4,7 +4,7 @@ import { BlogViewModel } from '../infrastructure/query-repository/blog-View-Mode
 import { PaginationDto } from './input-Dtos/pagination-Dto-Model';
 import { PaginationViewModel } from '../infrastructure/query-repository/pagination-View-Model';
 import { PostsQueryRepositories } from '../../posts/infrastructure/query-repositories/posts-query.reposit';
-import { IdValidationPipe } from '../../../validators/id-validation-pipe';
+import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-View-Model';
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
 import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
@@ -17,9 +17,7 @@ export class BlogsController {
   ) {}
 
   @Get()
-  async findAll(
-    @Query() paginationInputModel: PaginationDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async findAll(@Query() paginationInputModel: PaginationDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepo.findBlogs(paginationInputModel);
   }
 
@@ -27,7 +25,7 @@ export class BlogsController {
   @Get(`:blogId/posts`)
   async findPosts(
     @CurrentUserId() userId: string,
-    @Param(`blogId`, IdValidationPipe) blogId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Query() paginationInputModel: PaginationDto,
   ): Promise<PaginationViewModel<PostViewModel[]>> {
     await this.blogsQueryRepo.findBlog(blogId);
@@ -35,7 +33,7 @@ export class BlogsController {
   }
 
   @Get(`:id`)
-  async findOne(@Param(`id`, IdValidationPipe) id: string): Promise<BlogViewModel> {
+  async findOne(@Param(`id`, ValidateUuidPipe) id: string): Promise<BlogViewModel> {
     return await this.blogsQueryRepo.findBlog(id);
   }
 }

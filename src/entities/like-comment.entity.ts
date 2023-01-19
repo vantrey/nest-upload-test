@@ -16,13 +16,13 @@ export class LikeComment {
   likeStatus: string;
   @ManyToOne(() => User, (u) => u.likeComments)
   user: User;
-  // @ManyToOne(() => Comment, (u) => u.likesComment)
-  // comment: Comment;
+  @ManyToOne(() => Comment, (u) => u.likesComment)
+  comment: Comment;
 
   constructor(userId: string, parentId: string, comment: Comment) {
     this.userId = userId;
     this.parentId = parentId;
-    // this.comment = comment;
+    this.comment = comment;
   }
 
   static createLikeComment(userId: string, parentId: string, comment: Comment) {

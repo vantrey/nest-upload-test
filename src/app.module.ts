@@ -55,7 +55,7 @@ import { DeletePostHandler } from './modules/blogger/application/use-cases/handl
 import { UpdatePostHandler } from './modules/blogger/application/use-cases/handlers/update-post-handler';
 import { UpdateBanUserForCurrentBlogHandler } from './modules/blogger/application/use-cases/handlers/update-ban-user-for-current-blog-handler';
 import { BloggersController } from './modules/blogger/api/bloggers.controller';
-import { BlogIdValidator } from './validators/is-mongo-id-validator.service';
+import { BlogUuidIdValidator } from './validators/is-uuid-id-validator.service';
 import { BloggersService } from './modules/blogger/domain/bloggers.service';
 import { LogoutHandler } from './modules/auth/application/use-cases/handlers/logout-handler';
 import { ResendingHandler } from './modules/auth/application/use-cases/handlers/resending-handler';
@@ -93,7 +93,7 @@ const providers = [
   BloggersService,
   PostsService,
   CommentsService,
-  BlogIdValidator,
+  BlogUuidIdValidator,
   BasicStrategy,
   ThrottlerGuard,
   // {

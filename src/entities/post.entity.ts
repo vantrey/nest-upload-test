@@ -2,6 +2,7 @@ import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'ty
 import { User } from './user.entity';
 import { Blog } from './blog.entity';
 import { LikePost } from './like-post.entity';
+import { Comment } from './comment.entity';
 
 @Entity()
 export class Post {
@@ -27,8 +28,8 @@ export class Post {
   user: User;
   @ManyToOne(() => Blog, (u) => u.posts)
   blog: Blog;
-  // @OneToMany(() => Comment, (u) => u.post)
-  // comments: Comment[];
+  @OneToMany(() => Comment, (u) => u.post)
+  comments: Comment[];
   @OneToMany(() => LikePost, (u) => u.post)
   likePost: LikePost[];
 
@@ -48,7 +49,7 @@ export class Post {
     this.blogId = blogId;
     this.blogName = blogName;
     this.createdAt = new Date().toISOString();
-    // this.blog = blog;
+    this.blog = blog;
   }
 
   static createPost(

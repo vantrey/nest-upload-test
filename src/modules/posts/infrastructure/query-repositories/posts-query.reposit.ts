@@ -136,7 +136,7 @@ export class PostsQueryRepositories {
     if (!post) throw new NotFoundExceptionMY(`No content found for current id: ${postId}`);
     const [comments, count] = await Promise.all([
       this.commentRepo.find({
-        // relations: { likesComment: true },
+        relations: { likesComment: true },
         where: { postId: postId, isBanned: false },
         order: { [sortBy]: order },
         skip: (pageNumber - 1) * pageSize,
@@ -209,7 +209,7 @@ export class PostsQueryRepositories {
     const [comments, count] = await Promise.all([
       this.commentRepo.find({
         select: ['commentId', 'content', 'createdAt', 'userId', 'userLogin'],
-        // relations: { post: true, likesComment: true },
+        relations: { post: true, likesComment: true },
         where: { ownerId: userId },
         order: { [sortBy]: order },
         skip: (pageNumber - 1) * pageSize,

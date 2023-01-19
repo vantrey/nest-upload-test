@@ -1,15 +1,15 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
-import { BlogIdValidator } from "../validators/is-mongo-id-validator.service";
+import { BlogUuidIdValidator } from '../validators/is-uuid-id-validator.service';
 
-export function IsMongoIdObject(validationOptions?: ValidationOptions) {
+export function IsUuidCustom(validationOptions?: ValidationOptions) {
   return function (object: any, propertyName: string) {
     registerDecorator({
-      name: 'IsMongoIdObject',
+      name: 'IsUuidCustom',
       target: object.constructor,
       propertyName: propertyName,
       constraints: [],
       options: validationOptions,
-      validator: BlogIdValidator,
+      validator: BlogUuidIdValidator,
       //validator: { validate(value: any) {return ObjectId.isValid(value)}}
     });
   };

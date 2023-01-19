@@ -1,6 +1,6 @@
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
-import { IsMongoIdObject } from "../../../../helpers/decorator-IsMongoIdObject";
-import { Trim } from "../../../../helpers/decorator-trim";
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, Length } from 'class-validator';
+import { IsUuidCustom } from '../../../../helpers/decorator-IsUuid';
+import { Trim } from '../../../../helpers/decorator-trim';
 
 export class UpdateBanInfoForUserDto {
   /**
@@ -21,7 +21,7 @@ export class UpdateBanInfoForUserDto {
    */
   @Trim()
   @IsNotEmpty()
-  @IsMongoIdObject()
+  @IsUuidCustom()
   @IsString()
   blogId: string;
 }

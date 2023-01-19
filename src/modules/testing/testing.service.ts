@@ -20,14 +20,14 @@ export class TestingService {
   async deleteAll() {
     await this.userRepo.manager.connection
       .transaction(async (manager) => {
-        await manager.delete(User, {});
-        await manager.delete(Device, {});
-        await manager.delete(Blog, {});
-        await manager.delete(Post, {});
-        await manager.delete(Comment, {});
-        await manager.delete(LikePost, {});
         await manager.delete(LikeComment, {});
+        await manager.delete(LikePost, {});
+        await manager.delete(Comment, {});
+        await manager.delete(Post, {});
         await manager.delete(BannedBlogUser, {});
+        await manager.delete(Blog, {});
+        await manager.delete(Device, {});
+        await manager.delete(User, {});
       })
       .catch((e) => {
         return console.log(e);

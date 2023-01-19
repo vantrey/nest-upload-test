@@ -22,8 +22,8 @@ export class Blog {
   createdAt: string;
   @Column('boolean', { default: false })
   isBanned: boolean;
-  @Column({ type: 'timestamptz', default: null })
-  banDate: Date;
+  @Column({ type: 'character varying', default: null })
+  banDate: string;
   //-----
   @ManyToOne(() => User, (u) => u.blogs)
   user: User;
@@ -32,7 +32,14 @@ export class Blog {
   @OneToMany(() => Post, (u) => u.blog)
   posts: Post[];
 
-  constructor(userId: string, login: string, name: string, description: string, websiteUrl: string, user: User) {
+  constructor(
+    userId: string,
+    login: string,
+    name: string,
+    description: string,
+    websiteUrl: string,
+    user: User,
+  ) {
     this.userId = userId;
     this.userLogin = login;
     this.name = name;
@@ -42,9 +49,21 @@ export class Blog {
     this.user = user;
   }
 
-  static createBlog(userId: string, login: string, name: string, description: string, websiteUrl: string, user: User) {
+  static createBlog(
+    userId: string,
+    login: string,
+    name: string,
+    description: string,
+    websiteUrl: string,
+    user: User,
+  ) {
     const reg = new RegExp(`^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`);
-    if (name.length > 15 && description.length > 500 && description.length > 100 && !reg.test(websiteUrl)) {
+    if (
+      name.length > 15 &&
+      description.length > 500 &&
+      description.length > 100 &&
+      !reg.test(websiteUrl)
+    ) {
       throw new Error('Incorrect input data for create User');
     }
     return new Blog(userId, login, name, description, websiteUrl, user);
@@ -83,6 +102,6 @@ export class Blog {
 
   updateBanStatus(isBanned: boolean) {
     this.isBanned = isBanned;
-    this.banDate = new Date();
+    this.banDate = new Date().toISOString();
   }
 }

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from '@nestjs/common';
 import { CommentsQueryRepositories } from '../infrastructure/query-repository/comments-query.repositories';
 import { CommentsViewType } from '../infrastructure/query-repository/comments-View-Model';
-import { IdValidationPipe } from '../../../validators/id-validation-pipe';
+import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { UpdateLikeStatusDto } from '../../posts/api/input-Dtos/update-Like-Status-Model';
 import { CommentsService } from '../domain/comments.service';
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
@@ -26,7 +26,7 @@ export class CommentsController {
   @Put(`/:id/like-status`)
   async updateLikeStatus(
     @CurrentUserId() userId: string,
-    @Param(`id`, IdValidationPipe) id: string,
+    @Param(`id`, ValidateUuidPipe) id: string,
     @Body() updateLikeStatusInputModel: UpdateLikeStatusDto,
   ): Promise<boolean> {
     return await this.commandBus.execute(new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId));
@@ -37,7 +37,7 @@ export class CommentsController {
   @Put(`/:id`)
   async updateCommentsById(
     @CurrentUserId() userId: string,
-    @Param(`id`, IdValidationPipe) id: string,
+    @Param(`id`, ValidateUuidPipe) id: string,
     @Body() updateCommentInputModel: UpdateCommentDto,
   ): Promise<boolean> {
     await this.commandBus.execute(new UpdateCommentCommand(id, updateCommentInputModel, userId));
@@ -49,7 +49,7 @@ export class CommentsController {
   @Delete(`/:id`)
   async deleteCommentById(
     @CurrentUserId() userId: string,
-    @Param(`id`, IdValidationPipe) id: string,
+    @Param(`id`, ValidateUuidPipe) id: string,
   ): Promise<boolean> {
     await this.commandBus.execute(new DeleteCommentCommand(id, userId));
     return true;
@@ -57,7 +57,7 @@ export class CommentsController {
 
   @UseGuards(JwtForGetGuard)
   @Get(`/:id`)
-  async findOne(@CurrentUserId() userId: string, @Param(`id`, IdValidationPipe) id: string): Promise<CommentsViewType> {
+  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentsViewType> {
     return this.commentsQueryRepo.getComment(id, userId);
   }
 }

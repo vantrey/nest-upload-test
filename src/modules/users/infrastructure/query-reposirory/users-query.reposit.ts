@@ -16,13 +16,7 @@ export class UsersQueryRepositories {
 
   private mappedForUser(user: User): UsersViewType {
     const banInfo = new BanInfoType(user.isBanned, user.banDate, user.banReason);
-    return new UsersViewType(
-      user.userId,
-      user.login,
-      user.email,
-      user.createdAt.toISOString(),
-      banInfo,
-    );
+    return new UsersViewType(user.userId, user.login, user.email, user.createdAt.toISOString(), banInfo);
   }
 
   async findUser(id: string): Promise<UsersViewType> {
@@ -32,15 +26,7 @@ export class UsersQueryRepositories {
   }
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
-    const {
-      searchEmailTerm,
-      searchLoginTerm,
-      pageNumber,
-      pageSize,
-      sortBy,
-      banStatus,
-      sortDirection,
-    } = data;
+    const { searchEmailTerm, searchLoginTerm, pageNumber, pageSize, sortBy, banStatus, sortDirection } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -57,6 +43,7 @@ export class UsersQueryRepositories {
     if (searchEmailTerm.trim().length > 0 || searchLoginTerm.trim().length > 0) {
       filter = [{ email: ILike(`%${searchEmailTerm}%`) }, { login: ILike(`%${searchLoginTerm}%`) }];
     }
+    console.log(filter);
     const [users, count] = await Promise.all([
       this.userRepo.find({
         select: ['userId', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],

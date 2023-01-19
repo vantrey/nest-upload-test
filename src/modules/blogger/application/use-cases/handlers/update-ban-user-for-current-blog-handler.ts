@@ -26,12 +26,12 @@ export class UpdateBanUserForCurrentBlogHandler
     if (!blog) throw new NotFoundExceptionMY(`Not found blog with id: ${id}`);
     if (!blog.checkOwner(userId))
       throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
-    const foundBanStatus = await this.blogsRepo.findStatusBanBy(userId, blogId);
+    const foundBanStatus = await this.blogsRepo.findStatusBanBy(id, blogId);
     if (!foundBanStatus) {
       const newBanStatus = BannedBlogUser.createBan(
         blogId,
-        userId,
-        user.userId,
+        userId, //Who banned user!
+        user.userId, //User for ban
         user.getLogin(),
         user.getEmail(),
         blog,

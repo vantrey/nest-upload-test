@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CreatePostDto } from '../../posts/api/input-Dtos/create-Post-Dto-Model';
-import { IdValidationPipe } from '../../../validators/id-validation-pipe';
+import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-View-Model';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../application/use-cases/create-blog-command';
@@ -41,7 +41,7 @@ export class BloggersController {
   @Delete(`blogs/:blogId`)
   async deleteBlog(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, IdValidationPipe) blogId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
   ): Promise<boolean> {
     return await this.commandBus.execute(new DeleteBlogCommand(blogId, userId));
   }
@@ -50,7 +50,7 @@ export class BloggersController {
   @Put(`blogs/:blogId`)
   async updateBlog(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, IdValidationPipe) blogId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Body() blogInputModel: UpdateBlogDto,
   ): Promise<boolean> {
     return await this.commandBus.execute(new UpdateBlogCommand(userId, blogId, blogInputModel));
@@ -59,7 +59,7 @@ export class BloggersController {
   @Post(`blogs/:blogId/posts`)
   async createPost(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, IdValidationPipe) blogId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Body() postInputModel: CreatePostDto,
   ): Promise<PostViewModel> {
     return this.commandBus.execute(new CreatePostCommand(postInputModel, blogId, userId));
@@ -69,8 +69,8 @@ export class BloggersController {
   @Put(`blogs/:blogId/posts/:postId`)
   async updatePost(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, IdValidationPipe) blogId: string,
-    @Param(`postId`, IdValidationPipe) postId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
+    @Param(`postId`, ValidateUuidPipe) postId: string,
     @Body() postInputModel: CreatePostDto,
   ): Promise<boolean> {
     return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel));
@@ -80,8 +80,8 @@ export class BloggersController {
   @HttpCode(204)
   async deletePost(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, IdValidationPipe) blogId: string,
-    @Param(`postId`, IdValidationPipe) postId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
+    @Param(`postId`, ValidateUuidPipe) postId: string,
   ): Promise<boolean> {
     return await this.commandBus.execute(new DeletePostCommand(userId, blogId, postId));
   }
@@ -107,7 +107,7 @@ export class BloggersController {
   @Put(`users/:id/ban`)
   async banUserForCurrentBlog(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`id`, IdValidationPipe) id: string,
+    @Param(`id`, ValidateUuidPipe) id: string,
     @Body() banUserForCurrentBlogInputModel: UpdateBanInfoForUserDto,
   ): Promise<boolean> {
     return await this.commandBus.execute(
@@ -118,7 +118,7 @@ export class BloggersController {
   @Get(`users/blog/:id`)
   async getBanedUser(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`id`, IdValidationPipe) id: string,
+    @Param(`id`, ValidateUuidPipe) id: string,
     @Query() paginationInputModel: PaginationUsersDto,
   ) {
     const blog = await this.blogsQueryRepo.findBlogWithMap(id);

@@ -3,7 +3,7 @@ import { User } from './user.entity';
 import { Post } from './post.entity';
 import { LikeComment } from './like-comment.entity';
 
-Entity();
+@Entity()
 export class Comment {
   @PrimaryGeneratedColumn('uuid')
   commentId: string;
@@ -21,12 +21,12 @@ export class Comment {
   userLogin: string;
   @Column({ type: 'character varying' })
   createdAt: string;
-  // @ManyToOne(() => User, (u) => u.comments)
-  // user: User;
-  // @ManyToOne(() => Post, (u) => u.comments)
-  // post: Post;
-  // @OneToMany(() => LikeComment, (u) => u.comment)
-  // likesComment: LikeComment[];
+  @ManyToOne(() => User, (u) => u.comments)
+  user: User;
+  @ManyToOne(() => Post, (u) => u.comments)
+  post: Post;
+  @OneToMany(() => LikeComment, (u) => u.comment)
+  likesComment: LikeComment[];
 
   constructor(postId: string, ownerId: string, content: string, userId: string, login: string, post: Post) {
     this.postId = postId;
@@ -35,7 +35,7 @@ export class Comment {
     this.userId = userId;
     this.userLogin = login;
     this.createdAt = new Date().toISOString();
-    // this.post = post;
+    this.post = post;
   }
 
   static createComment(postId: string, ownerId: string, content: string, userId: string, login: string, post: Post) {

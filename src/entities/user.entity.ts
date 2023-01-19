@@ -48,8 +48,8 @@ export class User {
   blogs: Blog[];
   @OneToMany(() => Post, (d) => d.user)
   posts: Post[];
-  // @OneToMany(() => Comment, (d) => d.user)
-  // comments: Comment[];
+  @OneToMany(() => Comment, (d) => d.user)
+  comments: Comment[];
   @OneToMany(() => LikePost, (d) => d.user)
   likePosts: LikePost[];
   @OneToMany(() => LikeComment, (d) => d.user)
