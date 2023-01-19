@@ -1,27 +1,20 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  Param,
-  UseGuards
-} from "@nestjs/common";
-import { DeviceQueryRepositories } from "../infrastructure/query-repository/device-query.repositories";
-import { RefreshGuard } from "../../../guards/jwt-auth-refresh.guard";
-import { DeviceViewModel } from "../infrastructure/query-repository/device-View-Model";
-import { PayloadRefresh } from "../../../decorators/payload-refresh.param.decorator";
-import { PayloadType } from "../../auth/application/payloadType";
-import { CurrentUserIdDevice } from "../../../decorators/current-device.param.decorator";
-import { CommandBus } from "@nestjs/cqrs";
-import { DeleteDevicesCommand } from "../application/use-cases/delete-devices-command";
-import { DeleteDeviceByIdCommand } from "../application/use-cases/delete-device-by-id-command";
-import { DeviceIdDto } from "./input-dtos/deviceId-Dto-Model";
+import { Controller, Delete, Get, HttpCode, Param, UseGuards } from '@nestjs/common';
+import { DeviceQueryRepositories } from '../infrastructure/query-repository/device-query.repositories';
+import { RefreshGuard } from '../../../guards/jwt-auth-refresh.guard';
+import { DeviceViewModel } from '../infrastructure/query-repository/device-View-Model';
+import { PayloadRefresh } from '../../../decorators/payload-refresh.param.decorator';
+import { PayloadType } from '../../auth/application/payloadType';
+import { CurrentUserIdDevice } from '../../../decorators/current-device.param.decorator';
+import { CommandBus } from '@nestjs/cqrs';
+import { DeleteDevicesCommand } from '../application/use-cases/delete-devices-command';
+import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id-command';
 
 @Controller(`security`)
 export class DevicesController {
-  constructor(private commandBus: CommandBus,
-              private readonly deviceQueryRepositories: DeviceQueryRepositories) {
-  }
+  constructor(
+    private commandBus: CommandBus,
+    private readonly deviceQueryRepositories: DeviceQueryRepositories,
+  ) {}
 
   @UseGuards(RefreshGuard)
   @Get(`/devices`)
@@ -39,8 +32,10 @@ export class DevicesController {
   @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Delete(`/devices/:deviceId`)
-  async deleteByDeviceId(@PayloadRefresh() payloadRefresh: PayloadType,
-                         @Param(`deviceId`) inputId: DeviceIdDto): Promise<boolean> {
-    return await this.commandBus.execute(new DeleteDeviceByIdCommand(inputId.deviceId, payloadRefresh));
+  async deleteByDeviceId(
+    @PayloadRefresh() payloadRefresh: PayloadType,
+    @Param(`deviceId`) deviceId: string,
+  ): Promise<boolean> {
+    return await this.commandBus.execute(new DeleteDeviceByIdCommand(deviceId, payloadRefresh));
   }
 }

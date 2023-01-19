@@ -11,6 +11,7 @@ export class DeleteDeviceByIdHandler implements ICommandHandler<DeleteDeviceById
   constructor(private readonly deviceRepo: DeviceRepositories) {}
 
   async execute(command: DeleteDeviceByIdCommand): Promise<boolean> {
+    console.log('command', command);
     const deviceIdForDelete = command.id;
     const { deviceId, userId } = command.payloadRefresh;
     //finding device by id from uri params

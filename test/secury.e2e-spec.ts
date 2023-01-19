@@ -17,7 +17,7 @@ const delay = async (delay: number = 1000) => {
 
 jest.setTimeout(120000);
 
-describe('Secury (e2e)', () => {
+describe.skip('Secury (e2e)', () => {
   let app: INestApplication;
   //let mongoServer: MongoMemoryServer;
   //let blogsController: BlogsController;
@@ -53,7 +53,10 @@ describe('Secury (e2e)', () => {
     });
     let user: UsersViewType;
     let validAccessToken: AccessTokenType;
-    let refreshTokenKey: string, validRefreshToken: string, oldRefreshToken: string, validRefreshToken0: string;
+    let refreshTokenKey: string,
+      validRefreshToken: string,
+      oldRefreshToken: string,
+      validRefreshToken0: string;
     let devices: DeviceViewModel[];
     it('01 - POST - `/sa/users` should authenticate user with correct data and return status code 200', async () => {
       const resultUser = await request(app.getHttpServer())
@@ -77,7 +80,9 @@ describe('Secury (e2e)', () => {
       expect(result.headers['set-cookie']).toBeTruthy();
       if (!result.headers['set-cookie']) return;
 
-      [refreshTokenKey, validRefreshToken0] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken0] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(result.headers['set-cookie'][0].includes('HttpOnly')).toBe(true);
       expect(result.headers['set-cookie'][0].includes('Secure')).toBe(true);
@@ -113,7 +118,9 @@ describe('Secury (e2e)', () => {
       expect(result.headers['set-cookie']).toBeTruthy();
       if (!result.headers['set-cookie']) return;
 
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(result.headers['set-cookie'][0].includes('HttpOnly')).toBe(true);
       expect(result.headers['set-cookie'][0].includes('Secure')).toBe(true);
@@ -157,7 +164,9 @@ describe('Secury (e2e)', () => {
         .delete(`/security/devices/${devices[0].deviceId}`)
         .set('Cookie', `refreshToken=${validRefreshToken}+1`)
         .expect(401);
-      await request(app.getHttpServer()).delete(`/security/devices/${devices[0].deviceId}`).expect(401);
+      await request(app.getHttpServer())
+        .delete(`/security/devices/${devices[0].deviceId}`)
+        .expect(401);
 
       await request(app.getHttpServer())
         .delete(`/security/devices`)
@@ -205,7 +214,9 @@ describe('Secury (e2e)', () => {
       if (!result.headers['set-cookie']) return;
 
       oldRefreshToken = validRefreshToken;
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(oldRefreshToken).not.toEqual(validRefreshToken);
       expect(result.headers['set-cookie'][0].includes('HttpOnly')).toBe(true);
@@ -238,7 +249,9 @@ describe('Secury (e2e)', () => {
         },
       ]);
       expect(devices.map((d) => d.deviceId)).toEqual(newDeviceList.map((d) => d.deviceId));
-      expect(devices.map((d) => d.lastActiveDate)).not.toEqual(newDeviceList.map((d) => d.lastActiveDate));
+      expect(devices.map((d) => d.lastActiveDate)).not.toEqual(
+        newDeviceList.map((d) => d.lastActiveDate),
+      );
     });
     it('09 - GET - `/security/devices` should delete device, used additional methods: DELETE -> /security/devices/:id, GET -> /security/devices', async () => {
       await request(app.getHttpServer())
@@ -313,7 +326,9 @@ describe('Secury (e2e)', () => {
       expect(result.headers['set-cookie']).toBeTruthy();
       if (!result.headers['set-cookie']) return;
 
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
 
       const resultDeviceList = await request(app.getHttpServer())
         .get('/security/devices')

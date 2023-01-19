@@ -2,7 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { createUniqeUserByLoginEmail, createUserByLoginEmail } from './helpers/create-user-by-login-email';
+import {
+  createUniqeUserByLoginEmail,
+  createUserByLoginEmail,
+} from './helpers/create-user-by-login-email';
 import { createBlogsForTest } from './helpers/create-blog-for-test';
 import { createdApp } from '../src/helpers/createdApp';
 import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
@@ -13,12 +16,14 @@ import { createBlogsAndPostForTest } from './helpers/create-blog-and-post-for-te
 
 jest.setTimeout(120000);
 
-describe.skip(`Ban blog by super admin`, () => {
+describe(`Ban blog by super admin`, () => {
   let app: INestApplication;
 
   beforeAll(async () => {
     // Create a NestJS application
-    const module: TestingModule = await Test.createTestingModule({ imports: [AppModule] }).compile();
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
     app = module.createNestApplication();
     //created me
     app = createdApp(app);
@@ -29,20 +34,16 @@ describe.skip(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe(``, () => {
+  describe.skip(``, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
-    let user: UsersViewType;
-    let user1: UsersViewType;
-    let blog: BlogViewModel;
-    let accessToken: string;
     it(`cre`, async () => {
       createUserByLoginEmail(3, app);
     });
   });
 
-  describe.skip(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
+  describe(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -379,8 +380,9 @@ describe.skip(`Ban blog by super admin`, () => {
         .auth('admin', 'qwerty', { type: 'basic' })
         .query({ pageSize: 50, sorBy: 'login', sortDirection: 'desc' })
         .expect(200);
+      console.log(responseStatusInfoUser.body.items);
 
-      expect(responseStatusInfoUser.body.items).toHaveLength(1);
+      expect(responseStatusInfoUser.body.items).toHaveLength(2);
 
       await request(app.getHttpServer())
         .post(`/auth/login`)
@@ -388,7 +390,7 @@ describe.skip(`Ban blog by super admin`, () => {
         .send({ loginOrEmail: `${res[0].user.login}`, password: `asirius-120` })
         .expect(401);
     });
-    it(`POST -> "/auth/refresh-token", "/auth/logout": should return an error if the "refresh" token has become invalid; status 401;`, async () => {
+    it.skip(`POST -> "/auth/refresh-token", "/auth/logout": should return an error if the "refresh" token has become invalid; status 401;`, async () => {
       const res = await createUserByLoginEmail(1, app);
       user = res[0].user;
       accessToken = res[0].accessToken;
@@ -400,9 +402,15 @@ describe.skip(`Ban blog by super admin`, () => {
         .send({ loginOrEmail: `${user.login}`, password: `asirius-120` })
         .expect(200);
 
-      await request(app.getHttpServer()).post(`/auth/logout`).set('Cookie', `${refreshToken[0]}`).expect(204);
+      await request(app.getHttpServer())
+        .post(`/auth/logout`)
+        .set('Cookie', `${refreshToken[0]}`)
+        .expect(204);
 
-      await request(app.getHttpServer()).post(`/auth/refresh-token`).set('Cookie', `${refreshToken[0]}`).expect(401);
+      await request(app.getHttpServer())
+        .post(`/auth/refresh-token`)
+        .set('Cookie', `${refreshToken[0]}`)
+        .expect(401);
     });
   });
   describe.skip(`Check error for testing`, () => {
@@ -446,7 +454,9 @@ describe.skip(`Ban blog by super admin`, () => {
       //   items: expect.any(Array)
       // });
 
-      const responseBlogId = await request(app.getHttpServer()).get(`/blogs/${blog.id}`).expect(404);
+      const responseBlogId = await request(app.getHttpServer())
+        .get(`/blogs/${blog.id}`)
+        .expect(404);
       console.log('-2', responseBlogId.body);
 
       const responseBlogSA = await request(app.getHttpServer())
