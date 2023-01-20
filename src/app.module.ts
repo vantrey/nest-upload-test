@@ -151,7 +151,7 @@ const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, L
 @Module({
   imports: [
     ThrottlerModule.forRoot({
-      ttl: 15,
+      ttl: 10,
       limit: 5,
     }),
     ConfigModule.forRoot({ isGlobal: true, load: [getConfiguration] }),

@@ -31,16 +31,14 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     const userId = await this.usersRepo.saveUser(user);
     //finding user for View
     const viewUser = await this.usersQueryRepo.findUser(userId);
-    try {
-      //send mail for confirmation
-      await this.mailService.sendUserConfirmation(user.email, user.confirmationCode);
-    } catch (error) {
-      console.error(error);
-      throw new HttpException(
-        'Service is unavailable. Please try again later. We need saved User',
-        421,
-      );
-    }
+    this.mailService.sendUserConfirmation(user.email, user.confirmationCode);
+    // try {
+    //   //send mail for confirmation
+    //   await this.mailService.sendUserConfirmation(user.email, user.confirmationCode);
+    // } catch (error) {
+    //   console.error(error);
+    //   throw new HttpException('Service is unavailable. Please try again later. We need saved User', 421);
+    // }
     return viewUser;
   }
 
