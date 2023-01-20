@@ -3,10 +3,9 @@ import { BanInfoType, UsersViewType } from './user-View-Model';
 import { PaginationUsersDto } from '../../api/input-Dto/pagination-Users-Dto';
 import { PaginationViewModel } from '../../../../common/pagination-View-Model';
 import { MeViewModel } from '../../../auth/infrastructure/me-View-Model';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../../entities/user.entity';
-import { Raw } from 'typeorm';
 
 @Injectable()
 export class UsersQueryRepositories {
@@ -49,6 +48,7 @@ export class UsersQueryRepositories {
       order = 'DESC';
     }
     let filter = {};
+    let advancedFilter;
     if (banStatus === 'banned') {
       filter = { isBanned: true };
     }
@@ -56,20 +56,21 @@ export class UsersQueryRepositories {
       filter = { isBanned: false };
     }
     if (searchEmailTerm.trim().length > 0 || searchLoginTerm.trim().length > 0) {
-      filter = {
-        login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`),
-        email: Raw((alias) => `${alias} ILIKE '%${searchEmailTerm}%'`),
-      };
+      advancedFilter = [
+        { login: ILike(`%${searchLoginTerm}%`) },
+        { email: ILike(`%${searchEmailTerm}%`) },
+      ];
     }
+    const queryFilter = searchEmailTerm || searchLoginTerm ? advancedFilter : filter;
     const [users, count] = await Promise.all([
       this.userRepo.find({
         select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
-        where: filter,
+        where: queryFilter,
         order: { [sortBy]: order },
         skip: data.skip,
         take: pageSize,
       }),
-      this.userRepo.count({ where: filter }),
+      this.userRepo.count({ where: queryFilter }),
     ]);
     //mapped user for View
     const mappedUsers = users.map((user) => this.mappedForUser(user));
