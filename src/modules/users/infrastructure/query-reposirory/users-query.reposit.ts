@@ -56,26 +56,19 @@ export class UsersQueryRepositories {
       filter = { isBanned: false };
     }
     if (searchEmailTerm.trim().length > 0 || searchLoginTerm.trim().length > 0) {
-      filter = { login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`) };
-      // filter = [
-      //   { email: Raw((alias) => `${alias} ILIKE '%${searchEmailTerm}%'`) },
-      //   { login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`) },
-      // ];
-      //TODO How?!
-      // filter = [{ email: ILike(`%${searchEmailTerm}%`) }, { login: ILike(`%${searchLoginTerm}%`) }];
+      filter = {
+        login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`),
+        email: Raw((alias) => `${alias} ILIKE '%${searchEmailTerm}%'`),
+      };
     }
     const [users, count] = await Promise.all([
       this.userRepo.find({
         select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
         where: filter,
-        // where: { login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`) },
         order: { [sortBy]: order },
         skip: data.skip,
         take: pageSize,
       }),
-      // this.userRepo.count({
-      //   where: filter,
-      // }),
       this.userRepo.count({ where: filter }),
     ]);
     //mapped user for View

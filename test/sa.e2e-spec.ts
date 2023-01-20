@@ -36,30 +36,96 @@ describe(`Ban blog by super admin`, () => {
   });
 
   describe(`factory users - blogs - posts `, () => {
-    let accessToken: string;
-    let blog: BlogViewModel;
+    // let accessToken: string;
+    // let blog: BlogViewModel;
     it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
       await request(app.getHttpServer()).delete(endpoints.testingController.allData).expect(204);
     });
     it(`01 - test endpoint`, async () => {
-      const r = await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'maKaka', app);
-      accessToken = r[0].accessToken;
-      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'asirius', app);
-      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'Raccoon', app);
-      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'podgorne', app);
-      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'lll376', app);
-      const b = await TestingFactory.prototype.createUniqueBlog(1, 'aRamat', accessToken, app);
-      blog = b[0].blog;
-      await TestingFactory.prototype.createUniqueBlog(1, 'raCoon', accessToken, app);
-      await TestingFactory.prototype.createUniqueBlog(1, 'elephant', accessToken, app);
-      await TestingFactory.prototype.createUniqueBlog(1, 'rabbit', accessToken, app);
-      await TestingFactory.prototype.createUniqueBlog(1, 'relation', accessToken, app);
-      await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
-      await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
-      await TestingFactory.prototype.createUniquePost(1, '778899', accessToken, blog.id, app);
-      await TestingFactory.prototype.createUniquePost(1, 'cherapacha', accessToken, blog.id, app);
-      await TestingFactory.prototype.createUniquePost(1, 'librus', accessToken, blog.id, app);
-      await TestingFactory.prototype.createUniquePost(1, 'aFfect', accessToken, blog.id, app);
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'user01',
+        'email1@gg.cm',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'user02',
+        'email1@gg.com',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'user05',
+        'email1@gg.coi',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'user03',
+        'email1@gg.cou',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'useee01',
+        'email1@gg.col',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'log01',
+        'emai@gg.com',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'log02',
+        'email2@gg.com',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'user15',
+        'emarrr1@gg.com',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'usr-1-01',
+        'email3@gg.com',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'some01',
+        'email1@gyyyg.ru',
+        app,
+      );
+      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
+        1,
+        'use4406',
+        'email1@grrg.ro',
+        app,
+      );
+      // const r = await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'maKaka', app);
+      // accessToken = r[0].accessToken;
+      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'asirius', app);
+      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'Raccoon', app);
+      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'podgorne', app);
+      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'lll376', app);
+      // const b = await TestingFactory.prototype.createUniqueBlog(1, 'aRamat', accessToken, app);
+      // blog = b[0].blog;
+      // await TestingFactory.prototype.createUniqueBlog(1, 'raCoon', accessToken, app);
+      // await TestingFactory.prototype.createUniqueBlog(1, 'elephant', accessToken, app);
+      // await TestingFactory.prototype.createUniqueBlog(1, 'rabbit', accessToken, app);
+      // await TestingFactory.prototype.createUniqueBlog(1, 'relation', accessToken, app);
+      // await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
+      // await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
+      // await TestingFactory.prototype.createUniquePost(1, '778899', accessToken, blog.id, app);
+      // await TestingFactory.prototype.createUniquePost(1, 'cherapacha', accessToken, blog.id, app);
+      // await TestingFactory.prototype.createUniquePost(1, 'librus', accessToken, blog.id, app);
+      // await TestingFactory.prototype.createUniquePost(1, 'aFfect', accessToken, blog.id, app);
     });
   });
 

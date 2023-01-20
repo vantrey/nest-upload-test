@@ -92,6 +92,48 @@ export class TestingFactory {
     }
     return result;
   }
+  async createUniqueUserByLoginAndEmail(
+    count: number,
+    log: string,
+    mal: string,
+    app: INestApplication,
+  ) {
+    const result: {
+      userId: string;
+      user: UsersViewType;
+      accessToken: string;
+      refreshToken: string;
+    }[] = [];
+    for (let i = 0; i < count; i++) {
+      const userInputModel: CreateUserDto = {
+        login: `${log}`,
+        password: `${log}${i}`,
+        email: `${mal}`,
+      };
+      const loginInputModel: LoginDto = {
+        loginOrEmail: `${log}`,
+        password: `${log}${i}`,
+      };
+      const response00 = await request(app.getHttpServer())
+        .post(endpoints.saController)
+        .auth(superUser.login, superUser.password, { type: 'basic' })
+        .send(userInputModel)
+        .expect(201);
+
+      const responseToken = await request(app.getHttpServer())
+        .post(endpoints.authController.login)
+        .set(`User-Agent`, `for test`)
+        .send(loginInputModel)
+        .expect(200);
+      result.push({
+        userId: response00.body.id,
+        user: response00.body,
+        accessToken: responseToken.body.accessToken,
+        refreshToken: responseToken.headers['set-cookie'],
+      });
+    }
+    return result;
+  }
 
   async createBlog(count: number, accessToken: string, app: INestApplication) {
     const result: { blog: BlogViewModel }[] = [];
