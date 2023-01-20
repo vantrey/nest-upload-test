@@ -14,7 +14,7 @@ import { UsersViewType } from '../src/modules/users/infrastructure/query-reposir
 
 jest.setTimeout(120000);
 
-describe.skip(`Ban blog by super admin`, () => {
+describe(`Ban blog by super admin`, () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -37,15 +37,15 @@ describe.skip(`Ban blog by super admin`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
-    let blog: BlogViewModel;
-    let blog1: BlogViewModel;
-    let blog2: BlogViewModel;
-    let post: PostViewModel;
-    let accessToken: string;
-    let accessToken1: string;
+    // let blog: BlogViewModel;
+    // let blog1: BlogViewModel;
+    // let blog2: BlogViewModel;
+    // let post: PostViewModel;
+    // let accessToken: string;
+    // let accessToken1: string;
 
     it(`01-POST -> "/sa/users": should create new user; status 201; content: created user; used additional methods: GET => /sa/users;`, async () => {
-      const res = await createUserByLoginEmail(1000, app);
+      await createUserByLoginEmail(1000, app);
     });
   });
 

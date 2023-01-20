@@ -31,7 +31,7 @@ export class BlogsQueryRepositories {
     const blogOwnerInfo = new BlogOwnerInfoType(object.userId, object.userLogin);
     const banInfoForBlog = new BanInfoForBlogType(object.isBanned, object.banDate);
     return new BlogViewForSaModel(
-      object.blogId,
+      object.id,
       object.name,
       object.description,
       object.websiteUrl,
@@ -61,7 +61,7 @@ export class BlogsQueryRepositories {
     //search all blogs for current user
     const [blogs, count] = await Promise.all([
       this.blogRepo.find({
-        select: ['blogId', 'name', 'description', 'websiteUrl', 'createdAt'],
+        select: ['id', 'name', 'description', 'websiteUrl', 'createdAt'],
         where: filter,
         order: { [sortBy]: order },
         skip: data.skip,
@@ -71,13 +71,7 @@ export class BlogsQueryRepositories {
     ]);
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      count,
-      blogs.map(({ blogId: id, ...rest }) => ({ id, ...rest })),
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, blogs);
   }
 
   async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewModel<BlogViewModel[]>> {
@@ -128,7 +122,7 @@ export class BlogsQueryRepositories {
     //search all blogs and counting for current user
     const [blogs, count] = await Promise.all([
       this.blogRepo.find({
-        select: ['blogId', 'name', 'description', 'websiteUrl', 'createdAt'],
+        select: ['id', 'name', 'description', 'websiteUrl', 'createdAt'],
         where: filter,
         order: { [sortBy]: order },
         skip: data.skip,
@@ -138,29 +132,17 @@ export class BlogsQueryRepositories {
     ]);
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      count,
-      blogs.map(({ blogId: id, ...rest }) => ({ id, ...rest })),
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, blogs);
   }
 
   async findBlog(id: string): Promise<BlogViewModel> {
-    const blog = await this.blogRepo.findOneBy({ blogId: id, isBanned: false });
+    const blog = await this.blogRepo.findOneBy({ id: id, isBanned: false });
     if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
-    return new BlogViewModel(
-      blog.blogId,
-      blog.name,
-      blog.description,
-      blog.websiteUrl,
-      blog.createdAt,
-    );
+    return new BlogViewModel(blog.id, blog.name, blog.description, blog.websiteUrl, blog.createdAt);
   }
 
   async findBlogWithMap(id: string): Promise<Blog> {
-    const blog = await this.blogRepo.findOneBy({ blogId: id, isBanned: false });
+    const blog = await this.blogRepo.findOneBy({ id: id, isBanned: false });
     if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
     return blog;
   }

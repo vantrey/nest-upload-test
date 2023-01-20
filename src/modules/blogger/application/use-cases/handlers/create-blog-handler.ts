@@ -24,6 +24,6 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
     //save created instance
     const createdBlog = await this.blogsRepo.saveBlog(newBlog);
     if (!createdBlog) throw new Error(`Not created`);
-    return createdBlog.blogId;
+    return createdBlog.id;
   }
 }

@@ -29,7 +29,7 @@ export class BlogsRepositories {
   }
 
   async findBlog(id: string): Promise<Blog> {
-    return await this.blogRepo.findOneBy({ blogId: id }).catch((e) => {
+    return await this.blogRepo.findOneBy({ id: id }).catch((e) => {
       console.log(e);
       return null;
     });

@@ -35,7 +35,7 @@ describe(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe(``, () => {
+  describe(`factory users - blogs - posts `, () => {
     let accessToken: string;
     let blog: BlogViewModel;
     it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
@@ -95,6 +95,7 @@ describe(`Ban blog by super admin`, () => {
         .query({ pageSize: 13, sorBy: 'login', sortDirection: 'desc' })
         .expect(200)
         .then(({ body }) => {
+          console.log('body', body);
           expect(body.items[0]).toEqual({
             id: expect.any(String),
             login: 'asirius-0',

@@ -7,7 +7,7 @@ import { Post } from './post.entity';
 @Entity()
 export class Blog {
   @PrimaryGeneratedColumn('uuid')
-  blogId: string;
+  id: string;
   @Column({ type: 'uuid' })
   userId: string;
   @Column({ type: 'character varying' })
