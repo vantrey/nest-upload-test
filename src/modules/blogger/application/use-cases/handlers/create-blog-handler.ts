@@ -20,7 +20,13 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
     if (user.id !== userId)
       throw new UnauthorizedExceptionMY(`user with id: ${userId} Unauthorized`);
     //preparation Blog for save in DB
-    const newBlog = Blog.createBlog(userId, user.getLogin(), name, description, websiteUrl, user);
+    const newBlog = Blog.createBlog(
+      userId,
+      name,
+      description,
+      websiteUrl,
+      user,
+    );
     //save created instance
     const createdBlog = await this.blogsRepo.saveBlog(newBlog);
     if (!createdBlog) throw new Error(`Not created`);

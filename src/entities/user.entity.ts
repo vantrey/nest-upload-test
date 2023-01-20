@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 import * as bcrypt from 'bcrypt';
@@ -47,15 +53,20 @@ export class User {
   @OneToMany(() => Blog, (d) => d.user)
   blogs: Blog[];
   @OneToMany(() => Post, (d) => d.user)
-  posts: Post[];
+  posts: Relation<Post[]>;
   @OneToMany(() => Comment, (d) => d.user)
-  comments: Comment[];
+  comments: Relation<Comment[]>;
   @OneToMany(() => LikePost, (d) => d.user)
-  likePosts: LikePost[];
+  likePosts: Relation<LikePost[]>;
   @OneToMany(() => LikeComment, (d) => d.user)
   likeComments: LikeComment[];
 
-  constructor(login: string, email: string, passwordHash: string, isConfirmation: boolean) {
+  constructor(
+    login: string,
+    email: string,
+    passwordHash: string,
+    isConfirmation: boolean,
+  ) {
     this.login = login;
     this.email = email;
     this.passwordHash = passwordHash;

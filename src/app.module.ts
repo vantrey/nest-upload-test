@@ -97,10 +97,10 @@ const providers = [
   BlogUuidIdValidator,
   BasicStrategy,
   ThrottlerGuard,
-  {
-    provide: APP_GUARD,
-    useClass: ThrottlerGuard,
-  },
+  // {
+  //   provide: APP_GUARD,
+  //   useClass: ThrottlerGuard,
+  // },
 ];
 const guards = [BasicAuthGuard, JwtAuthGuard, JwtForGetGuard];
 const adapters = [
@@ -151,8 +151,8 @@ const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, L
 @Module({
   imports: [
     ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 5,
+      ttl: 10, //default  - 10 s
+      limit: 5, //default  - 5 st
     }),
     ConfigModule.forRoot({ isGlobal: true, load: [getConfiguration] }),
     TypeOrmModule.forRootAsync({

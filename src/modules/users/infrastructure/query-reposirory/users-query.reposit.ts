@@ -15,7 +15,11 @@ export class UsersQueryRepositories {
   ) {}
 
   private mappedForUser(user: User): UsersViewType {
-    const banInfo = new BanInfoType(user.isBanned, user.banDate, user.banReason);
+    const banInfo = new BanInfoType(
+      user.isBanned,
+      user.banDate,
+      user.banReason,
+    );
     return new UsersViewType(
       user.id,
       user.login,
@@ -31,7 +35,9 @@ export class UsersQueryRepositories {
     return this.mappedForUser(user);
   }
 
-  async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
+  async findUsers(
+    data: PaginationUsersDto,
+  ): Promise<PaginationViewModel<UsersViewType[]>> {
     const {
       searchEmailTerm,
       searchLoginTerm,
@@ -55,16 +61,28 @@ export class UsersQueryRepositories {
     if (banStatus === 'notBanned') {
       filter = { isBanned: false };
     }
-    if (searchEmailTerm.trim().length > 0 || searchLoginTerm.trim().length > 0) {
+    if (
+      searchEmailTerm.trim().length > 0 ||
+      searchLoginTerm.trim().length > 0
+    ) {
       advancedFilter = [
         { login: ILike(`%${searchLoginTerm}%`) },
         { email: ILike(`%${searchEmailTerm}%`) },
       ];
     }
-    const queryFilter = searchEmailTerm || searchLoginTerm ? advancedFilter : filter;
+    const queryFilter =
+      searchEmailTerm || searchLoginTerm ? advancedFilter : filter;
     const [users, count] = await Promise.all([
       this.userRepo.find({
-        select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
+        select: [
+          'id',
+          'login',
+          'email',
+          'createdAt',
+          'isBanned',
+          'banDate',
+          'banReason',
+        ],
         where: queryFilter,
         order: { [sortBy]: order },
         skip: data.skip,
@@ -77,7 +95,13 @@ export class UsersQueryRepositories {
     const items = await Promise.all(mappedUsers);
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Users with pagination!
-    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, items);
+    return new PaginationViewModel(
+      pagesCountRes,
+      pageNumber,
+      pageSize,
+      count,
+      items,
+    );
   }
 
   async getUserById(userId: string): Promise<MeViewModel> {

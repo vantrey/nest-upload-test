@@ -17,8 +17,8 @@ export class Blog {
   id: string;
   @Column({ type: 'uuid' })
   userId: string;
-  @Column({ type: 'character varying' })
-  userLogin: string;
+  // @Column({ type: 'character varying' })
+  // userLogin: string;
   @Column({ type: 'character varying', length: 15, collation: 'C' })
   name: string;
   @Column({ type: 'character varying', length: 500, collation: 'C' })
@@ -41,14 +41,14 @@ export class Blog {
 
   constructor(
     userId: string,
-    login: string,
+    // login: string,
     name: string,
     description: string,
     websiteUrl: string,
     user: User,
   ) {
     this.userId = userId;
-    this.userLogin = login;
+    // this.userLogin = login;
     this.name = name;
     this.description = description;
     this.websiteUrl = websiteUrl;
@@ -58,7 +58,7 @@ export class Blog {
 
   static createBlog(
     userId: string,
-    login: string,
+    // login: string,
     name: string,
     description: string,
     websiteUrl: string,
@@ -75,7 +75,7 @@ export class Blog {
     ) {
       throw new Error('Incorrect input data for create User');
     }
-    return new Blog(userId, login, name, description, websiteUrl, user);
+    return new Blog(userId, name, description, websiteUrl, user);
   }
 
   getName() {

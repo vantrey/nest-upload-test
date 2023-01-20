@@ -20,7 +20,13 @@ export class UpdateLikeStatusPostHandler implements ICommandHandler<UpdateLikeSt
     //finding likePost for update like status
     const foundLikePost = await this.postsRepo.findLikePost(id, userId);
     if (!foundLikePost) {
-      const newLikePost = LikePost.createLikePost(userId, id, user.getLogin(), post, user);
+      const newLikePost = LikePost.createLikePost(
+        userId,
+        id,
+        // user.getLogin(),
+        post,
+        user,
+      );
       //save
       const createdLikePost = await this.postsRepo.saveLikePost(newLikePost);
       //update likeStatus

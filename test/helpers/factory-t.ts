@@ -17,7 +17,7 @@ export const superUser = {
   password: 'qwerty',
 };
 
-export class TestingFactory {
+export class FactoryT {
   async createUserByLoginEmail(count: number, app: INestApplication) {
     const result: {
       userId: string;
@@ -270,6 +270,14 @@ export class TestingFactory {
     };
     await request(app.getHttpServer())
       .put(endpoints.postController + `/${id}/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({ likeStatus: `${value}` })
+      .expect(204);
+  }
+
+  async createLikeComment(id: string, value: string, accessToken: string, app: INestApplication) {
+    await request(app.getHttpServer())
+      .put(endpoints.commentController + `/${id}/like-status`)
       .auth(accessToken, { type: 'bearer' })
       .send({ likeStatus: `${value}` })
       .expect(204);
