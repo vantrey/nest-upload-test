@@ -35,7 +35,7 @@ describe(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe(`factory users - blogs - posts `, () => {
+  describe.skip(`factory users - blogs - posts `, () => {
     // let accessToken: string;
     // let blog: BlogViewModel;
     it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
@@ -129,7 +129,7 @@ describe(`Ban blog by super admin`, () => {
     });
   });
 
-  describe.skip(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
+  describe(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -191,7 +191,7 @@ describe(`Ban blog by super admin`, () => {
         });
     });
   });
-  describe.skip(`Homework 22.1 > Super admin Api > Ban user by super admin`, () => {
+  describe(`Homework 22.1 > Super admin Api > Ban user by super admin`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -302,7 +302,7 @@ describe(`Ban blog by super admin`, () => {
       await request(app.getHttpServer()).get(`/comments/${comment.id}`).expect(404);
     });
   });
-  describe.skip(`Homework 22.2 > Blogger Api > Blogger posts`, () => {
+  describe(`Homework 22.2 > Blogger Api > Blogger posts`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -433,7 +433,7 @@ describe(`Ban blog by super admin`, () => {
         .expect(404);
     });
   });
-  describe.skip(`Super admin Api > Users`, () => {
+  describe(`Super admin Api > Users`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -500,7 +500,7 @@ describe(`Ban blog by super admin`, () => {
         .expect(401);
     });
   });
-  describe.skip(`Check error for testing`, () => {
+  describe(`Check error for testing`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
