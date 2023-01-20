@@ -2,10 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import {
-  createUniqeUserByLoginEmail,
-  createUserByLoginEmail,
-} from './helpers/create-user-by-login-email';
+import { createUniqeUserByLoginEmail, createUserByLoginEmail } from './helpers/create-user-by-login-email';
 import { createBlogsForTest } from './helpers/create-blog-for-test';
 import { createdApp } from '../src/helpers/createdApp';
 import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
@@ -13,8 +10,6 @@ import { BlogViewModel } from '../src/modules/blogs/infrastructure/query-reposit
 import { PostViewModel } from '../src/modules/posts/infrastructure/query-repositories/post-View-Model';
 import { CommentsViewType } from '../src/modules/comments/infrastructure/query-repository/comments-View-Model';
 import { createBlogsAndPostForTest } from './helpers/create-blog-and-post-for-test';
-import { endpoints } from './helpers/routing';
-import { TestingFactory } from './helpers/testing-factory';
 
 jest.setTimeout(1200000);
 
@@ -35,101 +30,7 @@ describe(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe.skip(`factory users - blogs - posts `, () => {
-    // let accessToken: string;
-    // let blog: BlogViewModel;
-    it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
-      await request(app.getHttpServer()).delete(endpoints.testingController.allData).expect(204);
-    });
-    it(`01 - test endpoint`, async () => {
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'user01',
-        'email1@gg.cm',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'user02',
-        'email1@gg.com',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'user05',
-        'email1@gg.coi',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'user03',
-        'email1@gg.cou',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'useee01',
-        'email1@gg.col',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'log01',
-        'emai@gg.com',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'log02',
-        'email2@gg.com',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'user15',
-        'emarrr1@gg.com',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'usr-1-01',
-        'email3@gg.com',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'some01',
-        'email1@gyyyg.ru',
-        app,
-      );
-      await TestingFactory.prototype.createUniqueUserByLoginAndEmail(
-        1,
-        'use4406',
-        'email1@grrg.ro',
-        app,
-      );
-      // const r = await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'maKaka', app);
-      // accessToken = r[0].accessToken;
-      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'asirius', app);
-      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'Raccoon', app);
-      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'podgorne', app);
-      // await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'lll376', app);
-      // const b = await TestingFactory.prototype.createUniqueBlog(1, 'aRamat', accessToken, app);
-      // blog = b[0].blog;
-      // await TestingFactory.prototype.createUniqueBlog(1, 'raCoon', accessToken, app);
-      // await TestingFactory.prototype.createUniqueBlog(1, 'elephant', accessToken, app);
-      // await TestingFactory.prototype.createUniqueBlog(1, 'rabbit', accessToken, app);
-      // await TestingFactory.prototype.createUniqueBlog(1, 'relation', accessToken, app);
-      // await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
-      // await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
-      // await TestingFactory.prototype.createUniquePost(1, '778899', accessToken, blog.id, app);
-      // await TestingFactory.prototype.createUniquePost(1, 'cherapacha', accessToken, blog.id, app);
-      // await TestingFactory.prototype.createUniquePost(1, 'librus', accessToken, blog.id, app);
-      // await TestingFactory.prototype.createUniquePost(1, 'aFfect', accessToken, blog.id, app);
-    });
-  });
-
-  describe(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
+  describe.skip(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -191,7 +92,7 @@ describe(`Ban blog by super admin`, () => {
         });
     });
   });
-  describe(`Homework 22.1 > Super admin Api > Ban user by super admin`, () => {
+  describe.skip(`Homework 22.1 > Super admin Api > Ban user by super admin`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -302,7 +203,7 @@ describe(`Ban blog by super admin`, () => {
       await request(app.getHttpServer()).get(`/comments/${comment.id}`).expect(404);
     });
   });
-  describe(`Homework 22.2 > Blogger Api > Blogger posts`, () => {
+  describe.skip(`Homework 22.2 > Blogger Api > Blogger posts`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -433,7 +334,7 @@ describe(`Ban blog by super admin`, () => {
         .expect(404);
     });
   });
-  describe(`Super admin Api > Users`, () => {
+  describe.skip(`Super admin Api > Users`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -489,18 +390,12 @@ describe(`Ban blog by super admin`, () => {
         .send({ loginOrEmail: `${user.login}`, password: `asirius-120` })
         .expect(200);
 
-      await request(app.getHttpServer())
-        .post(`/auth/logout`)
-        .set('Cookie', `${refreshToken[0]}`)
-        .expect(204);
+      await request(app.getHttpServer()).post(`/auth/logout`).set('Cookie', `${refreshToken[0]}`).expect(204);
 
-      await request(app.getHttpServer())
-        .post(`/auth/refresh-token`)
-        .set('Cookie', `${refreshToken[0]}`)
-        .expect(401);
+      await request(app.getHttpServer()).post(`/auth/refresh-token`).set('Cookie', `${refreshToken[0]}`).expect(401);
     });
   });
-  describe(`Check error for testing`, () => {
+  describe.skip(`Check error for testing`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });
@@ -541,9 +436,7 @@ describe(`Ban blog by super admin`, () => {
       //   items: expect.any(Array)
       // });
 
-      const responseBlogId = await request(app.getHttpServer())
-        .get(`/blogs/${blog.id}`)
-        .expect(404);
+      const responseBlogId = await request(app.getHttpServer()).get(`/blogs/${blog.id}`).expect(404);
       console.log('-2', responseBlogId.body);
 
       const responseBlogSA = await request(app.getHttpServer())

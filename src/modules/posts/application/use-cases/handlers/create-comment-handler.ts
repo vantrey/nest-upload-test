@@ -2,10 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepositories } from '../../../infrastructure/posts-repositories';
 import { CreateCommentCommand } from '../create-comment-command';
 import { CommentsViewType } from '../../../../comments/infrastructure/query-repository/comments-View-Model';
-import {
-  ForbiddenExceptionMY,
-  NotFoundExceptionMY,
-} from '../../../../../helpers/My-HttpExceptionFilter';
+import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
 import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
 import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
@@ -42,7 +39,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
       post.getOwnerPost(),
       content,
       userId,
-      user.getLogin(),
+      // user.getLogin(),
       post,
       user,
     );

@@ -10,6 +10,7 @@ import { LoginDto } from '../../src/modules/auth/api/input-dtos/login-Dto-Model'
 import { CreateBlogDto } from '../../src/modules/blogger/api/input-dtos/create-Blog-Dto-Model';
 import { CreatePostDto } from '../../src/modules/posts/api/input-Dtos/create-Post-Dto-Model';
 import { CreateCommentDto } from '../../src/modules/posts/api/input-Dtos/create-Comment-Dto-Model';
+import { generateRandomString } from './generateRandomText';
 
 export const superUser = {
   login: 'admin',
@@ -92,12 +93,8 @@ export class TestingFactory {
     }
     return result;
   }
-  async createUniqueUserByLoginAndEmail(
-    count: number,
-    log: string,
-    mal: string,
-    app: INestApplication,
-  ) {
+
+  async createUniqueUserByLoginAndEmail(count: number, log: string, mal: string, app: INestApplication) {
     const result: {
       userId: string;
       user: UsersViewType;
@@ -189,13 +186,7 @@ export class TestingFactory {
     return result;
   }
 
-  async createUniquePost(
-    count: number,
-    uniq: string,
-    accessToken: string,
-    blogId: string,
-    app: INestApplication,
-  ) {
+  async createUniquePost(count: number, uniq: string, accessToken: string, blogId: string, app: INestApplication) {
     const result: { post: PostViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const postInputModel: CreatePostDto = {
@@ -230,6 +221,22 @@ export class TestingFactory {
     return result;
   }
 
+  async createUniqueComment(count: number, length: number, accessToken: string, postId: string, app: INestApplication) {
+    const result: { comment: CommentsViewType }[] = [];
+    for (let i = 0; i < count; i++) {
+      const commentInputModel: CreateCommentDto = {
+        content: `${generateRandomString(length)}${i}`,
+      };
+      const response = await request(app.getHttpServer())
+        .post(endpoints.postController + `/${postId}/comments`)
+        .auth(accessToken, { type: 'bearer' })
+        .send(commentInputModel)
+        .expect(201);
+      result.push({ comment: response.body });
+    }
+    return result;
+  }
+
   async createBlogsAndPostForTest(count: number, accessToken: string, app: INestApplication) {
     const result: { blog: BlogViewModel; post: PostViewModel }[] = [];
     for (let i = 0; i < count; i++) {
@@ -255,5 +262,16 @@ export class TestingFactory {
       result.push({ blog: responseBlog.body, post: responsePost.body });
     }
     return result;
+  }
+
+  async createLikePost(id: string, value: string, accessToken: string, app: INestApplication) {
+    const inputModel = {
+      likeStatus: `${value}`,
+    };
+    await request(app.getHttpServer())
+      .put(endpoints.postController + `/${id}/like-status`)
+      .auth(accessToken, { type: 'bearer' })
+      .send({ likeStatus: `${value}` })
+      .expect(204);
   }
 }

@@ -7,10 +7,7 @@ import { LikePost } from '../../../../../entities/like-post.entity';
 
 @CommandHandler(UpdateLikeStatusCommand)
 export class UpdateLikeStatusPostHandler implements ICommandHandler<UpdateLikeStatusCommand> {
-  constructor(
-    private readonly postsRepo: PostsRepositories,
-    private readonly usersRepo: UsersRepositories,
-  ) {}
+  constructor(private readonly postsRepo: PostsRepositories, private readonly usersRepo: UsersRepositories) {}
 
   async execute(command: UpdateLikeStatusCommand): Promise<boolean> {
     const { id, userId } = command;
@@ -31,6 +28,7 @@ export class UpdateLikeStatusPostHandler implements ICommandHandler<UpdateLikeSt
       await this.postsRepo.saveLikePost(createdLikePost);
       return true;
     }
+
     //update likeStatus
     foundLikePost.updateLikePost(likeStatus);
     await this.postsRepo.saveLikePost(foundLikePost);

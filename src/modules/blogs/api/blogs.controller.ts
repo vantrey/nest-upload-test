@@ -37,7 +37,9 @@ export class BlogsController {
   }
 
   @Get(`:id`)
-  async findOne(@Param(`id`, ValidateUuidPipe) id: string): Promise<BlogViewModel> {
+  async findOne(
+    @Param(`id`, ValidateUuidPipe) id: string,
+  ): Promise<BlogViewModel> {
     return await this.blogsQueryRepo.findBlog(id);
   }
 }

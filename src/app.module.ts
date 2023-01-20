@@ -74,6 +74,7 @@ import { Post } from './entities/post.entity';
 import { LikeComment } from './entities/like-comment.entity';
 import { LikePost } from './entities/like-post.entity';
 import { Comment } from './entities/comment.entity';
+import { APP_GUARD } from '@nestjs/core';
 
 const controllers = [
   AuthController,
@@ -96,10 +97,10 @@ const providers = [
   BlogUuidIdValidator,
   BasicStrategy,
   ThrottlerGuard,
-  /*{
+  {
     provide: APP_GUARD,
     useClass: ThrottlerGuard,
-  },*/
+  },
 ];
 const guards = [BasicAuthGuard, JwtAuthGuard, JwtForGetGuard];
 const adapters = [

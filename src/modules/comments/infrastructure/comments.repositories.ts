@@ -25,7 +25,7 @@ export class CommentsRepositories {
       createdComment.commentId,
       newComment.content,
       newComment.userId,
-      newComment.userLogin,
+      newComment.user.login,
       newComment.createdAt,
       likesInfo,
     );

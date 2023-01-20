@@ -22,10 +22,12 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     const { userId, blogId } = command;
     const { title, shortDescription, content } = command.postInputModel;
     const blog = await this.blogsRepo.findBlog(blogId);
-    if (!blog) throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
+    if (!blog)
+      throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
     if (!blog.checkOwner(userId))
       throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
-    if (blog.checkStatusBan()) throw new NotFoundExceptionMY(`Not found data for id: ${blogId}`);
+    if (blog.checkStatusBan())
+      throw new NotFoundExceptionMY(`Not found data for id: ${blogId}`);
     //preparation post
     const newPost = Post.createPost(
       userId,
@@ -33,12 +35,12 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
       shortDescription,
       content,
       blogId,
-      blog.getName(),
+      // blog.getName(),
       blog,
     );
     //save instance
     const createdPost = await this.postsRepo.savePost(newPost);
     //mapped for view
-    return await this.postsQueryRepo.createPostForView(createdPost.postId);
+    return await this.postsQueryRepo.mappedPostForView(createdPost);
   }
 }

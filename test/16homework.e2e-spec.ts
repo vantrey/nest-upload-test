@@ -33,22 +33,6 @@ describe(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe.skip(`Super`, () => {
-    beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
-    });
-    // let blog: BlogViewModel;
-    // let blog1: BlogViewModel;
-    // let blog2: BlogViewModel;
-    // let post: PostViewModel;
-    // let accessToken: string;
-    // let accessToken1: string;
-
-    it(`01-POST -> "/sa/users": should create new user; status 201; content: created user; used additional methods: GET => /sa/users;`, async () => {
-      await createUserByLoginEmail(1000, app);
-    });
-  });
-
   describe(`Super admin Api > Users`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
@@ -82,10 +66,7 @@ describe(`Ban blog by super admin`, () => {
       blog1 = resBlog1[0].blog;
       blog2 = resBlog1[1].blog;
 
-      const resBlogs = await request(app.getHttpServer())
-        .get(`/blogs`)
-        .query({ pageSize: 6 })
-        .expect(200);
+      const resBlogs = await request(app.getHttpServer()).get(`/blogs`).query({ pageSize: 6 }).expect(200);
 
       expect(resBlogs.body.items).toHaveLength(3);
 

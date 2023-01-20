@@ -44,7 +44,7 @@ export class CommentsQueryRepositories {
       comment.commentId,
       comment.content,
       comment.userId,
-      comment.userLogin,
+      comment.user.login,
       comment.createdAt,
       likesInfo,
     );

@@ -17,7 +17,7 @@ const delay = async (delay: number = 1000) => {
 
 jest.setTimeout(120000);
 
-describe.skip('Secury (e2e)', () => {
+describe('Secury (e2e)', () => {
   let app: INestApplication;
   //let mongoServer: MongoMemoryServer;
   //let blogsController: BlogsController;
@@ -53,10 +53,7 @@ describe.skip('Secury (e2e)', () => {
     });
     let user: UsersViewType;
     let validAccessToken: AccessTokenType;
-    let refreshTokenKey: string,
-      validRefreshToken: string,
-      oldRefreshToken: string,
-      validRefreshToken0: string;
+    let refreshTokenKey: string, validRefreshToken: string, oldRefreshToken: string, validRefreshToken0: string;
     let devices: DeviceViewModel[];
     it('01 - POST - `/sa/users` should authenticate user with correct data and return status code 200', async () => {
       const resultUser = await request(app.getHttpServer())
@@ -80,18 +77,13 @@ describe.skip('Secury (e2e)', () => {
       expect(result.headers['set-cookie']).toBeTruthy();
       if (!result.headers['set-cookie']) return;
 
-      [refreshTokenKey, validRefreshToken0] = result.headers['set-cookie'][0]
-        .split(';')[0]
-        .split('=');
+      [refreshTokenKey, validRefreshToken0] = result.headers['set-cookie'][0].split(';')[0].split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(result.headers['set-cookie'][0].includes('HttpOnly')).toBe(true);
       expect(result.headers['set-cookie'][0].includes('Secure')).toBe(true);
     });
     it('02 - GET - `/auth/me` should get data about user by token and return status code - 200', async () => {
-      await request(app.getHttpServer())
-        .get('/auth/me')
-        .auth(validAccessToken.accessToken, { type: 'bearer' })
-        .expect(200);
+      await request(app.getHttpServer()).get('/auth/me').auth(validAccessToken.accessToken, { type: 'bearer' }).expect(200);
     });
     it('03 - POST - `/auth/login` should authenticate user +2 times', async () => {
       await request(app.getHttpServer())
@@ -118,9 +110,7 @@ describe.skip('Secury (e2e)', () => {
       expect(result.headers['set-cookie']).toBeTruthy();
       if (!result.headers['set-cookie']) return;
 
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
-        .split(';')[0]
-        .split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(result.headers['set-cookie'][0].includes('HttpOnly')).toBe(true);
       expect(result.headers['set-cookie'][0].includes('Secure')).toBe(true);
@@ -164,9 +154,7 @@ describe.skip('Secury (e2e)', () => {
         .delete(`/security/devices/${devices[0].deviceId}`)
         .set('Cookie', `refreshToken=${validRefreshToken}+1`)
         .expect(401);
-      await request(app.getHttpServer())
-        .delete(`/security/devices/${devices[0].deviceId}`)
-        .expect(401);
+      await request(app.getHttpServer()).delete(`/security/devices/${devices[0].deviceId}`).expect(401);
 
       await request(app.getHttpServer())
         .delete(`/security/devices`)
@@ -214,9 +202,7 @@ describe.skip('Secury (e2e)', () => {
       if (!result.headers['set-cookie']) return;
 
       oldRefreshToken = validRefreshToken;
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
-        .split(';')[0]
-        .split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(oldRefreshToken).not.toEqual(validRefreshToken);
       expect(result.headers['set-cookie'][0].includes('HttpOnly')).toBe(true);
@@ -249,9 +235,7 @@ describe.skip('Secury (e2e)', () => {
         },
       ]);
       expect(devices.map((d) => d.deviceId)).toEqual(newDeviceList.map((d) => d.deviceId));
-      expect(devices.map((d) => d.lastActiveDate)).not.toEqual(
-        newDeviceList.map((d) => d.lastActiveDate),
-      );
+      expect(devices.map((d) => d.lastActiveDate)).not.toEqual(newDeviceList.map((d) => d.lastActiveDate));
     });
     it('09 - GET - `/security/devices` should delete device, used additional methods: DELETE -> /security/devices/:id, GET -> /security/devices', async () => {
       await request(app.getHttpServer())
@@ -307,10 +291,7 @@ describe.skip('Secury (e2e)', () => {
       devices = newDeviceList;
     });
     it('11 - POST - `` should logout device', async () => {
-      await request(app.getHttpServer())
-        .post('/auth/logout')
-        .set('Cookie', `refreshToken=${validRefreshToken}`)
-        .expect(204);
+      await request(app.getHttpServer()).post('/auth/logout').set('Cookie', `refreshToken=${validRefreshToken}`).expect(204);
 
       const result = await request(app.getHttpServer())
         .post('/auth/login')
@@ -326,9 +307,7 @@ describe.skip('Secury (e2e)', () => {
       expect(result.headers['set-cookie']).toBeTruthy();
       if (!result.headers['set-cookie']) return;
 
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
-        .split(';')[0]
-        .split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
 
       const resultDeviceList = await request(app.getHttpServer())
         .get('/security/devices')
@@ -346,7 +325,7 @@ describe.skip('Secury (e2e)', () => {
       ]);
       expect(devices).not.toEqual(newDeviceList);
     });
-    it.skip('12 - POST - /registration should return status code 429 if more than 5 requests in 10 seconds, and 204 after waiting', async () => {
+    it('12 - POST - /registration should return status code 429 if more than 5 requests in 10 seconds, and 204 after waiting', async () => {
       await request(app.getHttpServer())
         .post('/auth/registration')
         .send({
@@ -407,7 +386,7 @@ describe.skip('Secury (e2e)', () => {
         })
         .expect(400);
     }, 35000);
-    it.skip('13 -POST - /login should return status code 429 if more than 5 requests in 10 seconds, and 401 after waiting ', async function () {
+    it('13 -POST - /login should return status code 429 if more than 5 requests in 10 seconds, and 401 after waiting ', async function () {
       await request(app.getHttpServer())
         .post('/auth/login')
         .set('User-Agent', 'for test')
@@ -468,7 +447,7 @@ describe.skip('Secury (e2e)', () => {
         })
         .expect(401);
     }, 15000);
-    it.skip('14 - POST/resending should return status code 429 if more than 5 requests in 10 seconds, and 400 after waiting', async () => {
+    it('14 - POST/resending should return status code 429 if more than 5 requests in 10 seconds, and 400 after waiting', async () => {
       await request(app.getHttpServer())
         .post('/auth/registration-email-resending')
         .send({
@@ -515,7 +494,7 @@ describe.skip('Secury (e2e)', () => {
         })
         .expect(400);
     }, 15000);
-    it.skip('15 - POST/confirmation should return status code 429 if more than 5 requests in 10 seconds, and 400 after waiting', async () => {
+    it('15 - POST/confirmation should return status code 429 if more than 5 requests in 10 seconds, and 400 after waiting', async () => {
       await request(app.getHttpServer())
         .post('/auth/registration-confirmation')
         .send({

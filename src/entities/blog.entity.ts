@@ -1,5 +1,12 @@
 import { UpdateBlogDto } from '../modules/blogger/api/input-dtos/update-Blog-Dto-Model';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 import { User } from './user.entity';
 import { BannedBlogUser } from './banned-blog-user.entity';
 import { Post } from './post.entity';
@@ -30,7 +37,7 @@ export class Blog {
   @OneToMany(() => BannedBlogUser, (u) => u.blog)
   bannedUsers: BannedBlogUser[];
   @OneToMany(() => Post, (u) => u.blog)
-  posts: Post[];
+  posts: Relation<Post[]>;
 
   constructor(
     userId: string,
@@ -57,7 +64,9 @@ export class Blog {
     websiteUrl: string,
     user: User,
   ) {
-    const reg = new RegExp(`^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`);
+    const reg = new RegExp(
+      `^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`,
+    );
     if (
       name.length > 15 &&
       description.length > 500 &&
@@ -75,11 +84,17 @@ export class Blog {
 
   updateBlog(dto: UpdateBlogDto) {
     const { name, description, websiteUrl } = dto;
-    const reg = new RegExp(`^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`);
+    const reg = new RegExp(
+      `^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`,
+    );
     if (!reg.test(websiteUrl)) {
       throw new Error(`Incorrect input #web data for update blog`);
     }
-    if (name.length < 15 && description.length < 500 && websiteUrl.length < 100) {
+    if (
+      name.length < 15 &&
+      description.length < 500 &&
+      websiteUrl.length < 100
+    ) {
       this.name = name;
       this.websiteUrl = websiteUrl;
       this.description = description;

@@ -53,7 +53,11 @@ export class PostsController {
     @Param(`postId`, ValidateUuidPipe) id: string,
     @Query() paginationInputModel: PaginationDto,
   ): Promise<PaginationViewModel<CommentsViewType[]>> {
-    return await this.postsQueryRepo.findCommentsByIdPost(id, paginationInputModel, userId);
+    return await this.postsQueryRepo.findCommentsByIdPost(
+      id,
+      paginationInputModel,
+      userId,
+    );
   }
 
   @UseGuards(JwtAuthGuard)
@@ -63,7 +67,9 @@ export class PostsController {
     @Param(`postId`, ValidateUuidPipe) id: string,
     @Body() inputCommentModel: CreateCommentDto,
   ) {
-    return await this.commandBus.execute(new CreateCommentCommand(id, inputCommentModel, userId));
+    return await this.commandBus.execute(
+      new CreateCommentCommand(id, inputCommentModel, userId),
+    );
   }
 
   @UseGuards(JwtForGetGuard)

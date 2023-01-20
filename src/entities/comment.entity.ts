@@ -17,8 +17,8 @@ export class Comment {
   content: string;
   @Column({ type: 'uuid' })
   userId: string;
-  @Column({ type: 'character varying' })
-  userLogin: string;
+  // @Column({ type: 'character varying' })
+  // userLogin: string;
   @Column({ type: 'character varying' })
   createdAt: string;
   @ManyToOne(() => User, (u) => u.comments)
@@ -33,7 +33,7 @@ export class Comment {
     ownerId: string,
     content: string,
     userId: string,
-    login: string,
+    // login: string,
     post: Post,
     user: User,
   ) {
@@ -41,7 +41,7 @@ export class Comment {
     this.ownerId = ownerId;
     this.content = content;
     this.userId = userId;
-    this.userLogin = login;
+    // this.userLogin = login;
     this.createdAt = new Date().toISOString();
     this.post = post;
     this.user = user;
@@ -52,12 +52,12 @@ export class Comment {
     ownerId: string,
     content: string,
     userId: string,
-    login: string,
+    // login: string,
     post: Post,
     user: User,
   ) {
     if (content.length < 300 && content.length > 20) {
-      return new Comment(postId, ownerId, content, userId, login, post, user);
+      return new Comment(postId, ownerId, content, userId, post, user);
     }
     throw new Error('Incorrect input data for create comment');
   }
