@@ -111,6 +111,24 @@ export class TestingFactory {
     return result;
   }
 
+  async createUniqueBlog(count: number, uniq: string, accessToken: string, app: INestApplication) {
+    const result: { blog: BlogViewModel }[] = [];
+    for (let i = 0; i < count; i++) {
+      const postInputModel: CreateBlogDto = {
+        name: `${uniq}${i}${i}`,
+        description: `A mongoose is a small terrestrial carnivorous mammal belonging to the family Herpestidae`,
+        websiteUrl: `https://www.mongoose${i}${i}.com`,
+      };
+      const responseBlog = await request(app.getHttpServer())
+        .post(endpoints.bloggerController)
+        .auth(accessToken, { type: 'bearer' })
+        .send(postInputModel)
+        .expect(201);
+      result.push({ blog: responseBlog.body });
+    }
+    return result;
+  }
+
   async createPost(count: number, accessToken: string, blogId: string, app: INestApplication) {
     const result: { post: PostViewModel }[] = [];
     for (let i = 0; i < count; i++) {
@@ -118,6 +136,30 @@ export class TestingFactory {
         name: `Mongoose${i}${i}`,
         description: `A mongoose is a small terrestrial carnivorous mammal belonging to the family Herpestidae`,
         websiteUrl: `https://www.mongoose${i}${i}.com`,
+      };
+      const responsePost = await request(app.getHttpServer())
+        .post(endpoints.bloggerController + `/${blogId}/posts`)
+        .auth(accessToken, { type: 'bearer' })
+        .send(postInputModel)
+        .expect(201);
+      result.push({ post: responsePost.body });
+    }
+    return result;
+  }
+
+  async createUniquePost(
+    count: number,
+    uniq: string,
+    accessToken: string,
+    blogId: string,
+    app: INestApplication,
+  ) {
+    const result: { post: PostViewModel }[] = [];
+    for (let i = 0; i < count; i++) {
+      const postInputModel: CreatePostDto = {
+        title: `${uniq}${i}`,
+        shortDescription: `A mongoose is a small terrestrial carnivorous mammal belonging to the family Herpestidae`,
+        content: `mongoose${i}${i}.com Let's not forget that SQL is a very high level language and very dynamic, so we can express in our plain js object only basic queries. Suggested syntax is weird IMO and covers such case, that can be easily extended to hundred other cases that aren't covered by this syntax.`,
       };
       const responsePost = await request(app.getHttpServer())
         .post(endpoints.bloggerController + `/${blogId}/posts`)

@@ -37,15 +37,29 @@ describe(`Ban blog by super admin`, () => {
 
   describe(``, () => {
     let accessToken: string;
+    let blog: BlogViewModel;
     it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
       await request(app.getHttpServer()).delete(endpoints.testingController.allData).expect(204);
     });
     it(`01 - test endpoint`, async () => {
-      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'maKaka', app);
+      const r = await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'maKaka', app);
+      accessToken = r[0].accessToken;
       await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'asirius', app);
       await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'Raccoon', app);
       await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'podgorne', app);
       await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'lll376', app);
+      const b = await TestingFactory.prototype.createUniqueBlog(1, 'aRamat', accessToken, app);
+      blog = b[0].blog;
+      await TestingFactory.prototype.createUniqueBlog(1, 'raCoon', accessToken, app);
+      await TestingFactory.prototype.createUniqueBlog(1, 'elephant', accessToken, app);
+      await TestingFactory.prototype.createUniqueBlog(1, 'rabbit', accessToken, app);
+      await TestingFactory.prototype.createUniqueBlog(1, 'relation', accessToken, app);
+      await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
+      await TestingFactory.prototype.createUniqueBlog(1, '778899', accessToken, app);
+      await TestingFactory.prototype.createUniquePost(1, '778899', accessToken, blog.id, app);
+      await TestingFactory.prototype.createUniquePost(1, 'cherapacha', accessToken, blog.id, app);
+      await TestingFactory.prototype.createUniquePost(1, 'librus', accessToken, blog.id, app);
+      await TestingFactory.prototype.createUniquePost(1, 'aFfect', accessToken, blog.id, app);
     });
   });
 
