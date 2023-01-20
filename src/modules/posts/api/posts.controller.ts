@@ -10,8 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { PostsQueryRepositories } from '../infrastructure/query-repositories/posts-query.reposit';
-import { PaginationDto } from '../../blogs/api/input-Dtos/pagination-Dto-Model';
-import { PaginationViewModel } from '../../blogs/infrastructure/query-repository/pagination-View-Model';
+import { PaginationViewModel } from '../../../common/pagination-View-Model';
 import { PostViewModel } from '../infrastructure/query-repositories/post-View-Model';
 import { CommentsViewType } from '../../comments/infrastructure/query-repository/comments-View-Model';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
@@ -24,6 +23,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../application/use-cases/create-comment-command';
 import { UpdateLikeStatusCommand } from '../application/use-cases/update-like-status-command';
 import { SkipThrottle } from '@nestjs/throttler';
+import { PaginationDto } from '../../../common/pagination-dto';
 
 @SkipThrottle()
 @Controller(`posts`)

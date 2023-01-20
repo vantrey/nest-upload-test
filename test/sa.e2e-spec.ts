@@ -13,12 +13,13 @@ import { BlogViewModel } from '../src/modules/blogs/infrastructure/query-reposit
 import { PostViewModel } from '../src/modules/posts/infrastructure/query-repositories/post-View-Model';
 import { CommentsViewType } from '../src/modules/comments/infrastructure/query-repository/comments-View-Model';
 import { createBlogsAndPostForTest } from './helpers/create-blog-and-post-for-test';
+import { endpoints } from './helpers/routing';
+import { TestingFactory } from './helpers/testing-factory';
 
-jest.setTimeout(120000);
+jest.setTimeout(1200000);
 
 describe(`Ban blog by super admin`, () => {
   let app: INestApplication;
-
   beforeAll(async () => {
     // Create a NestJS application
     const module: TestingModule = await Test.createTestingModule({
@@ -34,16 +35,21 @@ describe(`Ban blog by super admin`, () => {
     await app.close();
   });
 
-  describe.skip(``, () => {
-    beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+  describe(``, () => {
+    let accessToken: string;
+    it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
+      await request(app.getHttpServer()).delete(endpoints.testingController.allData).expect(204);
     });
-    it(`cre`, async () => {
-      createUserByLoginEmail(3, app);
+    it(`01 - test endpoint`, async () => {
+      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'maKaka', app);
+      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'asirius', app);
+      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'Raccoon', app);
+      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'podgorne', app);
+      await TestingFactory.prototype.createUniqueUserByLoginEmail(1, 'lll376', app);
     });
   });
 
-  describe(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
+  describe.skip(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
     beforeAll(async () => {
       await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
     });

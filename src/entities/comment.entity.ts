@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { User } from './user.entity';
 import { Post } from './post.entity';
 import { LikeComment } from './like-comment.entity';
@@ -26,9 +26,16 @@ export class Comment {
   @ManyToOne(() => Post, (u) => u.comments)
   post: Post;
   @OneToMany(() => LikeComment, (u) => u.comment)
-  likesComment: LikeComment[];
+  likesComment: Relation<LikeComment[]>;
 
-  constructor(postId: string, ownerId: string, content: string, userId: string, login: string, post: Post) {
+  constructor(
+    postId: string,
+    ownerId: string,
+    content: string,
+    userId: string,
+    login: string,
+    post: Post,
+  ) {
     this.postId = postId;
     this.ownerId = ownerId;
     this.content = content;
@@ -38,7 +45,14 @@ export class Comment {
     this.post = post;
   }
 
-  static createComment(postId: string, ownerId: string, content: string, userId: string, login: string, post: Post) {
+  static createComment(
+    postId: string,
+    ownerId: string,
+    content: string,
+    userId: string,
+    login: string,
+    post: Post,
+  ) {
     if (content.length < 300 && content.length > 20) {
       return new Comment(postId, ownerId, content, userId, login, post);
     }

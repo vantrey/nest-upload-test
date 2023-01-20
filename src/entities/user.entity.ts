@@ -12,7 +12,7 @@ import { LikeComment } from './like-comment.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  userId: string;
+  id: string;
   @Column({ type: 'character varying', length: 10, collation: 'C' })
   login: string;
   @Column({ type: 'character varying', collation: 'C' })
@@ -67,7 +67,12 @@ export class User {
     this.expirationDateR = add(new Date(), { hours: 1 });
   }
 
-  static createUser(login: string, email: string, passwordHash: string, isConfirmation: boolean): User {
+  static createUser(
+    login: string,
+    email: string,
+    passwordHash: string,
+    isConfirmation: boolean,
+  ): User {
     const reg = new RegExp(`^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$`);
     if (login.length < 3 && login.length > 10 && !reg.test(email)) {
       throw new Error('Incorrect input data for create User');

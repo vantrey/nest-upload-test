@@ -12,7 +12,7 @@ export class UsersRepositories {
 
   async saveUser(createdUser: User): Promise<string> {
     const user = await this.userRepo.save(createdUser);
-    return user.userId;
+    return user.id;
   }
 
   async deleteUser(id: string): Promise<boolean> {
@@ -69,7 +69,7 @@ export class UsersRepositories {
   }
 
   async findUserByIdWithMapped(userId: string): Promise<User> {
-    const user = await this.userRepo.findOneBy({ userId: userId });
+    const user = await this.userRepo.findOneBy({ id: userId });
     if (!user) return null;
     return user;
   }

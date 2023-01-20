@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PaginationDto } from '../../../blogs/api/input-Dtos/pagination-Dto-Model';
 import { PostViewModel } from './post-View-Model';
 import { ExtendedLikesInfoViewModel } from './likes-Info-View-Model';
-import { PaginationViewModel } from '../../../blogs/infrastructure/query-repository/pagination-View-Model';
+import { PaginationViewModel } from '../../../../common/pagination-View-Model';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
 import {
   BloggerCommentsViewType,
@@ -18,6 +17,7 @@ import { Repository } from 'typeorm';
 import { Comment } from '../../../../entities/comment.entity';
 import { LikePost, LikeStatusType } from '../../../../entities/like-post.entity';
 import { LikeComment } from '../../../../entities/like-comment.entity';
+import { PaginationDto } from '../../../../common/pagination-dto';
 
 @Injectable()
 export class PostsQueryRepositories {
@@ -79,7 +79,7 @@ export class PostsQueryRepositories {
     userId: string | null,
     blogId?: string,
   ): Promise<PaginationViewModel<PostViewModel[]>> {
-    const { sortDirection, sortBy, pageSize, pageNumber } = data;
+    const { sortDirection, sortBy, pageSize } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -94,10 +94,18 @@ export class PostsQueryRepositories {
     }
     const [posts, count] = await Promise.all([
       this.postRepo.find({
-        select: ['postId', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt'],
+        select: [
+          'postId',
+          'title',
+          'shortDescription',
+          'content',
+          'blogId',
+          'blogName',
+          'createdAt',
+        ],
         where: filter,
         order: { [sortBy]: order },
-        skip: (pageNumber - 1) * pageSize,
+        skip: data.skip,
         take: pageSize,
       }),
       this.postRepo.count({ where: filter }),
@@ -108,7 +116,13 @@ export class PostsQueryRepositories {
     //counting blogs user
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found posts with pagination
-    return new PaginationViewModel(pagesCountRes, data.pageNumber, data.pageSize, count, itemsPosts);
+    return new PaginationViewModel(
+      pagesCountRes,
+      data.pageNumber,
+      data.pageSize,
+      count,
+      itemsPosts,
+    );
   }
 
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
@@ -124,7 +138,7 @@ export class PostsQueryRepositories {
     data: PaginationDto,
     userId: string | null,
   ): Promise<PaginationViewModel<CommentsViewType[]>> {
-    const { sortDirection, sortBy, pageSize, pageNumber } = data;
+    const { sortDirection, sortBy, pageSize } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -139,7 +153,7 @@ export class PostsQueryRepositories {
         relations: { likesComment: true },
         where: { postId: postId, isBanned: false },
         order: { [sortBy]: order },
-        skip: (pageNumber - 1) * pageSize,
+        skip: data.skip,
         take: pageSize,
       }),
       this.commentRepo.count({ where: { postId: postId, isBanned: false } }),
@@ -149,10 +163,19 @@ export class PostsQueryRepositories {
     const itemsComments = await Promise.all(mappedComments);
     const pagesCountRes = Math.ceil(count / data.pageSize);
     //returning comment with pagination
-    return new PaginationViewModel(pagesCountRes, data.pageNumber, data.pageSize, count, itemsComments);
+    return new PaginationViewModel(
+      pagesCountRes,
+      data.pageNumber,
+      data.pageSize,
+      count,
+      itemsComments,
+    );
   }
 
-  private async commentByIdPostForView(object: any, userId: string | null): Promise<CommentsViewType> {
+  private async commentByIdPostForView(
+    object: any,
+    userId: string | null,
+  ): Promise<CommentsViewType> {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
       const result = await this.likeCommentRepo.findOneBy({
@@ -212,7 +235,7 @@ export class PostsQueryRepositories {
         relations: { post: true, likesComment: true },
         where: { ownerId: userId },
         order: { [sortBy]: order },
-        skip: (pageNumber - 1) * pageSize,
+        skip: paginationInputModel.skip,
         take: pageSize,
       }),
       this.commentRepo.count({ where: { ownerId: userId } }),
@@ -246,7 +269,12 @@ export class PostsQueryRepositories {
     ]);
     const likesInfo = new LikesInfoViewModel(countLike, countDislike, myStatus);
     const commentatorInfo = new CommentatorInfoModel(object.userId, object.userLogin);
-    const postInfo = new PostInfoModel(object.post.postId, object.post.title, object.post.blogId, object.post.blogName);
+    const postInfo = new PostInfoModel(
+      object.post.postId,
+      object.post.title,
+      object.post.blogId,
+      object.post.blogName,
+    );
     return new BloggerCommentsViewType(
       object.commentId,
       object.content,

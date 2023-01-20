@@ -9,18 +9,9 @@ export class UsersViewType {
 }
 
 export class BanInfoType {
-  constructor(
-    public isBanned: boolean,
-    public banDate: string,
-    public banReason: string,
-  ) {}
+  constructor(public isBanned: boolean, public banDate: string, public banReason: string) {}
 }
 
-
 export class UsersForBanBlogViewType {
-  constructor(
-    public id: string,
-    public login: string,
-    public banInfo: BanInfoType,
-  ) {}
+  constructor(public id: string, public login: string, public banInfo: BanInfoType) {}
 }

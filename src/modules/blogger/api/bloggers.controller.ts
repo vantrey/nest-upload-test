@@ -20,9 +20,9 @@ import { UpdateBlogCommand } from '../application/use-cases/update-blog-command'
 import { CreatePostCommand } from '../application/use-cases/create-post-command';
 import { BlogsQueryRepositories } from '../../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
-import { PaginationDto } from '../../blogs/api/input-Dtos/pagination-Dto-Model';
+import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-Blog-Dto';
 import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-View-Model';
-import { PaginationViewModel } from '../../blogs/infrastructure/query-repository/pagination-View-Model';
+import { PaginationViewModel } from '../../../common/pagination-View-Model';
 import { UpdatePostCommand } from '../application/use-cases/update-post-command';
 import { DeletePostCommand } from '../application/use-cases/delete-post-command';
 import { CurrentUserIdBlogger } from '../../../decorators/current-user-id.param.decorator';
@@ -32,8 +32,9 @@ import { UpdateBanInfoForUserDto } from './input-dtos/update-ban-info-for-User-D
 import { UpdateBanUserForCurrentBlogCommand } from '../application/use-cases/update-ban-User-For-Current-Blog-command';
 import { PostsQueryRepositories } from '../../posts/infrastructure/query-repositories/posts-query.reposit';
 import { ForbiddenExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
-import { PaginationUsersDto } from '../../users/api/input-Dto/pagination-Users-Dto-Model';
 import { SkipThrottle } from '@nestjs/throttler';
+import { PaginationUsersByLoginDto } from '../../blogs/api/input-Dtos/pagination-Users-By-Login-Dto';
+import { PaginationDto } from '../../../common/pagination-dto';
 
 @SkipThrottle()
 @UseGuards(JwtAuthGuard)
@@ -116,7 +117,7 @@ export class BloggersController {
   @Get(`blogs`)
   async findAll(
     @CurrentUserIdBlogger() userId: string,
-    @Query() paginationInputModel: PaginationDto,
+    @Query() paginationInputModel: PaginationBlogDto,
   ): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepo.findBlogsForCurrentBlogger(paginationInputModel, userId);
   }
@@ -137,7 +138,7 @@ export class BloggersController {
   async getBanedUser(
     @CurrentUserIdBlogger() userId: string,
     @Param(`id`, ValidateUuidPipe) id: string,
-    @Query() paginationInputModel: PaginationUsersDto,
+    @Query() paginationInputModel: PaginationUsersByLoginDto,
   ) {
     const blog = await this.blogsQueryRepo.findBlogWithMap(id);
     if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);

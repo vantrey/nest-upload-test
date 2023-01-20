@@ -1,8 +1,8 @@
 import { Body, Controller, Get, HttpCode, Param, Put, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { BlogsQueryRepositories } from '../../blogs/infrastructure/query-repository/blogs-query.repositories';
-import { PaginationDto } from '../../blogs/api/input-Dtos/pagination-Dto-Model';
-import { PaginationViewModel } from '../../blogs/infrastructure/query-repository/pagination-View-Model';
+import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-Blog-Dto';
+import { PaginationViewModel } from '../../../common/pagination-View-Model';
 import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-View-Model';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
@@ -42,7 +42,7 @@ export class SaController {
 
   @Get()
   async findAll(
-    @Query() paginationInputModel: PaginationDto,
+    @Query() paginationInputModel: PaginationBlogDto,
   ): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepositories.findBlogsForSa(paginationInputModel);
   }

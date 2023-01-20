@@ -1,8 +1,8 @@
 import { Controller, Get, Query, Param, UseGuards } from '@nestjs/common';
 import { BlogsQueryRepositories } from '../infrastructure/query-repository/blogs-query.repositories';
 import { BlogViewModel } from '../infrastructure/query-repository/blog-View-Model';
-import { PaginationDto } from './input-Dtos/pagination-Dto-Model';
-import { PaginationViewModel } from '../infrastructure/query-repository/pagination-View-Model';
+import { PaginationBlogDto } from './input-Dtos/pagination-Blog-Dto';
+import { PaginationViewModel } from '../../../common/pagination-View-Model';
 import { PostsQueryRepositories } from '../../posts/infrastructure/query-repositories/posts-query.reposit';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-View-Model';
@@ -20,7 +20,7 @@ export class BlogsController {
 
   @Get()
   async findAll(
-    @Query() paginationInputModel: PaginationDto,
+    @Query() paginationInputModel: PaginationBlogDto,
   ): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepo.findBlogs(paginationInputModel);
   }
@@ -30,7 +30,7 @@ export class BlogsController {
   async findPosts(
     @CurrentUserId() userId: string,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
-    @Query() paginationInputModel: PaginationDto,
+    @Query() paginationInputModel: PaginationBlogDto,
   ): Promise<PaginationViewModel<PostViewModel[]>> {
     await this.blogsQueryRepo.findBlog(blogId);
     return this.postsQueryRepo.findPosts(paginationInputModel, userId, blogId);

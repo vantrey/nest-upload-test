@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { BanInfoType, UsersViewType } from './user-View-Model';
-import { PaginationUsersDto } from '../../api/input-Dto/pagination-Users-Dto-Model';
-import { PaginationViewModel } from '../../../blogs/infrastructure/query-repository/pagination-View-Model';
+import { PaginationUsersDto } from '../../api/input-Dto/pagination-Users-Dto';
+import { PaginationViewModel } from '../../../../common/pagination-View-Model';
 import { MeViewModel } from '../../../auth/infrastructure/me-View-Model';
-import { ILike, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../../entities/user.entity';
+import { Raw } from 'typeorm';
 
 @Injectable()
 export class UsersQueryRepositories {
@@ -16,17 +17,31 @@ export class UsersQueryRepositories {
 
   private mappedForUser(user: User): UsersViewType {
     const banInfo = new BanInfoType(user.isBanned, user.banDate, user.banReason);
-    return new UsersViewType(user.userId, user.login, user.email, user.createdAt.toISOString(), banInfo);
+    return new UsersViewType(
+      user.id,
+      user.login,
+      user.email,
+      user.createdAt.toISOString(),
+      banInfo,
+    );
   }
 
   async findUser(id: string): Promise<UsersViewType> {
-    const user = await this.userRepo.findOneBy({ userId: id });
+    const user = await this.userRepo.findOneBy({ id: id });
     if (!user) return null;
     return this.mappedForUser(user);
   }
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewModel<UsersViewType[]>> {
-    const { searchEmailTerm, searchLoginTerm, pageNumber, pageSize, sortBy, banStatus, sortDirection } = data;
+    const {
+      searchEmailTerm,
+      searchLoginTerm,
+      pageNumber,
+      pageSize,
+      sortBy,
+      banStatus,
+      sortDirection,
+    } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -41,17 +56,26 @@ export class UsersQueryRepositories {
       filter = { isBanned: false };
     }
     if (searchEmailTerm.trim().length > 0 || searchLoginTerm.trim().length > 0) {
-      filter = [{ email: ILike(`%${searchEmailTerm}%`) }, { login: ILike(`%${searchLoginTerm}%`) }];
+      filter = { login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`) };
+      // filter = [
+      //   { email: Raw((alias) => `${alias} ILIKE '%${searchEmailTerm}%'`) },
+      //   { login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`) },
+      // ];
+      //TODO How?!
+      // filter = [{ email: ILike(`%${searchEmailTerm}%`) }, { login: ILike(`%${searchLoginTerm}%`) }];
     }
-    console.log(filter);
     const [users, count] = await Promise.all([
       this.userRepo.find({
-        select: ['userId', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
+        select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
         where: filter,
+        // where: { login: Raw((alias) => `${alias} ILIKE '%${searchLoginTerm}%'`) },
         order: { [sortBy]: order },
-        skip: (pageNumber - 1) * pageSize,
+        skip: data.skip,
         take: pageSize,
       }),
+      // this.userRepo.count({
+      //   where: filter,
+      // }),
       this.userRepo.count({ where: filter }),
     ]);
     //mapped user for View
@@ -62,10 +86,12 @@ export class UsersQueryRepositories {
     return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, items);
   }
 
-  async getUserById(id: string): Promise<MeViewModel> {
-    const { email, login, userId } = await this.userRepo.findOneBy({
-      userId: id,
+  async getUserById(userId: string): Promise<MeViewModel> {
+    // const user = await this.userRepo.findOneBy({
+    const { email, login, id } = await this.userRepo.findOneBy({
+      id: userId,
     });
-    return { email, login, userId };
+    return new MeViewModel(email, login, id);
+    // return { email, login, userId };
   }
 }

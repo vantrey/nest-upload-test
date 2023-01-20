@@ -31,7 +31,7 @@ export class UpdateBanUserForCurrentBlogHandler
       const newBanStatus = BannedBlogUser.createBan(
         blogId,
         userId, //Who banned user!
-        user.userId, //User for ban
+        user.id, //User for ban
         user.getLogin(),
         user.getEmail(),
         blog,
