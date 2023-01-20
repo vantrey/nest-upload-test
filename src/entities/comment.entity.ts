@@ -35,6 +35,7 @@ export class Comment {
     userId: string,
     login: string,
     post: Post,
+    user: User,
   ) {
     this.postId = postId;
     this.ownerId = ownerId;
@@ -43,6 +44,7 @@ export class Comment {
     this.userLogin = login;
     this.createdAt = new Date().toISOString();
     this.post = post;
+    this.user = user;
   }
 
   static createComment(
@@ -52,9 +54,10 @@ export class Comment {
     userId: string,
     login: string,
     post: Post,
+    user: User,
   ) {
     if (content.length < 300 && content.length > 20) {
-      return new Comment(postId, ownerId, content, userId, login, post);
+      return new Comment(postId, ownerId, content, userId, login, post, user);
     }
     throw new Error('Incorrect input data for create comment');
   }

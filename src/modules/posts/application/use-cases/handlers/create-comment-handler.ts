@@ -2,7 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepositories } from '../../../infrastructure/posts-repositories';
 import { CreateCommentCommand } from '../create-comment-command';
 import { CommentsViewType } from '../../../../comments/infrastructure/query-repository/comments-View-Model';
-import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
+import {
+  ForbiddenExceptionMY,
+  NotFoundExceptionMY,
+} from '../../../../../helpers/My-HttpExceptionFilter';
 import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
 import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
 import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
@@ -26,6 +29,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
     //find post for create comment
     const post = await this.postsRepositories.findPost(id);
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
+    //find user
     const user = await this.usersRepositories.findUserByIdWithMapped(userId);
     //check status ban user
     const statusBan = await this.blogsRepositories.findStatusBanBy(userId, post.blogId);
@@ -33,7 +37,15 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
       throw new ForbiddenExceptionMY(`For user comment banned`);
     }
     //preparation comment for save in DB
-    const newComment = Comment.createComment(post.postId, post.getOwnerPost(), content, userId, user.getLogin(), post);
+    const newComment = Comment.createComment(
+      post.postId,
+      post.getOwnerPost(),
+      content,
+      userId,
+      user.getLogin(),
+      post,
+      user,
+    );
     //save created instance and return for view
     return await this.commentsRepositories.saveComment(newComment);
   }

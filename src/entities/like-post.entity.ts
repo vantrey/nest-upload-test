@@ -29,16 +29,17 @@ export class LikePost {
   @ManyToOne(() => Post, (u) => u.likePost)
   post: Post;
 
-  constructor(userId: string, parentId: string, login: string, post: Post) {
+  constructor(userId: string, parentId: string, login: string, post: Post, user: User) {
     this.addedAt = new Date().toISOString();
     this.userId = userId;
     this.parentId = parentId;
     this.userLogin = login;
     this.post = post;
+    this.user = user;
   }
 
-  static createLikePost(userId: string, parentId: string, login: string, post: Post) {
-    return new LikePost(userId, parentId, login, post);
+  static createLikePost(userId: string, parentId: string, login: string, post: Post, user: User) {
+    return new LikePost(userId, parentId, login, post, user);
   }
 
   updateLikePost(likeStatus: string) {
