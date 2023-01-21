@@ -35,7 +35,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
     }
     //preparation comment for save in DB
     const newComment = Comment.createComment(
-      post.postId,
+      post.id,
       post.getOwnerPost(),
       content,
       userId,

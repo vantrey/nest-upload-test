@@ -35,7 +35,7 @@ export class PostsQueryRepositories {
     if (userId) {
       const result = await this.likePostRepo.findOneBy({
         userId: userId,
-        parentId: post.postId,
+        parentId: post.id,
         isBanned: false,
       });
       if (result) {
@@ -43,15 +43,15 @@ export class PostsQueryRepositories {
       }
     }
     const countLike = await this.likePostRepo.count({
-      where: { likeStatus: 'Like', parentId: post.postId, isBanned: false },
+      where: { likeStatus: 'Like', parentId: post.id, isBanned: false },
     });
     const countDislike = await this.likePostRepo.count({
-      where: { likeStatus: 'Dislike', parentId: post.postId, isBanned: false },
+      where: { likeStatus: 'Dislike', parentId: post.id, isBanned: false },
     });
     // finding the newest likes
     const likes = await this.likePostRepo.find({
       relations: { user: true },
-      where: { likeStatus: 'Like', parentId: post.postId, isBanned: false },
+      where: { likeStatus: 'Like', parentId: post.id, isBanned: false },
       order: { addedAt: 'DESC' },
       take: 3,
     });
@@ -60,7 +60,7 @@ export class PostsQueryRepositories {
     });
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(countLike, countDislike, myStatus, newestLikes);
     return new PostViewModel(
-      post.postId,
+      post.id,
       post.title,
       post.shortDescription,
       post.content,
@@ -87,7 +87,7 @@ export class PostsQueryRepositories {
     }
     const [posts, count] = await Promise.all([
       this.postRepo.find({
-        select: ['postId', 'title', 'shortDescription', 'content', 'blogId', 'createdAt'],
+        select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'createdAt'],
         relations: { blog: true },
         where: filter,
         order: { [sortBy]: order },
@@ -108,9 +108,9 @@ export class PostsQueryRepositories {
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
     //find post by id from uri params
     const post = await this.postRepo.findOne({
-      select: ['postId', 'title', 'shortDescription', 'content', 'blogId', 'createdAt'],
+      select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'createdAt'],
       relations: { blog: true },
-      where: { postId: id, isBanned: false },
+      where: { id: id, isBanned: false },
     });
     // const post = await this.postRepo.findOneBy({ postId: id, isBanned: false });
     if (!post) throw new NotFoundExceptionMY(`Not found for id: ${id}`);
@@ -127,7 +127,7 @@ export class PostsQueryRepositories {
       order = 'DESC';
     }
     //find post by postId and userId
-    const post = await this.postRepo.findOneBy({ postId: postId });
+    const post = await this.postRepo.findOneBy({ id: postId });
     if (!post) throw new NotFoundExceptionMY(`No content found for current id: ${postId}`);
     const [comments, count] = await Promise.all([
       this.commentRepo.find({
@@ -152,7 +152,7 @@ export class PostsQueryRepositories {
     if (userId) {
       const result = await this.likeCommentRepo.findOneBy({
         userId: userId,
-        parentId: object.commentId,
+        parentId: object.id,
       });
       if (result) {
         myStatus = result.likeStatus;
@@ -161,28 +161,28 @@ export class PostsQueryRepositories {
     const [countLike, countDislike] = await Promise.all([
       this.likeCommentRepo.count({
         where: {
-          parentId: object.commentId,
+          parentId: object.id,
           likeStatus: 'Like',
           isBanned: false,
         },
       }),
       this.likeCommentRepo.count({
         where: {
-          parentId: object.commentId,
+          parentId: object.id,
           likeStatus: 'Dislike',
           isBanned: false,
         },
       }),
     ]);
     const likesInfo = new LikesInfoViewModel(countLike, countDislike, myStatus);
-    return new CommentsViewType(object.commentId, object.content, object.userId, object.user.login, object.createdAt, likesInfo);
+    return new CommentsViewType(object.id, object.content, object.userId, object.user.login, object.createdAt, likesInfo);
   }
 
   async mappedPostForView(post: Post): Promise<PostViewModel> {
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(0, 0, LikeStatusType.None, []);
     //returning created post with extended likes info for View
     return new PostViewModel(
-      post.postId,
+      post.id,
       post.title,
       post.shortDescription,
       post.content,
@@ -203,7 +203,7 @@ export class PostsQueryRepositories {
     }
     const [comments, count] = await Promise.all([
       this.commentRepo.find({
-        select: ['commentId', 'content', 'createdAt', 'userId'],
+        select: ['id', 'content', 'createdAt', 'userId'],
         relations: { post: true, user: true, likesComment: true },
         where: { ownerId: userId },
         order: { [sortBy]: order },
@@ -225,7 +225,7 @@ export class PostsQueryRepositories {
     if (userId) {
       const result = await this.likeCommentRepo.findOneBy({
         userId: userId,
-        parentId: object.commentId,
+        parentId: object.id,
       });
       if (result) {
         myStatus = result.likeStatus;
@@ -234,14 +234,14 @@ export class PostsQueryRepositories {
     const [countLike, countDislike] = await Promise.all([
       this.likeCommentRepo.count({
         where: {
-          parentId: object.commentId,
+          parentId: object.id,
           likeStatus: 'Like',
           isBanned: false,
         },
       }),
       this.likeCommentRepo.count({
         where: {
-          parentId: object.commentId,
+          parentId: object.id,
           likeStatus: 'Dislike',
           isBanned: false,
         },
@@ -249,7 +249,7 @@ export class PostsQueryRepositories {
     ]);
     const likesInfo = new LikesInfoViewModel(countLike, countDislike, myStatus);
     const commentatorInfo = new CommentatorInfoModel(object.userId, object.user.login);
-    const postInfo = new PostInfoModel(object.post.postId, object.post.title, object.post.blogId, object.post);
-    return new BloggerCommentsViewType(object.commentId, object.content, object.createdAt, likesInfo, commentatorInfo, postInfo);
+    const postInfo = new PostInfoModel(object.post.id, object.post.title, object.post.blogId, object.post);
+    return new BloggerCommentsViewType(object.id, object.content, object.createdAt, likesInfo, commentatorInfo, postInfo);
   }
 }

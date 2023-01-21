@@ -6,7 +6,7 @@ import { LikeComment } from './like-comment.entity';
 @Entity()
 export class Comment {
   @PrimaryGeneratedColumn('uuid')
-  commentId: string;
+  id: string;
   @Column('boolean', { default: false })
   isBanned: boolean;
   @Column({ type: 'uuid' })

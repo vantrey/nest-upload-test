@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Blog } from './blog.entity';
 import { LikePost } from './like-post.entity';
@@ -13,7 +7,7 @@ import { Comment } from './comment.entity';
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn('uuid')
-  postId: string;
+  id: string;
   @Column('boolean', { default: false })
   isBanned: boolean;
   @Column({ type: 'uuid' })
@@ -67,27 +61,14 @@ export class Post {
     // blogName: string,
     blog: Blog,
   ) {
-    if (
-      title.length > 30 &&
-      shortDescription.length > 100 &&
-      content.length > 1000
-    ) {
+    if (title.length > 30 && shortDescription.length > 100 && content.length > 1000) {
       throw new Error('Incorrect input data for create User');
     }
     return new Post(userId, title, shortDescription, content, blogId, blog);
   }
 
-  updatePost(
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-  ) {
-    if (
-      title.length < 30 &&
-      shortDescription.length < 100 &&
-      content.length < 1000
-    ) {
+  updatePost(title: string, shortDescription: string, content: string, blogId: string) {
+    if (title.length < 30 && shortDescription.length < 100 && content.length < 1000) {
       this.title = title;
       this.shortDescription = shortDescription;
       this.content = content;

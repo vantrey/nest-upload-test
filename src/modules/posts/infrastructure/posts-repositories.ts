@@ -24,13 +24,13 @@ export class PostsRepositories {
   }
 
   async getPost(id: string, userId: string): Promise<Post> {
-    const post = await this.postRepo.findOneBy({ postId: id, userId: userId });
+    const post = await this.postRepo.findOneBy({ id: id, userId: userId });
     if (!post) return null;
     return post;
   }
 
   async deletePost(id: string, userId: string): Promise<boolean> {
-    const post = await this.postRepo.findOneBy({ postId: id, userId: userId });
+    const post = await this.postRepo.findOneBy({ id: id, userId: userId });
     if (!post) return null;
     await this.postRepo.manager.connection
       .transaction(async (manager) => {
@@ -44,7 +44,7 @@ export class PostsRepositories {
   }
 
   async findPost(id: string): Promise<Post> {
-    const post = await this.postRepo.findOneBy({ postId: id });
+    const post = await this.postRepo.findOneBy({ id: id });
     if (!post) return null;
     return post;
   }

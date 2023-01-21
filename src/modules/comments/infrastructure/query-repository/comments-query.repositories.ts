@@ -29,9 +29,9 @@ export class CommentsQueryRepositories {
     }
     const [comment, countLike, countDislike] = await Promise.all([
       this.commentRepo.findOne({
-        select: ['commentId', 'content', 'userId', 'createdAt'],
+        select: ['id', 'content', 'userId', 'createdAt'],
         relations: { user: true },
-        where: { commentId: commentId, isBanned: false },
+        where: { id: commentId, isBanned: false },
       }),
       this.likeCommentRepo.count({
         where: { parentId: commentId, likeStatus: 'Like', isBanned: false },
@@ -44,6 +44,6 @@ export class CommentsQueryRepositories {
     if (!comment) throw new NotFoundExceptionMY(`Not found for commentId: ${commentId}`);
     const likesInfo = new LikesInfoViewModel(countLike, countDislike, myStatus);
     //returning comment for View
-    return new CommentsViewType(comment.commentId, comment.content, comment.userId, comment.user.login, comment.createdAt, likesInfo);
+    return new CommentsViewType(comment.id, comment.content, comment.userId, comment.user.login, comment.createdAt, likesInfo);
   }
 }

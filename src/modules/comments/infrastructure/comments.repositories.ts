@@ -22,7 +22,7 @@ export class CommentsRepositories {
     const likesInfo = new LikesInfoViewModel(0, 0, LikeStatusType.None);
     //returning comment for View
     return new CommentsViewType(
-      createdComment.commentId,
+      createdComment.id,
       newComment.content,
       newComment.userId,
       newComment.user.login,
@@ -36,7 +36,7 @@ export class CommentsRepositories {
   }
 
   async findCommentsById(id: string): Promise<Comment> {
-    return this.commentRepo.findOneBy({ commentId: id });
+    return this.commentRepo.findOneBy({ id: id });
   }
 
   async deleteCommentsById(id: string): Promise<boolean> {
