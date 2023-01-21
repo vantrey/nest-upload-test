@@ -16,7 +16,6 @@ export class CommentsRepositories {
   ) {}
 
   async saveComment(newComment: Comment): Promise<CommentsViewType> {
-    // const createComment = await this.commentsModel.create(newComment);
     const createdComment = await this.commentRepo.save(newComment);
     //default items
     const likesInfo = new LikesInfoViewModel(0, 0, LikeStatusType.None);
@@ -42,7 +41,7 @@ export class CommentsRepositories {
   async deleteCommentsById(id: string): Promise<boolean> {
     await this.commentRepo.manager.connection
       .transaction(async (manager) => {
-        await manager.delete(Comment, { commentId: id });
+        await manager.delete(Comment, { id: id });
       })
       .catch((e) => {
         console.log(e);

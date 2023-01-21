@@ -34,7 +34,7 @@ export class PostsRepositories {
     if (!post) return null;
     await this.postRepo.manager.connection
       .transaction(async (manager) => {
-        await manager.delete(Post, { postId: id, userId: userId });
+        await manager.delete(Post, { id: id, userId: userId });
       })
       .catch((e) => {
         console.log(e);

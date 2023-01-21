@@ -1,17 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-  BanInfoForBlogType,
-  BlogOwnerInfoType,
-  BlogViewForSaModel,
-  BlogViewModel,
-} from './blog-View-Model';
+import { BanInfoForBlogType, BlogOwnerInfoType, BlogViewForSaModel, BlogViewModel } from './blog-View-Model';
 import { PaginationViewModel } from '../../../../common/pagination-View-Model';
 import { PaginationBlogDto } from '../../api/input-Dtos/pagination-Blog-Dto';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
-import {
-  BanInfoType,
-  UsersForBanBlogViewType,
-} from '../../../users/infrastructure/query-reposirory/user-View-Model';
+import { BanInfoType, UsersForBanBlogViewType } from '../../../users/infrastructure/query-reposirory/user-View-Model';
 import { Blog } from '../../../../entities/blog.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
@@ -28,14 +20,8 @@ export class BlogsQueryRepositories {
   ) {}
 
   private mapperBlogForSaView(object: Blog): BlogViewForSaModel {
-    const blogOwnerInfo = new BlogOwnerInfoType(
-      object.userId,
-      object.user.login,
-    );
-    const banInfoForBlog = new BanInfoForBlogType(
-      object.isBanned,
-      object.banDate,
-    );
+    const blogOwnerInfo = new BlogOwnerInfoType(object.userId, object.user.login);
+    const banInfoForBlog = new BanInfoForBlogType(object.isBanned, object.banDate);
     return new BlogViewForSaModel(
       object.id,
       object.name,
@@ -48,19 +34,12 @@ export class BlogsQueryRepositories {
   }
 
   private mapperBanInfo(object: BannedBlogUser): UsersForBanBlogViewType {
-    const banInfo = new BanInfoType(
-      object.isBanned,
-      object.banDate,
-      object.banReason,
-    );
+    const banInfo = new BanInfoType(object.isBanned, object.banDate, object.banReason);
     return new UsersForBanBlogViewType(object.userId, object.login, banInfo);
   }
 
-  async findBlogs(
-    data: PaginationBlogDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } =
-      data;
+  async findBlogs(data: PaginationBlogDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -84,20 +63,11 @@ export class BlogsQueryRepositories {
     ]);
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      count,
-      blogs,
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, blogs);
   }
 
-  async findBlogsForSa(
-    data: PaginationBlogDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } =
-      data;
+  async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -111,7 +81,8 @@ export class BlogsQueryRepositories {
     //search all blogs for current user and counting
     const [blogs, count] = await Promise.all([
       this.blogRepo.find({
-        select: [],
+        select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'userId', 'isBanned', 'banDate'],
+        relations: { user: true },
         where: filter,
         order: { [sortBy]: order },
         skip: data.skip,
@@ -123,21 +94,11 @@ export class BlogsQueryRepositories {
     const mappedBlogs = blogs.map((blog) => this.mapperBlogForSaView(blog));
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      count,
-      mappedBlogs,
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
   }
 
-  async findBlogsForCurrentBlogger(
-    data: PaginationBlogDto,
-    userId: string,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } =
-      data;
+  async findBlogsForCurrentBlogger(data: PaginationBlogDto, userId: string): Promise<PaginationViewModel<BlogViewModel[]>> {
+    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -165,32 +126,18 @@ export class BlogsQueryRepositories {
     ]);
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      count,
-      blogs,
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, blogs);
   }
 
   async findBlog(id: string): Promise<BlogViewModel> {
     const blog = await this.blogRepo.findOneBy({ id: id, isBanned: false });
-    if (!blog)
-      throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
-    return new BlogViewModel(
-      blog.id,
-      blog.name,
-      blog.description,
-      blog.websiteUrl,
-      blog.createdAt,
-    );
+    if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
+    return new BlogViewModel(blog.id, blog.name, blog.description, blog.websiteUrl, blog.createdAt);
   }
 
   async findBlogWithMap(id: string): Promise<Blog> {
     const blog = await this.blogRepo.findOneBy({ id: id, isBanned: false });
-    if (!blog)
-      throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
+    if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
     return blog;
   }
 
@@ -198,8 +145,7 @@ export class BlogsQueryRepositories {
     blogId: string,
     paginationInputModel: PaginationUsersByLoginDto,
   ): Promise<PaginationViewModel<UsersForBanBlogViewType[]>> {
-    const { searchLoginTerm, pageSize, pageNumber, sortDirection, sortBy } =
-      paginationInputModel;
+    const { searchLoginTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -229,12 +175,6 @@ export class BlogsQueryRepositories {
     const mappedBlogs = blogs.map((blog) => this.mapperBanInfo(blog));
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      count,
-      mappedBlogs,
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
   }
 }

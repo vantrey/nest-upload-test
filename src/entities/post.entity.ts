@@ -20,8 +20,8 @@ export class Post {
   content: string;
   @Column({ type: 'uuid' })
   blogId: string;
-  // @Column({ type: 'character varying' })
-  // blogName: string;
+  @Column({ type: 'character varying' })
+  blogName: string;
   @Column({ type: 'character varying' })
   createdAt: string;
   @ManyToOne(() => User, (u) => u.posts)
@@ -33,21 +33,13 @@ export class Post {
   @OneToMany(() => LikePost, (u) => u.post)
   likePost: LikePost[];
 
-  constructor(
-    userId: string,
-    title: string,
-    shortDescription: string,
-    content: string,
-    blogId: string,
-    // blogName: string,
-    blog: Blog,
-  ) {
+  constructor(userId: string, title: string, shortDescription: string, content: string, blogId: string, blogName: string, blog: Blog) {
     this.userId = userId;
     this.title = title;
     this.shortDescription = shortDescription;
     this.content = content;
     this.blogId = blogId;
-    // this.blogName = blogName;
+    this.blogName = blogName;
     this.createdAt = new Date().toISOString();
     this.blog = blog;
   }
@@ -58,13 +50,13 @@ export class Post {
     shortDescription: string,
     content: string,
     blogId: string,
-    // blogName: string,
+    blogName: string,
     blog: Blog,
   ) {
     if (title.length > 30 && shortDescription.length > 100 && content.length > 1000) {
       throw new Error('Incorrect input data for create User');
     }
-    return new Post(userId, title, shortDescription, content, blogId, blog);
+    return new Post(userId, title, shortDescription, content, blogId, blogName, blog);
   }
 
   updatePost(title: string, shortDescription: string, content: string, blogId: string) {

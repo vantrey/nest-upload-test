@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PostViewModel } from './post-View-Model';
-import { ExtendedLikesInfoViewModel, LikeDetailsViewModel } from './likes-Info-View-Model';
+import { ExtendedLikesInfoViewModel } from './likes-Info-View-Model';
 import { PaginationViewModel } from '../../../../common/pagination-View-Model';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
 import {
@@ -220,7 +220,7 @@ export class PostsQueryRepositories {
     return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, items);
   }
 
-  private async commentBloggerForPostView(object: any, userId: string) {
+  private async commentBloggerForPostView(object: Comment, userId: string) {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
       const result = await this.likeCommentRepo.findOneBy({
@@ -249,7 +249,7 @@ export class PostsQueryRepositories {
     ]);
     const likesInfo = new LikesInfoViewModel(countLike, countDislike, myStatus);
     const commentatorInfo = new CommentatorInfoModel(object.userId, object.user.login);
-    const postInfo = new PostInfoModel(object.post.id, object.post.title, object.post.blogId, object.post);
+    const postInfo = new PostInfoModel(object.post.id, object.post.title, object.post.blogId, object.post.blogName);
     return new BloggerCommentsViewType(object.id, object.content, object.createdAt, likesInfo, commentatorInfo, postInfo);
   }
 }

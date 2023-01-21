@@ -19,7 +19,7 @@ export class BlogsRepositories {
   async deleteBlog(id: string, userId: string): Promise<boolean> {
     await this.blogRepo.manager.connection
       .transaction(async (manager) => {
-        await manager.delete(Blog, { userId: userId });
+        await manager.delete(Blog, { id: id, userId: userId });
       })
       .catch((e) => {
         console.log(e);

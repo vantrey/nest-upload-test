@@ -84,10 +84,7 @@ describe(`Ban blog by super admin`, () => {
 
       expect(resBlogs2.body.items).toHaveLength(2);
 
-      const result = await request(app.getHttpServer())
-        .get(`/sa/blogs`)
-        .auth('admin', 'qwerty', { type: 'basic' })
-        .expect(200);
+      const result = await request(app.getHttpServer()).get(`/sa/blogs`).auth('admin', 'qwerty', { type: 'basic' }).expect(200);
 
       expect(result.body.items).toHaveLength(3);
       // expect(result.body.items[2].banInfo).toContainEqual({ isBanned: true, banDate: expect.any(String) })
@@ -246,10 +243,7 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(404);
 
-      await request(app.getHttpServer())
-        .get(`/blogger/users/blog/${new ObjectId()}`)
-        .auth(accessToken, { type: 'bearer' })
-        .expect(404);
+      await request(app.getHttpServer()).get(`/blogger/users/blog/${new ObjectId()}`).auth(accessToken, { type: 'bearer' }).expect(404);
     });
     it(`05-PUT -> "/blogger/users/:id/ban", GET -> "blogger/users/blog/:id": should return error if access denied; status 403; used additional methods: POST => /sa/users, POST => /auth/login, POST => /blogger/blogs;`, async () => {
       await request(app.getHttpServer())
@@ -262,10 +256,7 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(403);
 
-      await request(app.getHttpServer())
-        .get(`/blogger/users/blog/${blog.id}`)
-        .auth(accessToken1, { type: 'bearer' })
-        .expect(403);
+      await request(app.getHttpServer()).get(`/blogger/users/blog/${blog.id}`).auth(accessToken1, { type: 'bearer' }).expect(403);
     });
   });
   describe(`Ban user by blogger`, () => {
@@ -390,10 +381,7 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(201);
 
-      const resC = await request(app.getHttpServer())
-        .get(`/blogger/blogs/comments`)
-        .auth(accessToken, { type: 'bearer' })
-        .expect(200);
+      const resC = await request(app.getHttpServer()).get(`/blogger/blogs/comments`).auth(accessToken, { type: 'bearer' }).expect(200);
 
       console.log(resC.body.items[0]);
 

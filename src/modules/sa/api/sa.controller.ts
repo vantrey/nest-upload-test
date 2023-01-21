@@ -15,10 +15,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 @UseGuards(BasicAuthGuard)
 @Controller(`sa/blogs`)
 export class SaController {
-  constructor(
-    private readonly blogsQueryRepositories: BlogsQueryRepositories,
-    private commandBus: CommandBus,
-  ) {}
+  constructor(private readonly blogsQueryRepositories: BlogsQueryRepositories, private commandBus: CommandBus) {}
 
   @HttpCode(204)
   @Put(`/:blogId/ban`)
@@ -26,24 +23,17 @@ export class SaController {
     @Body() updateBanInfoForBlogModel: UpdateBanInfoForBlogDto,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
   ): Promise<boolean> {
-    return this.commandBus.execute(
-      new UpdateBanInfoForBlogCommand(updateBanInfoForBlogModel, blogId),
-    );
+    return this.commandBus.execute(new UpdateBanInfoForBlogCommand(updateBanInfoForBlogModel, blogId));
   }
 
   @HttpCode(204)
   @Put(`/:blogId/bind-with-user/:userId`)
-  async bindBlog(
-    @Param(`blogId`, ValidateUuidPipe) blogId: string,
-    @Param(`userId`, ValidateUuidPipe) userId: string,
-  ) {
+  async bindBlog(@Param(`blogId`, ValidateUuidPipe) blogId: string, @Param(`userId`, ValidateUuidPipe) userId: string) {
     return await this.commandBus.execute(new BindBlogCommand(blogId, userId));
   }
 
   @Get()
-  async findAll(
-    @Query() paginationInputModel: PaginationBlogDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async findAll(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepositories.findBlogsForSa(paginationInputModel);
   }
 }
