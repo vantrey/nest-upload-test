@@ -65,7 +65,7 @@ export class PostsQueryRepositories {
       post.shortDescription,
       post.content,
       post.blogId,
-      post.blog.name,
+      post.blogName,
       post.createdAt,
       extendedLikesInfo,
     );
@@ -87,8 +87,7 @@ export class PostsQueryRepositories {
     }
     const [posts, count] = await Promise.all([
       this.postRepo.find({
-        select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'createdAt'],
-        relations: { blog: true },
+        select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt'],
         where: filter,
         order: { [sortBy]: order },
         skip: data.skip,
