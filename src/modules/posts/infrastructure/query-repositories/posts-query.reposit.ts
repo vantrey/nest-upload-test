@@ -107,8 +107,8 @@ export class PostsQueryRepositories {
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
     //find post by id from uri params
     const post = await this.postRepo.findOne({
-      select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'createdAt'],
-      relations: { blog: true },
+      select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt'],
+      // relations: { blog: true },
       where: { id: id, isBanned: false },
     });
     // const post = await this.postRepo.findOneBy({ postId: id, isBanned: false });
