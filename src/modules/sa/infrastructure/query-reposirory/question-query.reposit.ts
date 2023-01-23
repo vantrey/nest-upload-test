@@ -20,7 +20,7 @@ export class QuestionQueryRepository {
       question.correctAnswers,
       question.published,
       question.createdAt.toISOString(),
-      question.updatedAt.toISOString(),
+      question.updatedAt,
     );
   }
 

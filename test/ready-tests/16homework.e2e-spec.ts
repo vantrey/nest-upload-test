@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { createUserByLoginEmail } from './helpers/create-user-by-login-email';
-import { createBlogsForTest } from './helpers/create-blog-for-test';
+import { AppModule } from '../../src/app.module';
+import { createUserByLoginEmail } from '../helpers/create-user-by-login-email';
+import { createBlogsForTest } from '../helpers/create-blog-for-test';
 import { ObjectId } from 'mongodb';
-import { MailService } from '../src/modules/mail/mail.service';
-import { MailServiceMock } from './mock/mailService.mock';
-import { createdApp } from '../src/helpers/createdApp';
-import { BlogViewModel } from '../src/modules/blogs/infrastructure/query-repository/blog-View-Model';
-import { PostViewModel } from '../src/modules/posts/infrastructure/query-repositories/post-View-Model';
-import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
+import { MailService } from '../../src/modules/mail/mail.service';
+import { MailServiceMock } from '../mock/mailService.mock';
+import { createdApp } from '../../src/helpers/createdApp';
+import { BlogViewModel } from '../../src/modules/blogs/infrastructure/query-repository/blog-View-Model';
+import { PostViewModel } from '../../src/modules/posts/infrastructure/query-repositories/post-View-Model';
+import { UsersViewType } from '../../src/modules/users/infrastructure/query-reposirory/user-View-Model';
 
 jest.setTimeout(120000);
 
@@ -19,7 +19,9 @@ describe(`Ban blog by super admin`, () => {
 
   beforeAll(async () => {
     // Create a NestJS application
-    const module: TestingModule = await Test.createTestingModule({ imports: [AppModule] })
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
       .overrideProvider(MailService)
       .useClass(MailServiceMock)
       .compile();
@@ -35,7 +37,9 @@ describe(`Ban blog by super admin`, () => {
 
   describe(`Super admin Api > Users`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let blog: BlogViewModel;
     let blog1: BlogViewModel;
@@ -66,7 +70,10 @@ describe(`Ban blog by super admin`, () => {
       blog1 = resBlog1[0].blog;
       blog2 = resBlog1[1].blog;
 
-      const resBlogs = await request(app.getHttpServer()).get(`/blogs`).query({ pageSize: 6 }).expect(200);
+      const resBlogs = await request(app.getHttpServer())
+        .get(`/blogs`)
+        .query({ pageSize: 6 })
+        .expect(200);
 
       expect(resBlogs.body.items).toHaveLength(3);
 
@@ -80,11 +87,16 @@ describe(`Ban blog by super admin`, () => {
 
       await request(app.getHttpServer()).get(`/blogs/${blog.id}`).expect(404);
 
-      const resBlogs2 = await request(app.getHttpServer()).get(`/blogs`).expect(200);
+      const resBlogs2 = await request(app.getHttpServer())
+        .get(`/blogs`)
+        .expect(200);
 
       expect(resBlogs2.body.items).toHaveLength(2);
 
-      const result = await request(app.getHttpServer()).get(`/sa/blogs`).auth('admin', 'qwerty', { type: 'basic' }).expect(200);
+      const result = await request(app.getHttpServer())
+        .get(`/sa/blogs`)
+        .auth('admin', 'qwerty', { type: 'basic' })
+        .expect(200);
 
       expect(result.body.items).toHaveLength(3);
       // expect(result.body.items[2].banInfo).toContainEqual({ isBanned: true, banDate: expect.any(String) })
@@ -98,7 +110,9 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(204);
 
-      const resBlogs = await request(app.getHttpServer()).get(`/blogs`).expect(200);
+      const resBlogs = await request(app.getHttpServer())
+        .get(`/blogs`)
+        .expect(200);
 
       expect(resBlogs.body.items).toHaveLength(3);
     });
@@ -141,7 +155,9 @@ describe(`Ban blog by super admin`, () => {
   });
   describe(`Super admin Api > Super Admin`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
 
     it(`01-GET -> "sa/blogs": should return blogs with owner info; status 200; content: blog array with pagination; used additional methods: POST -> /sa/users, POST => /auth/login, POST -> /blogger/blogs;`, async () => {
@@ -158,7 +174,9 @@ describe(`Ban blog by super admin`, () => {
   });
   describe(`Blogger`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let user: UsersViewType;
     let user1: UsersViewType;
@@ -243,7 +261,10 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(404);
 
-      await request(app.getHttpServer()).get(`/blogger/users/blog/${new ObjectId()}`).auth(accessToken, { type: 'bearer' }).expect(404);
+      await request(app.getHttpServer())
+        .get(`/blogger/users/blog/${new ObjectId()}`)
+        .auth(accessToken, { type: 'bearer' })
+        .expect(404);
     });
     it(`05-PUT -> "/blogger/users/:id/ban", GET -> "blogger/users/blog/:id": should return error if access denied; status 403; used additional methods: POST => /sa/users, POST => /auth/login, POST => /blogger/blogs;`, async () => {
       await request(app.getHttpServer())
@@ -256,12 +277,17 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(403);
 
-      await request(app.getHttpServer()).get(`/blogger/users/blog/${blog.id}`).auth(accessToken1, { type: 'bearer' }).expect(403);
+      await request(app.getHttpServer())
+        .get(`/blogger/users/blog/${blog.id}`)
+        .auth(accessToken1, { type: 'bearer' })
+        .expect(403);
     });
   });
   describe(`Ban user by blogger`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let user: UsersViewType;
     let user1: UsersViewType;
@@ -312,7 +338,9 @@ describe(`Ban blog by super admin`, () => {
   });
   describe(`blogger studio comments`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let user: UsersViewType;
     let user1: UsersViewType;
@@ -369,7 +397,8 @@ describe(`Ban blog by super admin`, () => {
         .post(`/posts/${post.id}/comments`)
         .auth(accessToken2, { type: 'bearer' })
         .send({
-          content: 'you need to read this post, it is very interesting history  0000',
+          content:
+            'you need to read this post, it is very interesting history  0000',
         })
         .expect(201);
 
@@ -381,7 +410,10 @@ describe(`Ban blog by super admin`, () => {
         })
         .expect(201);
 
-      const resC = await request(app.getHttpServer()).get(`/blogger/blogs/comments`).auth(accessToken, { type: 'bearer' }).expect(200);
+      const resC = await request(app.getHttpServer())
+        .get(`/blogger/blogs/comments`)
+        .auth(accessToken, { type: 'bearer' })
+        .expect(200);
 
       console.log(resC.body.items[0]);
 

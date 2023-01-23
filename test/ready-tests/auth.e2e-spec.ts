@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
-import { createdApp } from '../src/helpers/createdApp';
-import { AccessTokenType } from './types/types';
+import { AppModule } from '../../src/app.module';
+import { UsersViewType } from '../../src/modules/users/infrastructure/query-reposirory/user-View-Model';
+import { createdApp } from '../../src/helpers/createdApp';
+import { AccessTokenType } from '../types/types';
 
 const delay = async (delay: number = 1000) => {
   await new Promise((resolve) => {
@@ -25,7 +25,9 @@ describe.skip('Auth (e2e)', () => {
 
   beforeAll(async () => {
     // Create a NestJS application
-    const module: TestingModule = await Test.createTestingModule({ imports: [AppModule] })
+    const module: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
       // .overrideProvider()
       .compile();
     app = module.createNestApplication();
@@ -47,20 +49,31 @@ describe.skip('Auth (e2e)', () => {
     //await mongoServer.stop();
   });
   it('/ (GET)', () => {
-    return request(app.getHttpServer()).get('/').expect(200).expect('Hello free Belarus!');
+    return request(app.getHttpServer())
+      .get('/')
+      .expect(200)
+      .expect('Hello free Belarus!');
   });
   describe(`/auth`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let user: UsersViewType;
     let validAccessToken: AccessTokenType, oldAccessToken: AccessTokenType;
-    let refreshTokenKey: string, validRefreshToken: string, oldRefreshToken: string;
+    let refreshTokenKey: string,
+      validRefreshToken: string,
+      oldRefreshToken: string;
     it('POST shouldn`t authenticate user with incorrect data', async () => {
       const result = await request(app.getHttpServer())
         .post(`/sa/users`)
         .auth('admin', 'qwerty', { type: 'basic' })
-        .send({ login: 'asirius', password: 'asirius321', email: 'asirius@jive.com' })
+        .send({
+          login: 'asirius',
+          password: 'asirius321',
+          email: 'asirius@jive.com',
+        })
         .expect(201);
       user = result.body;
 
@@ -112,7 +125,9 @@ describe.skip('Auth (e2e)', () => {
       expect(validAccessToken).toEqual({ accessToken: expect.any(String) });
       expect(result.headers['set-cookie'][0]).toBeTruthy();
       if (!result.headers['set-cookie']) return;
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
       expect(refreshTokenKey).toBe(`refreshToken`);
       expect(result.headers['set-cookie'][0].includes(`HttpOnly`)).toBeTruthy();
       expect(result.headers['set-cookie'][0].includes(`Secure`)).toBeTruthy();
@@ -151,8 +166,13 @@ describe.skip('Auth (e2e)', () => {
         .expect(401);
     }, 15000);
     it('POST should return an error when the "refresh" token has expired or there is no one in the cookie', async () => {
-      await request(app.getHttpServer()).post('/auth/refresh-token').expect(401);
-      await request(app.getHttpServer()).post('/auth/refresh-token').set('Cookie', ``).expect(401);
+      await request(app.getHttpServer())
+        .post('/auth/refresh-token')
+        .expect(401);
+      await request(app.getHttpServer())
+        .post('/auth/refresh-token')
+        .set('Cookie', ``)
+        .expect(401);
       await request(app.getHttpServer())
         .post('/auth/refresh-token')
         .set('Cookie', `refreshToken=${validRefreshToken}1`)
@@ -184,7 +204,9 @@ describe.skip('Auth (e2e)', () => {
       if (!result.headers['set-cookie']) return;
 
       oldRefreshToken = validRefreshToken;
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(oldRefreshToken).not.toEqual(validRefreshToken);
     });
@@ -205,7 +227,9 @@ describe.skip('Auth (e2e)', () => {
       if (!result.headers['set-cookie']) return;
 
       oldRefreshToken = validRefreshToken;
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(oldRefreshToken).not.toEqual(validRefreshToken);
       expect(result.headers['set-cookie'][0].includes('HttpOnly')).toBe(true);
@@ -233,7 +257,9 @@ describe.skip('Auth (e2e)', () => {
       if (!result.headers['set-cookie']) return;
 
       oldRefreshToken = validRefreshToken;
-      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0].split(';')[0].split('=');
+      [refreshTokenKey, validRefreshToken] = result.headers['set-cookie'][0]
+        .split(';')[0]
+        .split('=');
       expect(refreshTokenKey).toBe('refreshToken');
       expect(oldRefreshToken).not.toEqual(validRefreshToken);
     });
@@ -260,7 +286,9 @@ describe.skip('Auth (e2e)', () => {
     let validAccessToken: AccessTokenType;
     let refreshTokenKey: string;
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     it('POST - `/auth/registration` should create user and send email, status - 204', async () => {
       await request(app.getHttpServer())

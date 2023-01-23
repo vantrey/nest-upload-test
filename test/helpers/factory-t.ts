@@ -36,7 +36,7 @@ export class FactoryT {
         password: `asirius-12${i}`,
       };
       const response00 = await request(app.getHttpServer())
-        .post(endpoints.saController)
+        .post(endpoints.saController.users)
         .auth(superUser.login, superUser.password, { type: 'basic' })
         .send(userInputModel)
         .expect(201);
@@ -56,7 +56,11 @@ export class FactoryT {
     return result;
   }
 
-  async createUniqueUserByLoginEmail(count: number, uniq: string, app: INestApplication) {
+  async createUniqueUserByLoginEmail(
+    count: number,
+    uniq: string,
+    app: INestApplication,
+  ) {
     const result: {
       userId: string;
       user: UsersViewType;
@@ -74,7 +78,7 @@ export class FactoryT {
         password: `${uniq}${i}`,
       };
       const response00 = await request(app.getHttpServer())
-        .post(endpoints.saController)
+        .post(endpoints.saController.users)
         .auth(superUser.login, superUser.password, { type: 'basic' })
         .send(userInputModel)
         .expect(201);
@@ -94,7 +98,12 @@ export class FactoryT {
     return result;
   }
 
-  async createUniqueUserByLoginAndEmail(count: number, log: string, mal: string, app: INestApplication) {
+  async createUniqueUserByLoginAndEmail(
+    count: number,
+    log: string,
+    mal: string,
+    app: INestApplication,
+  ) {
     const result: {
       userId: string;
       user: UsersViewType;
@@ -112,7 +121,7 @@ export class FactoryT {
         password: `${log}${i}`,
       };
       const response00 = await request(app.getHttpServer())
-        .post(endpoints.saController)
+        .post(endpoints.saController.users)
         .auth(superUser.login, superUser.password, { type: 'basic' })
         .send(userInputModel)
         .expect(201);
@@ -150,7 +159,12 @@ export class FactoryT {
     return result;
   }
 
-  async createUniqueBlog(count: number, uniq: string, accessToken: string, app: INestApplication) {
+  async createUniqueBlog(
+    count: number,
+    uniq: string,
+    accessToken: string,
+    app: INestApplication,
+  ) {
     const result: { blog: BlogViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const postInputModel: CreateBlogDto = {
@@ -168,7 +182,12 @@ export class FactoryT {
     return result;
   }
 
-  async createPost(count: number, accessToken: string, blogId: string, app: INestApplication) {
+  async createPost(
+    count: number,
+    accessToken: string,
+    blogId: string,
+    app: INestApplication,
+  ) {
     const result: { post: PostViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const postInputModel: CreateBlogDto = {
@@ -186,7 +205,13 @@ export class FactoryT {
     return result;
   }
 
-  async createUniquePost(count: number, uniq: string, accessToken: string, blogId: string, app: INestApplication) {
+  async createUniquePost(
+    count: number,
+    uniq: string,
+    accessToken: string,
+    blogId: string,
+    app: INestApplication,
+  ) {
     const result: { post: PostViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const postInputModel: CreatePostDto = {
@@ -204,7 +229,12 @@ export class FactoryT {
     return result;
   }
 
-  async createComment(count: number, accessToken: string, id: string, app: INestApplication) {
+  async createComment(
+    count: number,
+    accessToken: string,
+    id: string,
+    app: INestApplication,
+  ) {
     const result: { comment: CommentsViewType }[] = [];
     for (let i = 0; i < count; i++) {
       const commentInputModel: CreateCommentDto = {
@@ -221,7 +251,13 @@ export class FactoryT {
     return result;
   }
 
-  async createUniqueComment(count: number, length: number, accessToken: string, postId: string, app: INestApplication) {
+  async createUniqueComment(
+    count: number,
+    length: number,
+    accessToken: string,
+    postId: string,
+    app: INestApplication,
+  ) {
     const result: { comment: CommentsViewType }[] = [];
     for (let i = 0; i < count; i++) {
       const commentInputModel: CreateCommentDto = {
@@ -237,7 +273,11 @@ export class FactoryT {
     return result;
   }
 
-  async createBlogsAndPostForTest(count: number, accessToken: string, app: INestApplication) {
+  async createBlogsAndPostForTest(
+    count: number,
+    accessToken: string,
+    app: INestApplication,
+  ) {
     const result: { blog: BlogViewModel; post: PostViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const postInputModel: CreatePostDto = {
@@ -264,7 +304,12 @@ export class FactoryT {
     return result;
   }
 
-  async createLikePost(id: string, value: string, accessToken: string, app: INestApplication) {
+  async createLikePost(
+    id: string,
+    value: string,
+    accessToken: string,
+    app: INestApplication,
+  ) {
     const inputModel = {
       likeStatus: `${value}`,
     };
@@ -275,7 +320,12 @@ export class FactoryT {
       .expect(204);
   }
 
-  async createLikeComment(id: string, value: string, accessToken: string, app: INestApplication) {
+  async createLikeComment(
+    id: string,
+    value: string,
+    accessToken: string,
+    app: INestApplication,
+  ) {
     await request(app.getHttpServer())
       .put(endpoints.commentController + `/${id}/like-status`)
       .auth(accessToken, { type: 'bearer' })

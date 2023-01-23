@@ -4,7 +4,7 @@ const bloggerController = `${globalPrefix}/blogger/blogs`;
 const postController = `${globalPrefix}/posts`;
 const commentController = `${globalPrefix}/comments`;
 const authController = `${globalPrefix}/auth`;
-const saController = `${globalPrefix}/sa/users`;
+const saController = `${globalPrefix}/sa`;
 const securityController = `${globalPrefix}/security/devices`;
 const testingController = `${globalPrefix}/testing`;
 
@@ -20,7 +20,11 @@ export const endpoints = {
   bloggerController,
   postController,
   commentController,
-  saController,
+  saController: {
+    users: `${saController}/users`,
+    blogs: `${saController}/blogs`,
+    quiz: `${saController}/quiz/questions`,
+  },
   securityController,
   testingController: {
     allData: `${testingController}/all-data`,

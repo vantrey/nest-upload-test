@@ -1,15 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { createUniqeUserByLoginEmail, createUserByLoginEmail } from './helpers/create-user-by-login-email';
-import { createBlogsForTest } from './helpers/create-blog-for-test';
-import { createdApp } from '../src/helpers/createdApp';
-import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
-import { BlogViewModel } from '../src/modules/blogs/infrastructure/query-repository/blog-View-Model';
-import { PostViewModel } from '../src/modules/posts/infrastructure/query-repositories/post-View-Model';
-import { CommentsViewType } from '../src/modules/comments/infrastructure/query-repository/comments-View-Model';
-import { createBlogsAndPostForTest } from './helpers/create-blog-and-post-for-test';
+import { AppModule } from '../../src/app.module';
+import {
+  createUniqeUserByLoginEmail,
+  createUserByLoginEmail,
+} from '../helpers/create-user-by-login-email';
+import { createBlogsForTest } from '../helpers/create-blog-for-test';
+import { createdApp } from '../../src/helpers/createdApp';
+import { UsersViewType } from '../../src/modules/users/infrastructure/query-reposirory/user-View-Model';
+import { BlogViewModel } from '../../src/modules/blogs/infrastructure/query-repository/blog-View-Model';
+import { PostViewModel } from '../../src/modules/posts/infrastructure/query-repositories/post-View-Model';
+import { CommentsViewType } from '../../src/modules/comments/infrastructure/query-repository/comments-View-Model';
+import { createBlogsAndPostForTest } from '../helpers/create-blog-and-post-for-test';
 
 jest.setTimeout(1200000);
 
@@ -32,7 +35,9 @@ describe(`Ban blog by super admin`, () => {
 
   describe.skip(`Homework 22.2 > Blogger Api > Ban user by blogger`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let user: UsersViewType;
     let user1: UsersViewType;
@@ -94,7 +99,9 @@ describe(`Ban blog by super admin`, () => {
   });
   describe.skip(`Homework 22.1 > Super admin Api > Ban user by super admin`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let user: UsersViewType;
     let user1: UsersViewType;
@@ -200,12 +207,16 @@ describe(`Ban blog by super admin`, () => {
           banReason: 'stringstringstringst',
         })
         .expect(204);
-      await request(app.getHttpServer()).get(`/comments/${comment.id}`).expect(404);
+      await request(app.getHttpServer())
+        .get(`/comments/${comment.id}`)
+        .expect(404);
     });
   });
   describe.skip(`Homework 22.2 > Blogger Api > Blogger posts`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
     let user: UsersViewType;
     let accessToken: string;
@@ -336,7 +347,9 @@ describe(`Ban blog by super admin`, () => {
   });
   describe.skip(`Super admin Api > Users`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
 
     let user: UsersViewType;
@@ -390,14 +403,22 @@ describe(`Ban blog by super admin`, () => {
         .send({ loginOrEmail: `${user.login}`, password: `asirius-120` })
         .expect(200);
 
-      await request(app.getHttpServer()).post(`/auth/logout`).set('Cookie', `${refreshToken[0]}`).expect(204);
+      await request(app.getHttpServer())
+        .post(`/auth/logout`)
+        .set('Cookie', `${refreshToken[0]}`)
+        .expect(204);
 
-      await request(app.getHttpServer()).post(`/auth/refresh-token`).set('Cookie', `${refreshToken[0]}`).expect(401);
+      await request(app.getHttpServer())
+        .post(`/auth/refresh-token`)
+        .set('Cookie', `${refreshToken[0]}`)
+        .expect(401);
     });
   });
   describe.skip(`Check error for testing`, () => {
     beforeAll(async () => {
-      await request(app.getHttpServer()).delete(`/testing/all-data`).expect(204);
+      await request(app.getHttpServer())
+        .delete(`/testing/all-data`)
+        .expect(204);
     });
 
     let user: UsersViewType;
@@ -436,7 +457,9 @@ describe(`Ban blog by super admin`, () => {
       //   items: expect.any(Array)
       // });
 
-      const responseBlogId = await request(app.getHttpServer()).get(`/blogs/${blog.id}`).expect(404);
+      const responseBlogId = await request(app.getHttpServer())
+        .get(`/blogs/${blog.id}`)
+        .expect(404);
       console.log('-2', responseBlogId.body);
 
       const responseBlogSA = await request(app.getHttpServer())

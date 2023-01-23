@@ -12,14 +12,13 @@ export class Question {
   published: boolean;
   @Column({ type: 'timestamptz' })
   createdAt: Date;
-  @Column({ type: 'timestamptz' })
-  updatedAt: Date;
+  @Column({ type: 'text', default: null })
+  updatedAt: string;
 
   constructor(body: string, correctAnswers: string[]) {
     this.body = body;
     this.correctAnswers = correctAnswers;
     this.createdAt = new Date();
-    this.updatedAt = new Date();
   }
 
   static createQuestion(body: string, correctAnswers: string[]) {
@@ -37,7 +36,7 @@ export class Question {
   updateValue(body: string, correctAnswers: string[]) {
     this.body = body;
     this.correctAnswers = correctAnswers;
-    this.updatedAt = new Date();
+    this.updatedAt = new Date().toISOString();
   }
 
   publisher(published: boolean) {
