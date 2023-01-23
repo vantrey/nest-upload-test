@@ -106,9 +106,10 @@ export class SaController {
   @HttpCode(204)
   @Put(`quiz/questions/:id/publish`)
   async publishQuestion(
-    @Body() publishInputModel: PublisherQuestionDto,
     @Param(`id`, ValidateUuidPipe) id: string,
+    @Body() publishInputModel: PublisherQuestionDto,
   ): Promise<boolean> {
+    console.log('publishInputModel', publishInputModel);
     return this.commandBus.execute(
       new PublishQuestionCommand(id, publishInputModel),
     );

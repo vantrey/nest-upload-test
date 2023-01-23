@@ -14,7 +14,7 @@ export class PublishQuestionHandler
     const id = command.id;
     const question = await this.questionRepo.findQuestionByIdWithMapped(id);
     if (!question)
-      throw new NotFoundExceptionMY(`Not found blog with id: ${id}`);
+      throw new NotFoundExceptionMY(`Not found question with id: ${id}`);
     question.publisher(published);
     await this.questionRepo.saveQuestion(question);
     return true;

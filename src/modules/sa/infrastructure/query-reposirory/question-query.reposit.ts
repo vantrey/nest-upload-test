@@ -20,12 +20,13 @@ export class QuestionQueryRepository {
       question.correctAnswers,
       question.published,
       question.createdAt.toISOString(),
-      question.updatedAt,
+      question.updatedAt ? question.updatedAt.toISOString() : null,
     );
   }
 
   async findQuestion(questionId: string): Promise<QuestionViewModel> {
     const user = await this.questionRepo.findOneBy({ id: questionId });
+    console.log('user', user);
     if (!user) return null;
     return this.mappedForQuestion(user);
   }
