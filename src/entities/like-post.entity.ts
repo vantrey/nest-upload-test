@@ -20,8 +20,6 @@ export class LikePost {
   userId: string;
   @Column({ type: 'uuid' })
   parentId: string;
-  // @Column({ type: 'character varying' })
-  // userLogin: string;
   @Column({ default: 'None' })
   likeStatus: string;
   @ManyToOne(() => User, (u) => u.likePosts)
@@ -33,17 +31,11 @@ export class LikePost {
     this.addedAt = new Date().toISOString();
     this.userId = userId;
     this.parentId = parentId;
-    // this.userLogin = login;
     this.post = post;
     this.user = user;
   }
 
-  static createLikePost(
-    userId: string,
-    parentId: string,
-    post: Post,
-    user: User,
-  ) {
+  static createLikePost(userId: string, parentId: string, post: Post, user: User) {
     return new LikePost(userId, parentId, post, user);
   }
 

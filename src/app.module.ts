@@ -74,6 +74,13 @@ import { Post } from './entities/post.entity';
 import { LikeComment } from './entities/like-comment.entity';
 import { LikePost } from './entities/like-post.entity';
 import { Comment } from './entities/comment.entity';
+import { CreateQuestionHandler } from './modules/sa/application/use-cases/handlers/create-question-handler';
+import { Question } from './entities/question.entity';
+import { QuestionRepository } from './modules/sa/infrastructure/question.reposit';
+import { QuestionQueryRepository } from './modules/sa/infrastructure/query-reposirory/question-query.reposit';
+import { DeleteQuestionHandler } from './modules/sa/application/use-cases/handlers/delete-question-handler';
+import { UpdateQuestionHandler } from './modules/sa/application/use-cases/handlers/update-question-handler';
+import { PublishQuestionHandler } from './modules/sa/application/use-cases/handlers/publish-question-handler';
 
 const controllers = [
   AuthController,
@@ -115,6 +122,8 @@ const adapters = [
   CommentsQueryRepositories,
   DeviceRepositories,
   DeviceQueryRepositories,
+  QuestionRepository,
+  QuestionQueryRepository,
 ];
 const handlers = [
   CreateUserHandler,
@@ -144,8 +153,22 @@ const handlers = [
   UpdateBlogHandler,
   UpdatePostHandler,
   UpdateBanUserForCurrentBlogHandler,
+  CreateQuestionHandler,
+  DeleteQuestionHandler,
+  UpdateQuestionHandler,
+  PublishQuestionHandler,
 ];
-const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, LikeComment];
+const entities = [
+  User,
+  Device,
+  Blog,
+  BannedBlogUser,
+  Post,
+  Comment,
+  LikePost,
+  LikeComment,
+  Question,
+];
 
 @Module({
   imports: [

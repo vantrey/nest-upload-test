@@ -1,12 +1,5 @@
 import { UpdateBlogDto } from '../modules/blogger/api/input-dtos/update-Blog-Dto-Model';
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { User } from './user.entity';
 import { BannedBlogUser } from './banned-blog-user.entity';
 import { Post } from './post.entity';
@@ -17,8 +10,6 @@ export class Blog {
   id: string;
   @Column({ type: 'uuid' })
   userId: string;
-  // @Column({ type: 'character varying' })
-  // userLogin: string;
   @Column({ type: 'character varying', length: 15, collation: 'C' })
   name: string;
   @Column({ type: 'character varying', length: 500, collation: 'C' })
@@ -39,16 +30,8 @@ export class Blog {
   @OneToMany(() => Post, (u) => u.blog)
   posts: Relation<Post[]>;
 
-  constructor(
-    userId: string,
-    // login: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    user: User,
-  ) {
+  constructor(userId: string, name: string, description: string, websiteUrl: string, user: User) {
     this.userId = userId;
-    // this.userLogin = login;
     this.name = name;
     this.description = description;
     this.websiteUrl = websiteUrl;
@@ -56,23 +39,9 @@ export class Blog {
     this.user = user;
   }
 
-  static createBlog(
-    userId: string,
-    // login: string,
-    name: string,
-    description: string,
-    websiteUrl: string,
-    user: User,
-  ) {
-    const reg = new RegExp(
-      `^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`,
-    );
-    if (
-      name.length > 15 &&
-      description.length > 500 &&
-      description.length > 100 &&
-      !reg.test(websiteUrl)
-    ) {
+  static createBlog(userId: string, name: string, description: string, websiteUrl: string, user: User) {
+    const reg = new RegExp(`^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`);
+    if (name.length > 15 && description.length > 500 && description.length > 100 && !reg.test(websiteUrl)) {
       throw new Error('Incorrect input data for create User');
     }
     return new Blog(userId, name, description, websiteUrl, user);
@@ -84,17 +53,11 @@ export class Blog {
 
   updateBlog(dto: UpdateBlogDto) {
     const { name, description, websiteUrl } = dto;
-    const reg = new RegExp(
-      `^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`,
-    );
+    const reg = new RegExp(`^https://([a-zA-Z0-9_-]+\\.)+[a-zA-Z0-9_-]+(\\/[a-zA-Z0-9_-]+)*\\/?$`);
     if (!reg.test(websiteUrl)) {
       throw new Error(`Incorrect input #web data for update blog`);
     }
-    if (
-      name.length < 15 &&
-      description.length < 500 &&
-      websiteUrl.length < 100
-    ) {
+    if (name.length < 15 && description.length < 500 && websiteUrl.length < 100) {
       this.name = name;
       this.websiteUrl = websiteUrl;
       this.description = description;

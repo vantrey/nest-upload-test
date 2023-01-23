@@ -28,3 +28,4 @@ export class PaginationUsersDto extends PaginationDto {
   @IsOptional()
   searchEmailTerm: string = '';
 }
+

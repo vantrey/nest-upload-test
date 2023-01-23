@@ -17,8 +17,6 @@ export class Comment {
   content: string;
   @Column({ type: 'uuid' })
   userId: string;
-  // @Column({ type: 'character varying' })
-  // userLogin: string;
   @Column({ type: 'character varying' })
   createdAt: string;
   @ManyToOne(() => User, (u) => u.comments)
@@ -28,15 +26,7 @@ export class Comment {
   @OneToMany(() => LikeComment, (u) => u.comment)
   likesComment: Relation<LikeComment[]>;
 
-  constructor(
-    postId: string,
-    ownerId: string,
-    content: string,
-    userId: string,
-    // login: string,
-    post: Post,
-    user: User,
-  ) {
+  constructor(postId: string, ownerId: string, content: string, userId: string, post: Post, user: User) {
     this.postId = postId;
     this.ownerId = ownerId;
     this.content = content;
@@ -47,15 +37,7 @@ export class Comment {
     this.user = user;
   }
 
-  static createComment(
-    postId: string,
-    ownerId: string,
-    content: string,
-    userId: string,
-    // login: string,
-    post: Post,
-    user: User,
-  ) {
+  static createComment(postId: string, ownerId: string, content: string, userId: string, post: Post, user: User) {
     if (content.length < 300 && content.length > 20) {
       return new Comment(postId, ownerId, content, userId, post, user);
     }

@@ -34,15 +34,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
       throw new ForbiddenExceptionMY(`For user comment banned`);
     }
     //preparation comment for save in DB
-    const newComment = Comment.createComment(
-      post.id,
-      post.getOwnerPost(),
-      content,
-      userId,
-      // user.getLogin(),
-      post,
-      user,
-    );
+    const newComment = Comment.createComment(post.id, post.getOwnerPost(), content, userId, post, user);
     //save created instance and return for view
     return await this.commentsRepositories.saveComment(newComment);
   }
