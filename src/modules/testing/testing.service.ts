@@ -9,6 +9,7 @@ import { Post } from '../../entities/post.entity';
 import { Comment } from '../../entities/comment.entity';
 import { LikePost } from '../../entities/like-post.entity';
 import { LikeComment } from '../../entities/like-comment.entity';
+import { Question } from '../../entities/question.entity';
 
 @Injectable()
 export class TestingService {
@@ -20,6 +21,7 @@ export class TestingService {
   async deleteAll() {
     await this.userRepo.manager.connection
       .transaction(async (manager) => {
+        await manager.delete(Question, {});
         await manager.delete(LikeComment, {});
         await manager.delete(LikePost, {});
         await manager.delete(Comment, {});
