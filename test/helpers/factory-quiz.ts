@@ -1,7 +1,5 @@
 import { FactoryT, superUser } from './factory-t';
 import { INestApplication } from '@nestjs/common';
-import { BlogViewModel } from '../../src/modules/blogs/infrastructure/query-repository/blog-View-Model';
-import { CreateBlogDto } from '../../src/modules/blogger/api/input-dtos/create-Blog-Dto-Model';
 import request from 'supertest';
 import { endpoints } from './routing';
 import { QuestionViewModel } from '../../src/modules/sa/infrastructure/query-reposirory/question-View-Model';
@@ -49,11 +47,16 @@ export class FactoryQuiz extends FactoryT {
         body: `${question}`,
         correctAnswers: answers,
       };
-      const responseBlog = await request(app.getHttpServer())
+      const response = await request(app.getHttpServer())
         .post(endpoints.saController.quiz)
         .auth(superUser.login, superUser.password, { type: 'basic' })
         .send(inputModel)
         .expect(201);
+      await request(app.getHttpServer())
+        .put(endpoints.saController.quiz + `/${response.body.id}/publish`)
+        .auth(superUser.login, superUser.password, { type: 'basic' })
+        .send({ published: true })
+        .expect(204);
       // .then(({ body }) => {
       //   expect(body).toEqual({
       //     id: expect.any(String),
@@ -65,8 +68,25 @@ export class FactoryQuiz extends FactoryT {
       //   });
       //   result.push({ question: body });
       // });
-      result.push({ question: responseBlog.body });
+      result.push({ question: response.body });
     }
     return result;
+  }
+
+  async connection(accessToken: string, app: INestApplication) {
+    await request(app.getHttpServer())
+      .post(endpoints.quizController.connection)
+      .auth(accessToken, { type: 'bearer' })
+      .expect(200);
+  }
+
+  async answer(value: string, accessToken: string, app: INestApplication) {
+    await request(app.getHttpServer())
+      .post(endpoints.quizController.answer)
+      .auth(accessToken, { type: 'bearer' })
+      .send({
+        answer: value,
+      })
+      .expect(200);
   }
 }

@@ -109,7 +109,6 @@ export class SaController {
     @Param(`id`, ValidateUuidPipe) id: string,
     @Body() publishInputModel: PublisherQuestionDto,
   ): Promise<boolean> {
-    console.log('publishInputModel', publishInputModel);
     return this.commandBus.execute(
       new PublishQuestionCommand(id, publishInputModel),
     );

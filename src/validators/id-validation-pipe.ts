@@ -12,3 +12,17 @@ export class ValidateUuidPipe implements PipeTransform {
     return value;
   }
 }
+
+//
+// @Injectable()
+// export class Sort implements PipeTransform {
+//   constructor(private readonly model: any) {
+//   }
+//
+//   transform(value: string, metadata: ArgumentMetadata) {
+//     if (!isUUID(value)) {
+//       throw new NotFoundExceptionMY(`Incorrect id,  please enter a valid one`);
+//     }
+//     return value;
+//   }
+// }

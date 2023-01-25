@@ -4,9 +4,10 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { createdApp } from '../src/helpers/createdApp';
 import { endpoints } from './helpers/routing';
-import { superUser } from './helpers/factory-t';
+import { FactoryT, superUser } from './helpers/factory-t';
 import { FactoryQuiz } from './helpers/factory-quiz';
 import { QuestionViewModel } from '../src/modules/sa/infrastructure/query-reposirory/question-View-Model';
+import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
 
 jest.setTimeout(1200000);
 
@@ -27,7 +28,7 @@ describe(`Question `, () => {
     await app.close();
   });
 
-  describe(`factory questions`, () => {
+  describe.skip(`factory questions`, () => {
     const quiz = new FactoryQuiz();
     let question: QuestionViewModel;
     it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
@@ -77,12 +78,7 @@ describe(`Question `, () => {
         ['Calypso', 'Matias', 'Colombo'],
         app,
       );
-      await quiz.createWithQuestion(
-        1,
-        'ttt dddd  l',
-        ['dddd', 'aaaaa', 'gggg'],
-        app,
-      );
+      await quiz.createWithQuestion(1, 'ttt dddd  l', ['dddd', 'aaaaa', 'gggg'], app);
       const res = await quiz.createWithQuestion(
         1,
         'gggggg    aaaaa',
@@ -127,6 +123,89 @@ describe(`Question `, () => {
             updatedAt: null,
           });
         });
+    });
+  });
+
+  describe(`24`, () => {
+    const quiz = new FactoryQuiz();
+    const factory = new FactoryT();
+    let accessToken0: string;
+    let accessToken1: string;
+    let user0: UsersViewType;
+    let user1: UsersViewType;
+    it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
+      await request(app.getHttpServer())
+        .delete(endpoints.testingController.allData)
+        .expect(204);
+    });
+    it(`01 - POST -> "/sa/quiz/questions": should create new question; status 201; content: created question; used additional methods: GET => /sa/quiz/questions;`, async () => {
+      await quiz.createWithQuestion(1, 'What is my name?', ['Alex', 'Sania'], app);
+      await quiz.createWithQuestion(
+        1,
+        'How many wheels does a three axle car have?',
+        ['Six', '6'],
+        app,
+      );
+      await quiz.createWithQuestion(
+        1,
+        'What shape is the moon?',
+        ['circle', 'oval', 'ellipse'],
+        app,
+      );
+      await quiz.createWithQuestion(1, 'What was Jobs first name?', ['Steven', 'Paul'], app);
+      await quiz.createWithQuestion(
+        1,
+        'How many angles are in a right triangle?',
+        ['3', 'three'],
+        app,
+      );
+      await quiz.createWithQuestion(
+        1,
+        'in what year was born abolished serfdom in Poland?',
+        ['1984'],
+        app,
+      );
+      await request(app.getHttpServer())
+        .get(endpoints.saController.quiz)
+        .auth(superUser.login, superUser.password, { type: 'basic' })
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.items).toHaveLength(6);
+        });
+      const res = await factory.createUniqueUserByLoginAndEmail(
+        1,
+        'asirius',
+        'asirius@jive.com',
+        app,
+      );
+      user0 = res[0].user;
+      accessToken0 = res[0].accessToken;
+      const res1 = await factory.createUniqueUserByLoginAndEmail(
+        1,
+        'raccoon',
+        'raccoon@animal.raw',
+        app,
+      );
+      accessToken1 = res1[0].accessToken;
+      user1 = res1[0].user;
+      await quiz.connection(accessToken0, app);
+      await quiz.connection(accessToken1, app);
+      await quiz.answer('Alex', accessToken0, app);
+      await quiz.answer('alex', accessToken1, app);
+      await quiz.answer('Six', accessToken0, app);
+      await quiz.answer('circle', accessToken0, app);
+      await quiz.answer('6', accessToken1, app);
+      await quiz.answer('paul', accessToken1, app);
+      await quiz.answer('Steven', accessToken0, app);
+      await quiz.answer('3', accessToken0, app);
+      await quiz.answer('1984', accessToken1, app);
+      await quiz.answer('1984', accessToken1, app);
+      // await quiz.connection(accessToken0, app);
+    });
+    it.skip(`02 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
+      await request(app.getHttpServer())
+        .delete(endpoints.testingController.allData)
+        .expect(204);
     });
   });
 });

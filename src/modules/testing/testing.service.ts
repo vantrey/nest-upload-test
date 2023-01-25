@@ -10,6 +10,9 @@ import { Comment } from '../../entities/comment.entity';
 import { LikePost } from '../../entities/like-post.entity';
 import { LikeComment } from '../../entities/like-comment.entity';
 import { Question } from '../../entities/question.entity';
+import { Answer } from '../../entities/answer.entity';
+import { Player } from '../../entities/player.entity';
+import { Game } from '../../entities/game.entity';
 
 @Injectable()
 export class TestingService {
@@ -21,7 +24,11 @@ export class TestingService {
   async deleteAll() {
     await this.userRepo.manager.connection
       .transaction(async (manager) => {
+        await manager.delete(Answer, {});
         await manager.delete(Question, {});
+        await manager.delete(Game, {});
+        await manager.delete(Player, {});
+
         await manager.delete(LikeComment, {});
         await manager.delete(LikePost, {});
         await manager.delete(Comment, {});

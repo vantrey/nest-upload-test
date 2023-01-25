@@ -1,10 +1,10 @@
 import { config } from 'dotenv';
-
 config();
 import * as process from 'process';
+// import 'dotenv/config';
 
 export const getConfiguration = () => ({
-  PORT: parseInt(process.env.PORT, 10) ?? 3010,
+  PORT: parseInt(process.env.PORTT, 10) || 3010,
   tokens: {
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
     REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,

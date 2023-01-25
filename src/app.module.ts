@@ -81,6 +81,14 @@ import { QuestionQueryRepository } from './modules/sa/infrastructure/query-repos
 import { DeleteQuestionHandler } from './modules/sa/application/use-cases/handlers/delete-question-handler';
 import { UpdateQuestionHandler } from './modules/sa/application/use-cases/handlers/update-question-handler';
 import { PublishQuestionHandler } from './modules/sa/application/use-cases/handlers/publish-question-handler';
+import { Answer } from './entities/answer.entity';
+import { Player } from './entities/player.entity';
+import { Game } from './entities/game.entity';
+import { QuizRepositories } from './modules/quiz/infrastructure/quiz-repositories';
+import { QuizController } from './modules/quiz/api/quiz.controller';
+import { ConnectionQuizHandler } from './modules/quiz/application/use-case/handlers/connection-quiz-handler';
+import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz-handler';
+import { QuizQueryRepositories } from './modules/quiz/infrastructure/query-repository/quiz-query-repositories';
 
 const controllers = [
   AuthController,
@@ -91,6 +99,7 @@ const controllers = [
   BloggersController,
   PostsController,
   CommentsController,
+  QuizController,
 ];
 const providers = [
   AppService,
@@ -124,6 +133,8 @@ const adapters = [
   DeviceQueryRepositories,
   QuestionRepository,
   QuestionQueryRepository,
+  QuizRepositories,
+  QuizQueryRepositories,
 ];
 const handlers = [
   CreateUserHandler,
@@ -157,6 +168,8 @@ const handlers = [
   DeleteQuestionHandler,
   UpdateQuestionHandler,
   PublishQuestionHandler,
+  ConnectionQuizHandler,
+  AnswerQuizHandler,
 ];
 const entities = [
   User,
@@ -168,6 +181,9 @@ const entities = [
   LikePost,
   LikeComment,
   Question,
+  Answer,
+  Player,
+  Game,
 ];
 
 @Module({
@@ -176,7 +192,10 @@ const entities = [
       ttl: 10, //default  - 10 s
       limit: 5, //default  - 5 st
     }),
-    ConfigModule.forRoot({ isGlobal: true, load: [getConfiguration] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [getConfiguration],
+    }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigType>) => {

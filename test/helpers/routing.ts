@@ -5,6 +5,7 @@ const postController = `${globalPrefix}/posts`;
 const commentController = `${globalPrefix}/comments`;
 const authController = `${globalPrefix}/auth`;
 const saController = `${globalPrefix}/sa`;
+const quizController = `${globalPrefix}/pair-game-quiz/pairs`;
 const securityController = `${globalPrefix}/security/devices`;
 const testingController = `${globalPrefix}/testing`;
 
@@ -24,6 +25,11 @@ export const endpoints = {
     users: `${saController}/users`,
     blogs: `${saController}/blogs`,
     quiz: `${saController}/quiz/questions`,
+  },
+  quizController: {
+    connection: `${quizController}/connection`,
+    answer: `${quizController}/my-current/answers`,
+    my_current: `${quizController}/my-current`,
   },
   securityController,
   testingController: {

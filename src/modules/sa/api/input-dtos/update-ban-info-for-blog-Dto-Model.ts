@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional } from "class-validator";
+import { IsBoolean, IsOptional } from 'class-validator';
 
 export class UpdateBanInfoForBlogDto {
   /**
@@ -6,5 +6,5 @@ export class UpdateBanInfoForBlogDto {
    */
   @IsBoolean()
   @IsOptional()
-  isBanned = true;
+  isBanned: boolean;
 }
