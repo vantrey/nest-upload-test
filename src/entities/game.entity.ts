@@ -1,11 +1,4 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Question } from './question.entity';
 
@@ -72,6 +65,7 @@ export class Game {
   }
 
   finishDate() {
+    this.status = GameStatusesType.Finished;
     this.finishGameDate = new Date();
   }
 }

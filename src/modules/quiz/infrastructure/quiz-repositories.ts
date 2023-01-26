@@ -35,15 +35,43 @@ export class QuizRepositories {
   }
 
   async findPendingGameByUserId(userId: string): Promise<boolean> {
-    const game = await this.gameRepo.findOne({
+    const games = await this.gameRepo.find({
       select: ['id'],
-      where: {
-        status: GameStatusesType.PendingSecondPlayer,
-        firstPlayerId: userId,
-      },
+      where: [
+        {
+          status: GameStatusesType.Finished,
+          firstPlayerId: userId,
+        },
+        {
+          status: GameStatusesType.Finished,
+          secondPlayerId: userId,
+        },
+        {
+          status: GameStatusesType.PendingSecondPlayer,
+          firstPlayerId: userId,
+        },
+      ],
+    });
+    // .catch((e) => {
+    //   return null;
+    // });
+    console.log(games);
+    if (games.length === 0) return null;
+    return true;
+  }
+
+  async findActiveAndPendingGameByUserId(userId: string): Promise<Game> {
+    const game = await this.gameRepo.findOne({
+      select: [],
+      relations: { firstPlayerProgress: true, secondPlayerProgress: true, questions: true },
+      where: [
+        { status: GameStatusesType.Active, firstPlayerId: userId },
+        { status: GameStatusesType.PendingSecondPlayer, firstPlayerId: userId },
+        { status: GameStatusesType.Active, secondPlayerId: userId },
+      ],
     });
     if (!game) return null;
-    return true;
+    return game;
   }
 
   async findActiveGameByUserId(userId: string): Promise<Game> {

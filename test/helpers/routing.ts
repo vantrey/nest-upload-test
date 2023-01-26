@@ -27,6 +27,7 @@ export const endpoints = {
     quiz: `${saController}/quiz/questions`,
   },
   quizController: {
+    id: `${quizController}`,
     connection: `${quizController}/connection`,
     answer: `${quizController}/my-current/answers`,
     my_current: `${quizController}/my-current`,

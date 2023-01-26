@@ -8,10 +8,7 @@ import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFil
 
 @CommandHandler(ConnectionQuizCommand)
 export class ConnectionQuizHandler implements ICommandHandler<ConnectionQuizCommand> {
-  constructor(
-    private readonly quizRepo: QuizRepositories,
-    private readonly usersRepo: UsersRepositories,
-  ) {}
+  constructor(private readonly quizRepo: QuizRepositories, private readonly usersRepo: UsersRepositories) {}
 
   async execute(command: ConnectionQuizCommand): Promise<boolean> {
     const { userId } = command;
@@ -19,7 +16,7 @@ export class ConnectionQuizHandler implements ICommandHandler<ConnectionQuizComm
     //find questions
     const questions = await this.quizRepo.findQuestions();
     //check active game
-    const activeGame = await this.quizRepo.findActiveGameByUserId(userId);
+    const activeGame = await this.quizRepo.findActiveAndPendingGameByUserId(userId);
     if (activeGame) {
       throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     }

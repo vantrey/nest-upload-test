@@ -8,14 +8,8 @@ import { AnswerQuizCommand } from '../application/use-case/answer-quiz-command';
 import { QuizRepositories } from '../infrastructure/quiz-repositories';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { QuizQueryRepositories } from '../infrastructure/query-repository/quiz-query-repositories';
-import {
-  BadRequestExceptionMY,
-  NotFoundExceptionMY,
-} from '../../../helpers/My-HttpExceptionFilter';
-import {
-  AnswerViewModel,
-  GameViewModel,
-} from '../infrastructure/query-repository/game-View-Model';
+import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
+import { AnswerViewModel, GameViewModel } from '../infrastructure/query-repository/game-View-Model';
 
 @UseGuards(JwtAuthGuard)
 @Controller(`pair-game-quiz/pairs`)
@@ -34,17 +28,12 @@ export class QuizController {
 
   @HttpCode(200)
   @Post(`my-current/answers`)
-  async answer(
-    @CurrentUserIdBlogger() userId: string,
-    @Body() inputAnswerModel: AnswerDto,
-  ): Promise<AnswerViewModel> {
+  async answer(@CurrentUserIdBlogger() userId: string, @Body() inputAnswerModel: AnswerDto): Promise<AnswerViewModel> {
     return this.commandBus.execute(new AnswerQuizCommand(userId, inputAnswerModel));
   }
 
   @Get(`my-current`)
-  async getCurrentActiveGame(
-    @CurrentUserIdBlogger() userId: string,
-  ): Promise<GameViewModel> {
+  async getCurrentActiveGame(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
     const pendingGame = await this.quizRepo.findPendingGameByUserId(userId);
     if (pendingGame) throw new NotFoundExceptionMY('Not found game');
     return await this.quizQueryRepo.getCurrentActiveGame(userId);
@@ -55,11 +44,10 @@ export class QuizController {
     @CurrentUserIdBlogger() userId: string,
     @Param(`id`, ValidateUuidPipe) id: string,
   ): Promise<GameViewModel> {
+    const finishedGame = await this.quizRepo.findFinishedGameByIdGameAndUserId(id, userId);
+    if (!finishedGame) throw new ForbiddenExceptionMY('The player did not participate in the game');
     const activeGame = await this.quizRepo.findActiveGameByIdGame(id);
     if (!activeGame) throw new NotFoundExceptionMY('Not found active game');
-    const finishedGame = await this.quizRepo.findFinishedGameByIdGameAndUserId(id, userId);
-    if (!finishedGame)
-      throw new BadRequestExceptionMY('The player did not participate in the game');
     return this.quizQueryRepo.getPairFinishedGameById(userId, id);
   }
 }

@@ -14,20 +14,13 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     const { userId } = command;
     //checking active game
     const activeGame = await this.quizRepo.findActiveGameByUserId(userId);
-    if (!activeGame)
-      throw new ForbiddenExceptionMY('Current user is already participating in active pair');
+    if (!activeGame) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     //counting answers for the current game
     const player = await this.quizRepo.findPlayer(userId, activeGame.id);
     if (player.answers.length === activeGame.questions.length)
       throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     const question = activeGame.questions[player.answers.length];
-    const instanceAnswer = Answer.createAnswer(
-      answer,
-      activeGame.id,
-      question.id,
-      player.id,
-      player,
-    );
+    const instanceAnswer = Answer.createAnswer(answer, activeGame.id, question.id, player.id, player);
     const savedAnswer = await this.quizRepo.saveAnswer(instanceAnswer);
     const result = question.correctAnswers.find((e) => e === answer);
     if (result) {
@@ -35,10 +28,7 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       await this.quizRepo.saveAnswer(savedAnswer);
       //checking the finish game!
       const activeGame = await this.quizRepo.findActiveGameByUserId(userId);
-      if (
-        activeGame.firstPlayerProgress.answers.length === 5 &&
-        activeGame.secondPlayerProgress.answers.length === 5
-      ) {
+      if (activeGame.firstPlayerProgress.answers.length === 5 && activeGame.secondPlayerProgress.answers.length === 5) {
         activeGame.finishDate();
         await this.quizRepo.saveGame(activeGame);
       }
@@ -50,26 +40,15 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       }
       player.addScore();
       await this.quizRepo.savePlayer(player);
-      return new AnswerViewModel(
-        savedAnswer.questionId,
-        savedAnswer.answerStatus,
-        savedAnswer.addedAt.toISOString(),
-      );
+      return new AnswerViewModel(savedAnswer.questionId, savedAnswer.answerStatus, savedAnswer.addedAt.toISOString());
     }
     savedAnswer.incorrectAnswer();
     await this.quizRepo.saveAnswer(savedAnswer);
     const game = await this.quizRepo.findActiveGameByUserId(userId);
-    if (
-      game.firstPlayerProgress.answers.length === 5 &&
-      game.secondPlayerProgress.answers.length === 5
-    ) {
+    if (game.firstPlayerProgress.answers.length === 5 && game.secondPlayerProgress.answers.length === 5) {
       game.finishDate();
       await this.quizRepo.saveGame(game);
     }
-    return new AnswerViewModel(
-      savedAnswer.questionId,
-      savedAnswer.answerStatus,
-      savedAnswer.addedAt.toISOString(),
-    );
+    return new AnswerViewModel(savedAnswer.questionId, savedAnswer.answerStatus, savedAnswer.addedAt.toISOString());
   }
 }
