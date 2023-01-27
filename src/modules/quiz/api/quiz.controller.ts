@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
 import { AnswerDto } from './input-dtos/answer-Dto-Model';
 import { AnswerQuizCommand } from '../application/use-case/answer-quiz-command';
 import { QuizRepositories } from '../infrastructure/quiz-repositories';
-import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
+import { ValidateUuidPipe, ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
 import { QuizQueryRepositories } from '../infrastructure/query-repository/quiz-query-repositories';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { AnswerViewModel, GameViewModel } from '../infrastructure/query-repository/game-View-Model';
@@ -44,7 +44,7 @@ export class QuizController {
   @Get(`:id`)
   async getPairGame(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`id`, ValidateUuidPipe) id: string,
+    @Param(`id`, ValidateUuidPipeFor404Error) id: string,
   ): Promise<GameViewModel> {
     const activeGame = await this.quizRepo.findAnyGameById(id);
     if (!activeGame) throw new NotFoundExceptionMY('Not found active game');

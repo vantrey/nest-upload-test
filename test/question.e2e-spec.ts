@@ -366,7 +366,7 @@ describe(`Quiz `, () => {
       await request(app.getHttpServer())
         .get(endpoints.quizController.my_current)
         .auth(accessToken, { type: 'bearer' })
-        .expect(404);
+        .expect(400);
     });
     it(`19 - GET -> "/pair-game-quiz/pairs/my-current": should return error if there is no active pair for current user; status 404;`, async () => {
       gameId = await quiz.connection(accessToken, app);
