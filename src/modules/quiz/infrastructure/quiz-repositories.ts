@@ -53,22 +53,14 @@ export class QuizRepositories {
     // return true;
   }
 
-  async findAnyGameById(gameId: string): Promise<boolean> {
+  async findAnyGameById(gameId: string): Promise<Game> {
     const game = await this.gameRepo.findOne({
-      select: ['id'],
+      select: ['id', 'firstPlayerId', 'secondPlayerId'],
       where: { id: gameId },
-    });
-    if (!game) return null;
-    return true;
-  }
-
-  async getGamePlayer(id: string, userId: string): Promise<Game> {
-    const game = await this.gameRepo.findOne({
-      select: ['id', 'questions'],
-      where: [
-        { id: id, firstPlayerId: userId },
-        { id: id, secondPlayerId: userId },
-      ],
+      // where: [
+      //   { id: gameId, firstPlayerId: userId },
+      //   { id: gameId, secondPlayerId: userId },
+      // ],
     });
     if (!game) return null;
     return game;
@@ -126,10 +118,23 @@ export class QuizRepositories {
   }
 
   async findPlayer(userId: string, gameId: string): Promise<Player> {
-    return this.playerRepo.findOne({
+    const players = await this.playerRepo.find({
       relations: { answers: true },
-      where: { id: userId, gameId: gameId },
+      where: { id: userId, gameId: gameId, statusesPlayer: false },
     });
+    if (players.length === 0) return null;
+    return players[0];
+  }
+
+  async findPlayerForAddPoint(userId: string, gameId: string): Promise<Player> {
+    return this.playerRepo
+      .findOne({
+        relations: { answers: true },
+        where: { id: userId, gameId: gameId },
+      })
+      .catch((e) => {
+        return null;
+      });
   }
 
   async fastestFirstSuccessAnswer(userId: string, gameId: string): Promise<Answer[]> {

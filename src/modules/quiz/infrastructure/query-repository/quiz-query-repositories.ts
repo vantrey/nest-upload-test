@@ -86,10 +86,23 @@ export class QuizQueryRepositories {
         questions: true,
       },
       where: [
-        { firstPlayerId: userId, status: GameStatusesType.Active },
-        { secondPlayerId: userId, status: GameStatusesType.Active },
+        {
+          status: GameStatusesType.Active,
+          firstPlayerId: userId,
+        },
+        {
+          status: GameStatusesType.Active,
+          secondPlayerId: userId,
+        },
+        {
+          status: GameStatusesType.PendingSecondPlayer,
+          firstPlayerId: userId,
+        },
       ],
     });
+    if (!game.secondPlayerProgress) {
+      return await this.mappedFirstPlayerForView(game.id);
+    }
     return await this.mappedGameForView(game);
   }
 

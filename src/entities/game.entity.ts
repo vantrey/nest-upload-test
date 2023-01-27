@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Question } from './question.entity';
 
@@ -31,9 +31,11 @@ export class Game {
   @Column({ type: 'uuid', default: null })
   secondPlayerId: string;
 
+  // @ManyToOne(() => Player, { eager: true })
   @OneToOne(() => Player, { eager: true })
   @JoinColumn()
   firstPlayerProgress: Player;
+  // @ManyToOne(() => Player, { eager: true })
   @OneToOne(() => Player, { eager: true })
   @JoinColumn()
   secondPlayerProgress: Player;

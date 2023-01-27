@@ -73,7 +73,7 @@ export class FactoryQuiz extends FactoryT {
       .post(endpoints.quizController.connection)
       .auth(accessToken, { type: 'bearer' })
       .expect(200);
-    return res.body.id;
+    return res.body;
   }
 
   async answer(value: string, accessToken: string, app: INestApplication) {

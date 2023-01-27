@@ -37,7 +37,7 @@ export class QuizController {
   async getCurrentGame(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
     const pendingGame = await this.quizRepo.findCurrentGame(userId);
     if (!pendingGame) throw new NotFoundExceptionMY('Not found game');
-    if (pendingGame.status === GameStatusesType.PendingSecondPlayer) throw new NotFoundExceptionMY('Not found game');
+    // if (pendingGame.status === GameStatusesType.PendingSecondPlayer) throw new NotFoundExceptionMY('Not found game');
     return await this.quizQueryRepo.getCurrentActiveGame(userId);
   }
 
@@ -48,8 +48,8 @@ export class QuizController {
   ): Promise<GameViewModel> {
     const activeGame = await this.quizRepo.findAnyGameById(id);
     if (!activeGame) throw new NotFoundExceptionMY('Not found active game');
-    const finishedGame = await this.quizRepo.getGamePlayer(id, userId);
-    if (!finishedGame) throw new ForbiddenExceptionMY('The player did not participate in the game');
+    if (activeGame.firstPlayerId !== userId && activeGame.secondPlayerId !== userId)
+      throw new ForbiddenExceptionMY('The player did not participate in the game');
     return this.quizQueryRepo.getPairGameById(userId, id);
   }
 }

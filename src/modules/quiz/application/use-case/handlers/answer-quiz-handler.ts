@@ -33,8 +33,10 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
         activeGame.finishDate();
         await this.quizRepo.saveGame(activeGame);
         await this.addBonusPoint(activeGame);
+        //change status players
+        await this.changeStatusesPlayer(activeGame);
       }
-      const player = await this.quizRepo.findPlayer(userId, activeGame.id);
+      const player = await this.quizRepo.findPlayerForAddPoint(userId, activeGame.id);
       player.addPoint();
       await this.quizRepo.savePlayer(player);
       return new AnswerViewModel(savedAnswer.questionId, savedAnswer.answerStatus, savedAnswer.addedAt.toISOString());
@@ -46,7 +48,10 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       game.finishDate();
       await this.quizRepo.saveGame(game);
       await this.addBonusPoint(game);
+      //change status players
+      await this.changeStatusesPlayer(game);
     }
+    //change status players
     return new AnswerViewModel(savedAnswer.questionId, savedAnswer.answerStatus, savedAnswer.addedAt.toISOString());
   }
 
@@ -69,6 +74,15 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       player.addPoint();
       await this.quizRepo.savePlayer(player);
     }
+    return true;
+  }
+  private async changeStatusesPlayer(game: Game): Promise<boolean> {
+    const firstPlayer = await this.quizRepo.findPlayer(game.firstPlayerId, game.id);
+    const secondPlayer = await this.quizRepo.findPlayer(game.secondPlayerId, game.id);
+    firstPlayer.changeStatuses();
+    secondPlayer.changeStatuses();
+    await this.quizRepo.savePlayer(firstPlayer);
+    await this.quizRepo.savePlayer(secondPlayer);
     return true;
   }
 }

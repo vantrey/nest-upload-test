@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
 import { Answer } from './answer.entity';
+import { Game, GameStatusesType } from './game.entity';
 
 @Entity()
 export class Player {
@@ -11,8 +12,13 @@ export class Player {
   login: string;
   @Column({ type: 'int', default: 0 })
   score: number;
+  @Column({ type: 'boolean', default: false })
+  statusesPlayer: boolean;
   @OneToMany(() => Answer, (q) => q.player, { eager: true })
   answers: Answer[];
+  @OneToOne(() => Game)
+  // @JoinColumn()
+  game: Game;
 
   constructor(login: string, userId: string, gameId: string) {
     this.id = userId;
@@ -26,6 +32,9 @@ export class Player {
 
   addPoint() {
     this.score += 1;
+  }
+  changeStatuses() {
+    this.statusesPlayer = true;
   }
 
   addBonusPoint() {
