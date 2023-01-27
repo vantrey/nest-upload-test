@@ -33,8 +33,7 @@ export class ConnectionQuizHandler implements ICommandHandler<ConnectionQuizComm
       const savedPlayer = await this.quizRepo.savePlayer(player);
       //adding a second player to the game
       pendingGame.addSecondPlayer(savedPlayer, userId);
-      const game = await this.quizRepo.saveGame(pendingGame);
-      console.log(game.secondPlayerProgress.answers);
+      await this.quizRepo.saveGame(pendingGame);
       return this.quizQueryRepo.mappedSecondPlayerForView(pendingGame.id);
     }
     //creating instance game

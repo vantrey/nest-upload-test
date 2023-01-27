@@ -113,7 +113,7 @@ export class QuizQueryRepositories {
       game.id,
       firstPlayerProgress,
       null,
-      game.questions,
+      null,
       game.status,
       game.pairCreatedDate.toISOString(),
       game.startGameDate ? game.startGameDate.toISOString() : null,
