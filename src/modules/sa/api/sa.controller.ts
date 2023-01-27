@@ -1,15 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  Param,
-  Post,
-  Put,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { BlogsQueryRepositories } from '../../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-Blog-Dto';
@@ -47,24 +36,17 @@ export class SaController {
     @Body() updateBanInfoForBlogModel: UpdateBanInfoForBlogDto,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
   ): Promise<boolean> {
-    return this.commandBus.execute(
-      new UpdateBanInfoForBlogCommand(updateBanInfoForBlogModel, blogId),
-    );
+    return this.commandBus.execute(new UpdateBanInfoForBlogCommand(updateBanInfoForBlogModel, blogId));
   }
 
   @HttpCode(204)
   @Put(`blogs/:blogId/bind-with-user/:userId`)
-  async bindBlog(
-    @Param(`blogId`, ValidateUuidPipe) blogId: string,
-    @Param(`userId`, ValidateUuidPipe) userId: string,
-  ) {
+  async bindBlog(@Param(`blogId`, ValidateUuidPipe) blogId: string, @Param(`userId`, ValidateUuidPipe) userId: string) {
     return await this.commandBus.execute(new BindBlogCommand(blogId, userId));
   }
 
   @Get(`blogs`)
-  async findAll(
-    @Query() paginationInputModel: PaginationBlogDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async findAll(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewModel<BlogViewModel[]>> {
     return await this.blogsQueryRepo.findBlogsForSa(paginationInputModel);
   }
 
@@ -76,19 +58,13 @@ export class SaController {
   }
 
   @Post(`quiz/questions`)
-  async createQuestion(
-    @Body() questionInputModel: CreateQuestionDto,
-  ): Promise<QuestionViewModel> {
-    return this.commandBus.execute(
-      new CreateQuestionCommand(questionInputModel),
-    );
+  async createQuestion(@Body() questionInputModel: CreateQuestionDto): Promise<QuestionViewModel> {
+    return this.commandBus.execute(new CreateQuestionCommand(questionInputModel));
   }
 
   @HttpCode(204)
   @Delete(`quiz/questions/:id`)
-  async deleteQuestion(
-    @Param(`id`, ValidateUuidPipe) id: string,
-  ): Promise<boolean> {
+  async deleteQuestion(@Param(`id`, ValidateUuidPipe) id: string): Promise<boolean> {
     return await this.commandBus.execute(new DeleteQuestionCommand(id));
   }
 
@@ -98,9 +74,7 @@ export class SaController {
     @Body() questionInputModel: CreateQuestionDto,
     @Param(`id`, ValidateUuidPipe) id: string,
   ): Promise<boolean> {
-    return this.commandBus.execute(
-      new UpdateQuestionCommand(id, questionInputModel),
-    );
+    return this.commandBus.execute(new UpdateQuestionCommand(id, questionInputModel));
   }
 
   @HttpCode(204)
@@ -109,8 +83,6 @@ export class SaController {
     @Param(`id`, ValidateUuidPipe) id: string,
     @Body() publishInputModel: PublisherQuestionDto,
   ): Promise<boolean> {
-    return this.commandBus.execute(
-      new PublishQuestionCommand(id, publishInputModel),
-    );
+    return this.commandBus.execute(new PublishQuestionCommand(id, publishInputModel));
   }
 }

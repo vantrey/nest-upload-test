@@ -4,6 +4,7 @@ import { AnswerQuizCommand } from '../answer-quiz-command';
 import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { Answer } from '../../../../../entities/answer.entity';
 import { AnswerViewModel } from '../../../infrastructure/query-repository/game-View-Model';
+import { Game } from '../../../../../entities/game.entity';
 
 @CommandHandler(AnswerQuizCommand)
 export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
@@ -31,14 +32,10 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       if (activeGame.firstPlayerProgress.answers.length === 5 && activeGame.secondPlayerProgress.answers.length === 5) {
         activeGame.finishDate();
         await this.quizRepo.saveGame(activeGame);
+        await this.addBonusPoint(activeGame);
       }
-
       const player = await this.quizRepo.findPlayer(userId, activeGame.id);
-      const successAnswers = await this.quizRepo.countSuccessAnswers(userId, activeGame.id);
-      if (successAnswers === 5) {
-        player.addScore();
-      }
-      player.addScore();
+      player.addPoint();
       await this.quizRepo.savePlayer(player);
       return new AnswerViewModel(savedAnswer.questionId, savedAnswer.answerStatus, savedAnswer.addedAt.toISOString());
     }
@@ -48,7 +45,30 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     if (game.firstPlayerProgress.answers.length === 5 && game.secondPlayerProgress.answers.length === 5) {
       game.finishDate();
       await this.quizRepo.saveGame(game);
+      await this.addBonusPoint(game);
     }
     return new AnswerViewModel(savedAnswer.questionId, savedAnswer.answerStatus, savedAnswer.addedAt.toISOString());
+  }
+
+  private async addBonusPoint(game: Game): Promise<boolean> {
+    const successAnswersFirstPlayer = await this.quizRepo.fastestFirstSuccessAnswer(game.firstPlayerId, game.id);
+    const successAnswersSecondPlayer = await this.quizRepo.fastestFirstSuccessAnswer(game.secondPlayerId, game.id);
+    if (
+      successAnswersFirstPlayer.length >= 1 &&
+      successAnswersFirstPlayer[0].addedAt < successAnswersSecondPlayer[0].addedAt
+    ) {
+      const player = await this.quizRepo.findPlayer(game.firstPlayerId, game.id);
+      player.addPoint();
+      await this.quizRepo.savePlayer(player);
+    }
+    if (
+      successAnswersSecondPlayer.length >= 1 &&
+      successAnswersFirstPlayer[0].addedAt > successAnswersSecondPlayer[0].addedAt
+    ) {
+      const player = await this.quizRepo.findPlayer(game.secondPlayerId, game.id);
+      player.addPoint();
+      await this.quizRepo.savePlayer(player);
+    }
+    return true;
   }
 }

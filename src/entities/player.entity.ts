@@ -24,7 +24,11 @@ export class Player {
     return new Player(login, userId, gameId);
   }
 
-  addScore() {
+  addPoint() {
     this.score += 1;
+  }
+
+  addBonusPoint() {
+    this.score += 2;
   }
 }

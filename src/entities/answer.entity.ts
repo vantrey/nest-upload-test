@@ -29,13 +29,7 @@ export class Answer {
   @ManyToOne(() => Player, (q) => q.answers)
   player: Player;
 
-  constructor(
-    answer: string,
-    gameId: string,
-    questionId: string,
-    playerId: string,
-    player: Player,
-  ) {
+  constructor(answer: string, gameId: string, questionId: string, playerId: string, player: Player) {
     this.answer = answer;
     this.gameId = gameId;
     this.questionId = questionId;
@@ -44,19 +38,12 @@ export class Answer {
     this.addedAt = new Date();
   }
 
-  static createAnswer(
-    answer: string,
-    gameId: string,
-    questionId: string,
-    playerId: string,
-    player: Player,
-  ) {
+  static createAnswer(answer: string, gameId: string, questionId: string, playerId: string, player: Player) {
     return new Answer(answer, gameId, questionId, playerId, player);
   }
 
   correctAnswer() {
     this.answerStatus = AnswerStatusesType.Correct;
-    this.player.score += 1;
     this.addedAt = new Date();
   }
   incorrectAnswer() {

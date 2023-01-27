@@ -26,24 +26,17 @@ export class QuizRepositories {
     return this.answerRepo.save(createdAnswer);
   }
 
-  async findPendingGame(): Promise<Game> {
-    const game = await this.gameRepo.findOne({
-      where: { status: GameStatusesType.PendingSecondPlayer },
-    });
-    if (!game) return null;
-    return game;
-  }
-
-  async findPendingGameByUserId(userId: string): Promise<boolean> {
-    const games = await this.gameRepo.find({
-      select: ['id'],
+  //get
+  async findCurrentGame(userId: string): Promise<Game> {
+    return await this.gameRepo.findOne({
+      select: ['id', 'status'],
       where: [
         {
-          status: GameStatusesType.Finished,
+          status: GameStatusesType.Active,
           firstPlayerId: userId,
         },
         {
-          status: GameStatusesType.Finished,
+          status: GameStatusesType.Active,
           secondPlayerId: userId,
         },
         {
@@ -55,9 +48,39 @@ export class QuizRepositories {
     // .catch((e) => {
     //   return null;
     // });
-    console.log(games);
-    if (games.length === 0) return null;
+    // console.log(games);
+    // if (games.length === 0) return null;
+    // return true;
+  }
+
+  async findAnyGameById(gameId: string): Promise<boolean> {
+    const game = await this.gameRepo.findOne({
+      select: ['id'],
+      where: { id: gameId },
+    });
+    if (!game) return null;
     return true;
+  }
+
+  async getGamePlayer(id: string, userId: string): Promise<Game> {
+    const game = await this.gameRepo.findOne({
+      select: ['id', 'questions'],
+      where: [
+        { id: id, firstPlayerId: userId },
+        { id: id, secondPlayerId: userId },
+      ],
+    });
+    if (!game) return null;
+    return game;
+  }
+
+  //connection
+  async findPendingGame(): Promise<Game> {
+    const game = await this.gameRepo.findOne({
+      where: { status: GameStatusesType.PendingSecondPlayer },
+    });
+    if (!game) return null;
+    return game;
   }
 
   async findActiveAndPendingGameByUserId(userId: string): Promise<Game> {
@@ -74,6 +97,21 @@ export class QuizRepositories {
     return game;
   }
 
+  async findQuestions(): Promise<Question[]> {
+    return this.questionRepo.find({
+      select: ['id', 'body'],
+      where: { published: true },
+      // order: { createdAt: 'ASC' },
+      take: 5,
+    });
+    // .createQueryBuilder('q')
+    // .select(['q.id, q.body'])
+    // .orderBy('RANDOM()')
+    // .take(5)
+    // .getMany();
+  }
+
+  //answer
   async findActiveGameByUserId(userId: string): Promise<Game> {
     const game = await this.gameRepo.findOne({
       select: [],
@@ -87,46 +125,6 @@ export class QuizRepositories {
     return game;
   }
 
-  async findQuestions(): Promise<Question[]> {
-    return this.questionRepo.find({
-      select: ['id', 'body'],
-      where: { published: true },
-      take: 5,
-    });
-    // .createQueryBuilder('q')
-    // .select(['q.id, q.body'])
-    // .orderBy('RANDOM()')
-    // .take(5)
-    // .getMany();
-  }
-
-  async findActiveGameByIdGame(id: string): Promise<boolean> {
-    const game = await this.gameRepo.findOne({
-      select: ['id'],
-      where: [{ id: id, status: GameStatusesType.Active }],
-    });
-    if (!game) return null;
-    return true;
-  }
-
-  async findFinishedGameByIdGameAndUserId(id: string, userId: string): Promise<Game> {
-    const game = await this.gameRepo.findOne({
-      select: ['id', 'questions'],
-      where: [
-        { id: id, status: GameStatusesType.Finished, firstPlayerId: userId },
-        { id: id, status: GameStatusesType.Finished, secondPlayerId: userId },
-      ],
-    });
-    if (!game) return null;
-    return game;
-  }
-
-  async countingAnswers(userId: string, gameId: string): Promise<number> {
-    return this.answerRepo.count({
-      where: { playerId: userId, gameId: gameId },
-    });
-  }
-
   async findPlayer(userId: string, gameId: string): Promise<Player> {
     return this.playerRepo.findOne({
       relations: { answers: true },
@@ -134,9 +132,12 @@ export class QuizRepositories {
     });
   }
 
-  async countSuccessAnswers(userId: string, gameId: string): Promise<number> {
-    return this.answerRepo.count({
+  async fastestFirstSuccessAnswer(userId: string, gameId: string): Promise<Answer[]> {
+    return this.answerRepo.find({
+      select: ['addedAt'],
       where: { playerId: userId, gameId: gameId, answerStatus: AnswerStatusesType.Correct },
+      order: { addedAt: 'ASC' },
+      take: 1,
     });
   }
 }

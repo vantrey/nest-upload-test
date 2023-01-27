@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Question } from './question.entity';
 
@@ -31,20 +31,19 @@ export class Game {
   @Column({ type: 'uuid', default: null })
   secondPlayerId: string;
 
-  @OneToOne(() => Player)
+  @OneToOne(() => Player, { eager: true })
   @JoinColumn()
   firstPlayerProgress: Player;
-  @OneToOne(() => Player)
+  @OneToOne(() => Player, { eager: true })
   @JoinColumn()
   secondPlayerProgress: Player;
 
-  @OneToMany(() => Question, (q) => q.game)
+  @ManyToMany(() => Question, (q) => q.games)
   questions: Question[];
 
   constructor(questions: Question[], userId: string) {
     this.questions = questions;
     this.firstPlayerId = userId;
-    // this.status = GameStatusesType.PendingSecondPlayer;
   }
 
   static createGame(questions: Question[], userId: string) {

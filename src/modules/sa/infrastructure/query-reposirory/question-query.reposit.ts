@@ -31,17 +31,8 @@ export class QuestionQueryRepository {
     return this.mappedForQuestion(user);
   }
 
-  async getQuestions(
-    data: PaginationQuestionDto,
-  ): Promise<PaginationViewModel<QuestionViewModel[]>> {
-    const {
-      bodySearchTerm,
-      publishedStatus,
-      pageSize,
-      pageNumber,
-      sortDirection,
-      sortBy,
-    } = data;
+  async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewModel<QuestionViewModel[]>> {
+    const { bodySearchTerm, publishedStatus, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
       order = 'ASC';
@@ -61,14 +52,7 @@ export class QuestionQueryRepository {
     //search all blogs for current user and counting
     const [question, count] = await Promise.all([
       this.questionRepo.find({
-        select: [
-          'id',
-          'body',
-          'correctAnswers',
-          'published',
-          'createdAt',
-          'updatedAt',
-        ],
+        select: ['id', 'body', 'correctAnswers', 'published', 'createdAt', 'updatedAt'],
         where: filter,
         order: { [sortBy]: order },
         skip: data.skip,
@@ -80,12 +64,6 @@ export class QuestionQueryRepository {
     const mappedBlogs = question.map((q) => this.mappedForQuestion(q));
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(
-      pagesCountRes,
-      pageNumber,
-      pageSize,
-      count,
-      mappedBlogs,
-    );
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
   }
 }

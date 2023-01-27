@@ -22,6 +22,7 @@ export const endpoints = {
   postController,
   commentController,
   saController: {
+    sa: `${saController}`,
     users: `${saController}/users`,
     blogs: `${saController}/blogs`,
     quiz: `${saController}/quiz/questions`,

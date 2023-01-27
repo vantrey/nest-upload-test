@@ -35,12 +35,7 @@ export class FactoryQuiz extends FactoryT {
     return result;
   }
 
-  async createWithQuestion(
-    count: number,
-    question: string,
-    answers: string[],
-    app: INestApplication,
-  ) {
+  async createWithQuestion(count: number, question: string, answers: string[], app: INestApplication) {
     const result: { question: QuestionViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const inputModel: CreateQuestionDto = {
@@ -74,19 +69,21 @@ export class FactoryQuiz extends FactoryT {
   }
 
   async connection(accessToken: string, app: INestApplication) {
-    await request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .post(endpoints.quizController.connection)
       .auth(accessToken, { type: 'bearer' })
       .expect(200);
+    return res.body.id;
   }
 
   async answer(value: string, accessToken: string, app: INestApplication) {
-    await request(app.getHttpServer())
+    const response = await request(app.getHttpServer())
       .post(endpoints.quizController.answer)
       .auth(accessToken, { type: 'bearer' })
       .send({
         answer: value,
       })
       .expect(200);
+    return response.body;
   }
 }
