@@ -46,10 +46,10 @@ export class QuizController {
     @CurrentUserIdBlogger() userId: string,
     @Param(`id`, ValidateUuidPipe) id: string,
   ): Promise<GameViewModel> {
-    const finishedGame = await this.quizRepo.getGamePlayer(id, userId);
-    if (!finishedGame) throw new ForbiddenExceptionMY('The player did not participate in the game');
     const activeGame = await this.quizRepo.findAnyGameById(id);
     if (!activeGame) throw new NotFoundExceptionMY('Not found active game');
+    const finishedGame = await this.quizRepo.getGamePlayer(id, userId);
+    if (!finishedGame) throw new ForbiddenExceptionMY('The player did not participate in the game');
     return this.quizQueryRepo.getPairGameById(userId, id);
   }
 }
