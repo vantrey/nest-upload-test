@@ -106,6 +106,9 @@ export class QuizQueryRepositories {
     if (!game.secondPlayerProgress) {
       return await this.mappedFirstPlayerForView(game.id);
     }
+    if (game.status === GameStatusesType.PendingSecondPlayer || game.status === GameStatusesType.Active) {
+      return await this.mappedUnfinishedGameForView(game);
+    }
     return await this.mappedGameForView(game);
   }
 
