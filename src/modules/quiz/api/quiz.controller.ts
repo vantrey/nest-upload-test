@@ -6,11 +6,10 @@ import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
 import { AnswerDto } from './input-dtos/answer-Dto-Model';
 import { AnswerQuizCommand } from '../application/use-case/answer-quiz-command';
 import { QuizRepositories } from '../infrastructure/quiz-repositories';
-import { ValidateUuidPipe, ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
+import { ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
 import { QuizQueryRepositories } from '../infrastructure/query-repository/quiz-query-repositories';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { AnswerViewModel, GameViewModel } from '../infrastructure/query-repository/game-View-Model';
-import { GameStatusesType } from '../../../entities/game.entity';
 
 @UseGuards(JwtAuthGuard)
 @Controller(`pair-game-quiz/pairs`)
@@ -37,7 +36,6 @@ export class QuizController {
   async getCurrentGame(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
     const pendingGame = await this.quizRepo.findCurrentGame(userId);
     if (!pendingGame) throw new NotFoundExceptionMY('Not found game');
-    // if (pendingGame.status === GameStatusesType.PendingSecondPlayer) throw new NotFoundExceptionMY('Not found game');
     return await this.quizQueryRepo.getCurrentActiveGame(userId);
   }
 

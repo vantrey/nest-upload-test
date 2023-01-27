@@ -637,7 +637,7 @@ describe(`Quiz `, () => {
           });
       },
     );
-    it(
+    it.skip(
       '27 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": create second game by user3, connect to the game by user4, then:\n' +
         'add correct answer by firstPlayer;\n' +

@@ -60,6 +60,37 @@ export class QuizQueryRepositories {
     );
   }
 
+  private async mappedUnfinishedGameForView(game: Game): Promise<GameViewModel> {
+    const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.id, game.firstPlayerProgress.login);
+    const answersFirstPlayer = await Promise.all(
+      game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
+    );
+    const answersSecondPlayer = await Promise.all(
+      game.secondPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
+    );
+    const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.id, game.secondPlayerProgress.login);
+    const firstPlayerProgress = new GamePlayerProgressViewModel(
+      answersFirstPlayer,
+      firstPlayer,
+      game.firstPlayerProgress.score,
+    );
+    const secondPlayerProgress = new GamePlayerProgressViewModel(
+      answersSecondPlayer,
+      secondPlayer,
+      game.secondPlayerProgress.score,
+    );
+    return new GameViewModel(
+      game.id,
+      firstPlayerProgress,
+      secondPlayerProgress,
+      null,
+      game.status,
+      game.pairCreatedDate.toISOString(),
+      game.startGameDate ? game.startGameDate.toISOString() : null,
+      game.finishGameDate ? game.finishGameDate.toISOString() : null,
+    );
+  }
+
   async getPairGameById(userId: string, id: string): Promise<GameViewModel> {
     const game = await this.gameRepo.findOne({
       relations: {
@@ -103,7 +134,7 @@ export class QuizQueryRepositories {
     if (!game.secondPlayerProgress) {
       return await this.mappedFirstPlayerForView(game.id);
     }
-    return await this.mappedGameForView(game);
+    return await this.mappedUnfinishedGameForView(game);
   }
 
   async mappedFirstPlayerForView(gameId: string): Promise<GameViewModel> {
@@ -141,24 +172,5 @@ export class QuizQueryRepositories {
       where: { id: gameId },
     });
     return this.mappedGameForView(game);
-    // const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.id, game.firstPlayerProgress.login);
-    // const answersFirstPlayer = await Promise.all(
-    //   game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
-    // );
-    // const firstPlayerProgress = new GamePlayerProgressViewModel(
-    //   answersFirstPlayer,
-    //   firstPlayer,
-    //   game.firstPlayerProgress.score,
-    // );
-    // return new GameViewModel(
-    //   game.id,
-    //   firstPlayerProgress,
-    //   null,
-    //   game.questions,
-    //   game.status,
-    //   game.pairCreatedDate.toISOString(),
-    //   game.startGameDate ? game.startGameDate.toISOString() : null,
-    //   game.finishGameDate ? game.finishGameDate.toISOString() : null,
-    // );
   }
 }

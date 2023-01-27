@@ -39,9 +39,11 @@ export class ConnectionQuizHandler implements ICommandHandler<ConnectionQuizComm
     //creating instance game
     const game = Game.createGame(questions, userId); //questions
     const savedGame = await this.quizRepo.saveGame(game);
+    console.log('savedGame---------------------------', savedGame);
     //creating instance player
     const player = Player.createPlayer(user.getLogin(), userId, savedGame.id);
     const savedPlayer = await this.quizRepo.savePlayer(player);
+    console.log('player---------------------------', savedPlayer);
     //adding the first player to the game
     savedGame.addFirstPlayer(savedPlayer);
     await this.quizRepo.saveGame(savedGame);
