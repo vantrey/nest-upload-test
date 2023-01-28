@@ -8,6 +8,7 @@ import { FactoryT, superUser } from './helpers/factory-t';
 import { FactoryQuiz } from './helpers/factory-quiz';
 import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
 import { GameViewModel } from '../src/modules/quiz/infrastructure/query-repository/game-View-Model';
+import { QuestionForSaViewModel } from '../src/modules/sa/infrastructure/query-reposirory/question-for-sa-view-model';
 
 jest.setTimeout(1200000);
 
@@ -425,26 +426,6 @@ describe(`Quiz `, () => {
       await quiz.createWithQuestion(1, 'What shape is the moon?', ['Alex'], app); //question 3
       await quiz.createWithQuestion(1, 'What was Jobs first name?', ['Alex'], app); // question 4
       await quiz.createWithQuestion(1, 'How many angles are in a right triangle?', ['Alex'], app); //question 5
-    });
-    it.skip('should ', async () => {
-      await quiz.connection(accessToken1, app);
-      await quiz.connection(accessToken2, app);
-      const answer1_1 = await quiz.answer('three', accessToken1, app); //correct answer for 1 question
-      const answer2_1 = await quiz.answer('Alexandro', accessToken2, app); //incorrect answer for 1 question
-
-      const answer2_2 = await quiz.answer('Steven', accessToken2, app); //correct answer for 2 question
-
-      const answer1_2 = await quiz.answer('Steven', accessToken1, app); //correct answer for 2 question
-
-      const answer1_3 = await quiz.answer('circle', accessToken1, app); //correct answer for 3 question
-
-      const answer2_3 = await quiz.answer('ellipse', accessToken2, app); //correct answer for 3 question
-
-      const answer2_4 = await quiz.answer('Six', accessToken2, app); //correct answer for 4 question
-      const answer2_5 = await quiz.answer('Six', accessToken2, app); //correct answer for 5 question
-
-      const answer1_4 = await quiz.answer('1984', accessToken1, app); //incorrect answer for 4 question
-      const answer1_5 = await quiz.answer('1984', accessToken1, app); //incorrect answer for 5 question
     });
     it(`24 - POST -> "/pair-game-quiz/pairs/connection", GET -> "/pair-game-quiz/pairs/:id", GET -> "/pair-game-quiz/pairs/my-current": create new active game by user1, then get the game by user1, then call "/pair-game-quiz/pairs/my-current" by user1. Should return new created active game; status 200;`, async () => {
       game = await quiz.connection(accessToken1, app);
@@ -1194,11 +1175,9 @@ describe(`Quiz `, () => {
       },
     );
   });
-});
-
-/* describe.skip(`factory questions`, () => {
+  describe.skip(`factory questions`, () => {
     const quiz = new FactoryQuiz();
-    let question: QuestionViewModel;
+    let question: QuestionForSaViewModel;
     it(`00 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
       await request(app.getHttpServer()).delete(endpoints.testingController.allData).expect(204);
     });
@@ -1273,4 +1252,5 @@ describe(`Quiz `, () => {
           });
         });
     });
-  });*/
+  });
+});
