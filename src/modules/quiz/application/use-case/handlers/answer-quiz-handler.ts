@@ -72,30 +72,14 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
   private async addBonusPoint(game: Game): Promise<boolean> {
     const answersFirstPlayer = await this.quizRepo.findAnswers(game.firstPlayerProgress.id, game.id);
     const answersSecondPlayer = await this.quizRepo.findAnswers(game.secondPlayerProgress.id, game.id);
-    console.log('---------------answersFirstPlayer', answersFirstPlayer);
-    console.log('---------------answersSecondPlayer', answersSecondPlayer);
-    const successAnswersFirstPlayer = await this.quizRepo.fastestFirstSuccessAnswer(
-      game.firstPlayerProgress.id,
-      game.id,
-    );
-    const successAnswersSecondPlayer = await this.quizRepo.fastestFirstSuccessAnswer(
-      game.secondPlayerProgress.id,
-      game.id,
-    );
-    if (
-      successAnswersFirstPlayer.length >= 1 &&
-      successAnswersFirstPlayer[0].addedAt < successAnswersSecondPlayer[0].addedAt &&
-      answersFirstPlayer[4].addedAt < answersSecondPlayer[4].addedAt
-    ) {
+    const successAnswersFirstPlayer = await this.quizRepo.countSuccessAnswers(game.firstPlayerProgress.id, game.id);
+    const successAnswersSecondPlayer = await this.quizRepo.countSuccessAnswers(game.secondPlayerProgress.id, game.id);
+    if (successAnswersFirstPlayer >= 1 && answersFirstPlayer[4].addedAt < answersSecondPlayer[4].addedAt) {
       const player = await this.quizRepo.findPlayer(game.firstPlayerId, game.id);
       player.addPoint();
       await this.quizRepo.savePlayer(player);
     }
-    if (
-      successAnswersSecondPlayer.length >= 1 &&
-      successAnswersFirstPlayer[0].addedAt > successAnswersSecondPlayer[0].addedAt &&
-      answersFirstPlayer[4].addedAt > answersSecondPlayer[4].addedAt
-    ) {
+    if (successAnswersSecondPlayer >= 1 && answersFirstPlayer[4].addedAt > answersSecondPlayer[4].addedAt) {
       const player = await this.quizRepo.findPlayer(game.secondPlayerId, game.id);
       player.addPoint();
       await this.quizRepo.savePlayer(player);

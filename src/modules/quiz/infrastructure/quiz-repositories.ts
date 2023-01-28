@@ -133,12 +133,9 @@ export class QuizRepositories {
       });
   }
 
-  async fastestFirstSuccessAnswer(userId: string, gameId: string): Promise<Answer[]> {
-    return this.answerRepo.find({
-      select: ['addedAt'],
+  async countSuccessAnswers(userId: string, gameId: string): Promise<number> {
+    return this.answerRepo.count({
       where: { playerId: userId, gameId: gameId, answerStatus: AnswerStatusesType.Correct },
-      order: { addedAt: 'ASC' },
-      take: 1,
     });
   }
 
