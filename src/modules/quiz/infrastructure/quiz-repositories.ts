@@ -141,4 +141,12 @@ export class QuizRepositories {
       take: 1,
     });
   }
+
+  async findAnswers(userId: string, gameId: string): Promise<Answer[]> {
+    return this.answerRepo.find({
+      select: ['addedAt'],
+      where: { playerId: userId, gameId: gameId },
+      order: { addedAt: 'ASC' },
+    });
+  }
 }
