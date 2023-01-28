@@ -26,25 +26,36 @@ export class QuizQueryRepositories {
 
   private async mappedGameForView(game: Game): Promise<GameViewModel> {
     const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.userId, game.firstPlayerProgress.login);
-    const answersFirstPlayer = await Promise.all(
-      game.firstPlayerProgress.answers
-        .map((a) => this.mappedAnswerForView(a))
-        .sort((p1, p2) => (p1.addedAt > p2.addedAt ? 1 : p1.addedAt < p2.addedAt ? -1 : 0)),
-    );
-    const answersSecondPlayer = await Promise.all(
-      game.secondPlayerProgress.answers
-        .map((a) => this.mappedAnswerForView(a))
-        .sort((p1, p2) => (p1.addedAt > p2.addedAt ? 1 : p1.addedAt < p2.addedAt ? -1 : 0)),
-    );
+    const answersFirstPlayer = await this.answerRepo.find({
+      select: ['questionId', 'answerStatus', 'addedAt'],
+      where: { playerId: game.firstPlayerProgress.userId, gameId: game.id },
+      order: { addedAt: 'ASC' },
+    });
+
+    const answersSecondPlayer = await this.answerRepo.find({
+      select: ['questionId', 'answerStatus', 'addedAt'],
+      where: { playerId: game.secondPlayerProgress.userId, gameId: game.id },
+      order: { addedAt: 'ASC' },
+    });
+    // const answersFirstPlayer = await Promise.all(
+    //   game.firstPlayerProgress.answers
+    //     .map((a) => this.mappedAnswerForView(a))
+    //     .sort((p1, p2) => (p1.addedAt > p2.addedAt ? 1 : p1.addedAt < p2.addedAt ? -1 : 0)),
+    // );
+    // const answersSecondPlayer = await Promise.all(
+    //   game.secondPlayerProgress.answers
+    //     .map((a) => this.mappedAnswerForView(a))
+    //     .sort((p1, p2) => (p1.addedAt > p2.addedAt ? 1 : p1.addedAt < p2.addedAt ? -1 : 0)),
+    // );
     const questions = await Promise.all(game.questions.map((q) => this.mappedQuestionForView(q)));
     const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.userId, game.secondPlayerProgress.login);
     const firstPlayerProgress = new GamePlayerProgressViewModel(
-      answersFirstPlayer,
+      answersFirstPlayer.map((a) => this.mappedAnswerForView(a)),
       firstPlayer,
       game.firstPlayerProgress.score,
     );
     const secondPlayerProgress = new GamePlayerProgressViewModel(
-      answersSecondPlayer,
+      answersSecondPlayer.map((a) => this.mappedAnswerForView(a)),
       secondPlayer,
       game.secondPlayerProgress.score,
     );
