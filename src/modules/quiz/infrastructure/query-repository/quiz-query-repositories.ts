@@ -29,12 +29,12 @@ export class QuizQueryRepositories {
     const answersFirstPlayer = await Promise.all(
       game.firstPlayerProgress.answers
         .map((a) => this.mappedAnswerForView(a))
-        .sort((p1, p2) => (p1.addedAt < p2.addedAt ? 1 : p1.addedAt > p2.addedAt ? -1 : 0)),
+        .sort((p1, p2) => (p1.addedAt > p2.addedAt ? 1 : p1.addedAt < p2.addedAt ? -1 : 0)),
     );
     const answersSecondPlayer = await Promise.all(
       game.secondPlayerProgress.answers
         .map((a) => this.mappedAnswerForView(a))
-        .sort((p1, p2) => (p1.addedAt < p2.addedAt ? 1 : p1.addedAt > p2.addedAt ? -1 : 0)),
+        .sort((p1, p2) => (p1.addedAt > p2.addedAt ? 1 : p1.addedAt < p2.addedAt ? -1 : 0)),
     );
     const questions = await Promise.all(game.questions.map((q) => this.mappedQuestionForView(q)));
     const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.userId, game.secondPlayerProgress.login);
