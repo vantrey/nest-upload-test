@@ -57,10 +57,6 @@ export class QuizRepositories {
     const game = await this.gameRepo.findOne({
       select: ['id', 'firstPlayerId', 'secondPlayerId'],
       where: { id: gameId },
-      // where: [
-      //   { id: gameId, firstPlayerId: userId },
-      //   { id: gameId, secondPlayerId: userId },
-      // ],
     });
     if (!game) return null;
     return game;
@@ -120,7 +116,7 @@ export class QuizRepositories {
   async findPlayer(userId: string, gameId: string): Promise<Player> {
     const players = await this.playerRepo.find({
       relations: { answers: true },
-      where: { id: userId, gameId: gameId, statusesPlayer: false },
+      where: { userId: userId, gameId: gameId, statusesPlayer: false },
     });
     if (players.length === 0) return null;
     return players[0];
@@ -130,9 +126,9 @@ export class QuizRepositories {
     return this.playerRepo
       .findOne({
         relations: { answers: true },
-        where: { id: userId, gameId: gameId },
+        where: { userId: userId, gameId: gameId },
       })
-      .catch((e) => {
+      .catch(() => {
         return null;
       });
   }

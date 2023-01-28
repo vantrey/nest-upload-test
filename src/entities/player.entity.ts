@@ -1,11 +1,12 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Answer } from './answer.entity';
-import { Game, GameStatusesType } from './game.entity';
 
 @Entity()
 export class Player {
-  @PrimaryColumn('uuid')
+  @PrimaryGeneratedColumn('uuid')
   id: string; //userId
+  @Column({ type: 'uuid' })
+  userId: string;
   @Column({ type: 'uuid' })
   gameId: string;
   @Column({ type: 'character varying', length: 10, collation: 'C' })
@@ -16,12 +17,12 @@ export class Player {
   statusesPlayer: boolean;
   @OneToMany(() => Answer, (q) => q.player, { eager: true })
   answers: Answer[];
-  @OneToOne(() => Game)
+  //@OneToOne(() => Game)
   // @JoinColumn()
-  game: Game;
+  // game: Game;
 
   constructor(login: string, userId: string, gameId: string) {
-    this.id = userId;
+    this.userId = userId;
     this.login = login;
     this.gameId = gameId;
   }

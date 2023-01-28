@@ -14,6 +14,7 @@ jest.setTimeout(1200000);
 
 describe(`Quiz `, () => {
   let app: INestApplication;
+
   beforeAll(async () => {
     // Create a NestJS application
     const module: TestingModule = await Test.createTestingModule({
