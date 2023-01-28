@@ -5,6 +5,10 @@ import { Player } from '../../../../entities/player.entity';
 import { Question } from '../../../../entities/question.entity';
 import { Answer } from '../../../../entities/answer.entity';
 import { AnswerViewModel, GamePlayerProgressViewModel, GameViewModel, PLayerViewModel } from './game-View-Model';
+import {
+  QuestionForSaViewModel,
+  QuestionViewModel,
+} from '../../../sa/infrastructure/query-reposirory/question-for-sa-view-model';
 
 export class QuizQueryRepositories {
   constructor(
@@ -19,17 +23,11 @@ export class QuizQueryRepositories {
     return new AnswerViewModel(answer.questionId, answer.answerStatus, answer.addedAt.toISOString());
   }
 
+  private mappedQuestionForView(question: Question): QuestionViewModel {
+    return new QuestionViewModel(question.id, question.body);
+  }
+
   private async mappedGameForView(game: Game): Promise<GameViewModel> {
-    // const [firstAnswers, secondAnswers] = await Promise.all([
-    //   this.answerRepo.find({
-    //     select: ['questionId', 'answerStatus', 'addedAt'],
-    //     where: { gameId: game.id, playerId: game.secondPlayerId },
-    //   }),
-    //   this.answerRepo.find({
-    //     select: ['questionId', 'answerStatus', 'addedAt'],
-    //     where: { gameId: game.id, playerId: game.secondPlayerId },
-    //   }),
-    // ]);
     const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.id, game.firstPlayerProgress.login);
     const answersFirstPlayer = await Promise.all(
       game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
@@ -37,6 +35,7 @@ export class QuizQueryRepositories {
     const answersSecondPlayer = await Promise.all(
       game.secondPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
     );
+    const questions = await Promise.all(game.questions.map((q) => this.mappedQuestionForView(q)));
     const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.id, game.secondPlayerProgress.login);
     const firstPlayerProgress = new GamePlayerProgressViewModel(
       answersFirstPlayer,
@@ -52,7 +51,7 @@ export class QuizQueryRepositories {
       game.id,
       firstPlayerProgress,
       secondPlayerProgress,
-      game.questions,
+      questions,
       game.status,
       game.pairCreatedDate.toISOString(),
       game.startGameDate ? game.startGameDate.toISOString() : null,
@@ -91,28 +90,7 @@ export class QuizQueryRepositories {
     );
   }
 
-  async getPairGameById(userId: string, id: string): Promise<GameViewModel> {
-    const game = await this.gameRepo.findOne({
-      relations: {
-        firstPlayerProgress: true,
-        secondPlayerProgress: true,
-        questions: true,
-      },
-      where: [
-        { id: id, firstPlayerId: userId },
-        { id: id, secondPlayerId: userId },
-      ],
-    });
-    if (!game.secondPlayerProgress) {
-      return await this.mappedFirstPlayerForView(game.id);
-    }
-    if (game.status === GameStatusesType.PendingSecondPlayer || game.status === GameStatusesType.Active) {
-      return await this.mappedUnfinishedGameForView(game);
-    }
-    return await this.mappedGameForView(game);
-  }
-
-  async getCurrentActiveGame(userId: string): Promise<GameViewModel> {
+  async findCurrentGame(userId: string): Promise<GameViewModel> {
     const game = await this.gameRepo.findOne({
       relations: {
         firstPlayerProgress: true,
@@ -137,7 +115,25 @@ export class QuizQueryRepositories {
     if (!game.secondPlayerProgress) {
       return await this.mappedFirstPlayerForView(game.id);
     }
-    return await this.mappedUnfinishedGameForView(game);
+    return await this.mappedGameForView(game);
+  }
+
+  async getGameById(userId: string, id: string): Promise<GameViewModel> {
+    const game = await this.gameRepo.findOne({
+      relations: {
+        firstPlayerProgress: true,
+        secondPlayerProgress: true,
+        questions: true,
+      },
+      where: [
+        { id: id, firstPlayerId: userId },
+        { id: id, secondPlayerId: userId },
+      ],
+    });
+    if (!game.secondPlayerProgress) {
+      return await this.mappedFirstPlayerForView(game.id);
+    }
+    return await this.mappedGameForView(game);
   }
 
   async mappedFirstPlayerForView(gameId: string): Promise<GameViewModel> {

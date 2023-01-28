@@ -2,12 +2,12 @@ import { FactoryT, superUser } from './factory-t';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { endpoints } from './routing';
-import { QuestionViewModel } from '../../src/modules/sa/infrastructure/query-reposirory/question-View-Model';
+import { QuestionForSaViewModel } from '../../src/modules/sa/infrastructure/query-reposirory/question-for-sa-view-model';
 import { CreateQuestionDto } from '../../src/modules/sa/api/input-dtos/create-Question-Dto-Model';
 
 export class FactoryQuiz extends FactoryT {
   async createQuestion(count: number, app: INestApplication) {
-    const result: { question: QuestionViewModel }[] = [];
+    const result: { question: QuestionForSaViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const inputModel: CreateQuestionDto = {
         body: `Как называют снеговика в Польше? ${i}${i}`,
@@ -36,7 +36,7 @@ export class FactoryQuiz extends FactoryT {
   }
 
   async createWithQuestion(count: number, question: string, answers: string[], app: INestApplication) {
-    const result: { question: QuestionViewModel }[] = [];
+    const result: { question: QuestionForSaViewModel }[] = [];
     for (let i = 0; i < count; i++) {
       const inputModel: CreateQuestionDto = {
         body: `${question}`,

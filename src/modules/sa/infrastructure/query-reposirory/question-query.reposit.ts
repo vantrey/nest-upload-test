@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QuestionViewModel } from './question-View-Model';
+import { QuestionForSaViewModel } from './question-for-sa-view-model';
 import { Question } from '../../../../entities/question.entity';
 import { PaginationViewModel } from '../../../../common/pagination-View-Model';
 import { PaginationQuestionDto } from '../../api/input-dtos/pagination-Question-Dto';
@@ -13,8 +13,8 @@ export class QuestionQueryRepository {
     private readonly questionRepo: Repository<Question>,
   ) {}
 
-  private mappedForQuestion(question: Question): QuestionViewModel {
-    return new QuestionViewModel(
+  private mappedForQuestion(question: Question): QuestionForSaViewModel {
+    return new QuestionForSaViewModel(
       question.id,
       question.body,
       question.correctAnswers,
@@ -24,14 +24,14 @@ export class QuestionQueryRepository {
     );
   }
 
-  async findQuestion(questionId: string): Promise<QuestionViewModel> {
+  async findQuestion(questionId: string): Promise<QuestionForSaViewModel> {
     const user = await this.questionRepo.findOneBy({ id: questionId });
     console.log('user', user);
     if (!user) return null;
     return this.mappedForQuestion(user);
   }
 
-  async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewModel<QuestionViewModel[]>> {
+  async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewModel<QuestionForSaViewModel[]>> {
     const { bodySearchTerm, publishedStatus, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {

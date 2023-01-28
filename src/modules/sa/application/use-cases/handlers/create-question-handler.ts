@@ -3,18 +3,16 @@ import { CreateQuestionCommand } from '../create-question-command';
 import { Question } from '../../../../../entities/question.entity';
 import { QuestionRepository } from '../../../infrastructure/question.reposit';
 import { QuestionQueryRepository } from '../../../infrastructure/query-reposirory/question-query.reposit';
-import { QuestionViewModel } from '../../../infrastructure/query-reposirory/question-View-Model';
+import { QuestionForSaViewModel } from '../../../infrastructure/query-reposirory/question-for-sa-view-model';
 
 @CommandHandler(CreateQuestionCommand)
-export class CreateQuestionHandler
-  implements ICommandHandler<CreateQuestionCommand>
-{
+export class CreateQuestionHandler implements ICommandHandler<CreateQuestionCommand> {
   constructor(
     private readonly questionRepo: QuestionRepository,
     private readonly questionQueryRepo: QuestionQueryRepository,
   ) {}
 
-  async execute(command: CreateQuestionCommand): Promise<QuestionViewModel> {
+  async execute(command: CreateQuestionCommand): Promise<QuestionForSaViewModel> {
     const { body, correctAnswers } = command.questionInputModel;
     //create instance
     const question = Question.createQuestion(body, correctAnswers);

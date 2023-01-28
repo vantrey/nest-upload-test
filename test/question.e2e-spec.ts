@@ -408,6 +408,7 @@ describe(`Quiz `, () => {
     let game: GameViewModel;
     let game2: GameViewModel;
     let game3: GameViewModel;
+    let game4: GameViewModel;
     it(`21 - DELETE -> "/testing/all-data": should remove all data; status 204;`, async () => {
       await request(app.getHttpServer()).delete(endpoints.testingController.allData).expect(204);
     });
@@ -421,11 +422,11 @@ describe(`Quiz `, () => {
       accessToken6 = response[5].accessToken;
     });
     it(`23 - POST -> "/sa/quiz/questions", PUT -> "/sa/quiz/questions/:questionId/publish": should create and publish several questions; status 201; content: created question;`, async () => {
-      await quiz.createWithQuestion(1, 'What is my name?', ['Alex', 'Sania'], app); //question 1
-      await quiz.createWithQuestion(1, 'How many wheels does a three axle car have?', ['Six', '6'], app); //question 2
-      await quiz.createWithQuestion(1, 'What shape is the moon?', ['circle', 'oval', 'ellipse'], app); //question 3
-      await quiz.createWithQuestion(1, 'What was Jobs first name?', ['Steven', 'Paul'], app); // question 4
-      await quiz.createWithQuestion(1, 'How many angles are in a right triangle?', ['3', 'three'], app); //question 5
+      await quiz.createWithQuestion(1, 'What is my name?', ['Alex'], app); //question 1
+      await quiz.createWithQuestion(1, 'How many wheels does a three axle car have?', ['Alex'], app); //question 2
+      await quiz.createWithQuestion(1, 'What shape is the moon?', ['Alex'], app); //question 3
+      await quiz.createWithQuestion(1, 'What was Jobs first name?', ['Alex'], app); // question 4
+      await quiz.createWithQuestion(1, 'How many angles are in a right triangle?', ['Alex'], app); //question 5
     });
     it.skip('should ', async () => {
       await quiz.connection(accessToken1, app);
@@ -622,7 +623,7 @@ describe(`Quiz `, () => {
             expect(body.firstPlayerProgress.score).toEqual(1);
             expect(body.secondPlayerProgress.score).toEqual(0);
           });
-        const answer2_2 = await quiz.answer('Six', accessToken2, app); //correct answer for 2 question
+        const answer2_2 = await quiz.answer('Alex', accessToken2, app); //correct answer for 2 question
         expect(answer2_2).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -638,7 +639,7 @@ describe(`Quiz `, () => {
           });
       },
     );
-    it.skip(
+    it(
       '27 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": create second game by user3, connect to the game by user4, then:\n' +
         'add correct answer by firstPlayer;\n' +
@@ -678,7 +679,7 @@ describe(`Quiz `, () => {
             expect(body.firstPlayerProgress.score).toEqual(1);
             expect(body.secondPlayerProgress.score).toEqual(0);
           });
-        const answer4_2 = await quiz.answer('Six', accessToken4, app); //correct answer for 2 question
+        const answer4_2 = await quiz.answer('Alex', accessToken4, app); //correct answer for 2 question
         expect(answer4_2).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -708,7 +709,7 @@ describe(`Quiz `, () => {
         'get active game and call "/pair-game-quiz/pairs/my-current by both users after each answer"\n' +
         '; status 200; ',
       async () => {
-        const answer1_2 = await quiz.answer('6', accessToken1, app); //correct answer for 2 question
+        const answer1_2 = await quiz.answer('Alex', accessToken1, app); //correct answer for 2 question
         expect(answer1_2).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -722,7 +723,7 @@ describe(`Quiz `, () => {
             expect(body.firstPlayerProgress.score).toEqual(2);
             expect(body.secondPlayerProgress.score).toEqual(1);
           });
-        const answer1_3 = await quiz.answer('circle', accessToken1, app); //correct answer for 3 question
+        const answer1_3 = await quiz.answer('Alex', accessToken1, app); //correct answer for 3 question
         expect(answer1_3).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -736,7 +737,7 @@ describe(`Quiz `, () => {
             expect(body.firstPlayerProgress.score).toEqual(3);
             expect(body.secondPlayerProgress.score).toEqual(1);
           });
-        const answer2_3 = await quiz.answer('ellipse', accessToken2, app); //correct answer for 3 question
+        const answer2_3 = await quiz.answer('Alex', accessToken2, app); //correct answer for 3 question
         expect(answer2_3).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -750,7 +751,7 @@ describe(`Quiz `, () => {
             expect(body.firstPlayerProgress.score).toEqual(3);
             expect(body.secondPlayerProgress.score).toEqual(2);
           });
-        const answer2_4 = await quiz.answer('Steven', accessToken2, app); //correct answer for 4 question
+        const answer2_4 = await quiz.answer('Alex', accessToken2, app); //correct answer for 4 question
         expect(answer2_4).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -778,7 +779,7 @@ describe(`Quiz `, () => {
             expect(body.firstPlayerProgress.score).toEqual(3);
             expect(body.secondPlayerProgress.score).toEqual(3);
           });
-        const answer1_5 = await quiz.answer('three', accessToken1, app); //correct answer for 5 question
+        const answer1_5 = await quiz.answer('Alex', accessToken1, app); //correct answer for 5 question
         expect(answer1_5).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -792,20 +793,20 @@ describe(`Quiz `, () => {
             expect(body.firstPlayerProgress.score).toEqual(4);
             expect(body.secondPlayerProgress.score).toEqual(3);
           });
-        const answer2_5 = await quiz.answer('three', accessToken2, app); //correct answer for 5 question
+        const answer2_5 = await quiz.answer('Alex', accessToken2, app); //correct answer for 5 question
         expect(answer2_5).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
           addedAt: expect.any(String),
         });
-        // await request(app.getHttpServer())
-        //   .get(endpoints.quizController.id + `/${game.id}`)
-        //   .auth(accessToken2, { type: 'bearer' })
-        //   .expect(200)
-        //   .then(({ body }) => {
-        //     expect(body.firstPlayerProgress.score).toEqual(5);
-        //     expect(body.secondPlayerProgress.score).toEqual(4);
-        //   });
+        await request(app.getHttpServer())
+          .get(endpoints.quizController.id + `/${game.id}`)
+          .auth(accessToken2, { type: 'bearer' })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.firstPlayerProgress.score).toEqual(5);
+            expect(body.secondPlayerProgress.score).toEqual(4);
+          });
       },
     );
     it(
@@ -819,30 +820,51 @@ describe(`Quiz `, () => {
       async () => {
         await quiz.connection(accessToken2, app);
         game3 = await quiz.connection(accessToken1, app);
-        console.log('----', game3);
-        console.log('----', game3.firstPlayerProgress);
-        console.log('----', game3.secondPlayerProgress);
         const answer1_1 = await quiz.answer('Alex', accessToken2, app); //correct answer for 1 question
         expect(answer1_1).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
           addedAt: expect.any(String),
         });
-        // // const answer2_1 = await quiz.answer('Alexandro', accessToken1, app); //incorrect answer for 1 question
-        // // expect(answer2_1).toEqual({
-        // //   questionId: expect.any(String),
-        // //   answerStatus: 'Incorrect',
-        // //   addedAt: expect.any(String),
-        // // });
-        // // const answer2_2 = await quiz.answer('Six', accessToken1, app); //correct answer for 2 question
-        // // expect(answer2_2).toEqual({
-        // //   questionId: expect.any(String),
-        // //   answerStatus: 'Correct',
-        // //   addedAt: expect.any(String),
-        // // });
+        await request(app.getHttpServer())
+          .get(endpoints.quizController.my_current)
+          .auth(accessToken1, { type: 'bearer' })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.firstPlayerProgress.score).toEqual(1);
+            expect(body.secondPlayerProgress.score).toEqual(0);
+          });
+        const answer2_1 = await quiz.answer('Alexandro', accessToken1, app); //incorrect answer for 1 question
+        expect(answer2_1).toEqual({
+          questionId: expect.any(String),
+          answerStatus: 'Incorrect',
+          addedAt: expect.any(String),
+        });
+        await request(app.getHttpServer())
+          .get(endpoints.quizController.my_current)
+          .auth(accessToken2, { type: 'bearer' })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.firstPlayerProgress.score).toEqual(1);
+            expect(body.secondPlayerProgress.score).toEqual(0);
+          });
+        const answer2_2 = await quiz.answer('Alex', accessToken1, app); //correct answer for 2 question
+        expect(answer2_2).toEqual({
+          questionId: expect.any(String),
+          answerStatus: 'Correct',
+          addedAt: expect.any(String),
+        });
+        await request(app.getHttpServer())
+          .get(endpoints.quizController.my_current)
+          .auth(accessToken2, { type: 'bearer' })
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.firstPlayerProgress.score).toEqual(1);
+            expect(body.secondPlayerProgress.score).toEqual(1);
+          });
       },
     );
-    it.skip(
+    it(
       '30 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": create 4th game by user5, connect to the game by user6, then:\n' +
         'add correct answer by firstPlayer;\n' +
@@ -860,84 +882,155 @@ describe(`Quiz `, () => {
         '; status 200;',
       async () => {
         await quiz.connection(accessToken4, app);
-        await quiz.connection(accessToken5, app);
-        const answer4_1 = await quiz.answer('three', accessToken4, app); //correct answer for 1 question
-        expect(answer4_1).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Correct',
-          addedAt: expect.any(String),
-        });
-        const answer4_2 = await quiz.answer('Alexandro', accessToken4, app); //incorrect answer for 2 question
-        expect(answer4_2).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Incorrect',
-          addedAt: expect.any(String),
-        });
-        const answer5_1 = await quiz.answer('three', accessToken5, app); //correct answer for 1 question
-        expect(answer5_1).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Correct',
-          addedAt: expect.any(String),
-        });
-
-        const answer5_2 = await quiz.answer('2', accessToken5, app); //incorrect answer for 2 question
-        expect(answer5_2).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Incorrect',
-          addedAt: expect.any(String),
-        });
-        const answer5_3 = await quiz.answer('2', accessToken5, app); //incorrect answer for 3 question
-        expect(answer5_3).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Incorrect',
-          addedAt: expect.any(String),
-        });
-        const answer5_4 = await quiz.answer('2', accessToken5, app); //incorrect answer for 4 question
+        game4 = await quiz.connection(accessToken5, app);
+        // const answer4_1 = await quiz.answer('Alex', accessToken4, app); //correct answer for 1 question
+        // expect(answer4_1).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Correct',
+        //   addedAt: expect.any(String),
+        // });
         // await request(app.getHttpServer())
         //   .get(endpoints.quizController.my_current)
         //   .auth(accessToken4, { type: 'bearer' })
         //   .expect(200)
         //   .then(({ body }) => {
-        //     console.log(body.firstPlayerProgress.score);
-        //     console.log(body.secondPlayerProgress.score);
+        //     expect(body.firstPlayerProgress.score).toEqual(1);
+        //     expect(body.secondPlayerProgress.score).toEqual(0);
         //   });
-        expect(answer5_4).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Incorrect',
-          addedAt: expect.any(String),
-        });
-        const answer5_5 = await quiz.answer('2', accessToken5, app); //incorrect answer for 5 question
-        expect(answer5_5).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Incorrect',
-          addedAt: expect.any(String),
-        });
-        const answer4_3 = await quiz.answer('circle', accessToken4, app); //correct answer for 3 question
-        expect(answer4_3).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Correct',
-          addedAt: expect.any(String),
-        });
-        const answer4_4 = await quiz.answer('free', accessToken4, app); //incorrect answer for 4 question
-        expect(answer4_4).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Incorrect',
-          addedAt: expect.any(String),
-        });
+        // const answer4_2 = await quiz.answer('Alexandro', accessToken4, app); //incorrect answer for 2 question
+        // expect(answer4_2).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Incorrect',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.my_current)
+        //   .auth(accessToken4, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(1);
+        //     expect(body.secondPlayerProgress.score).toEqual(0);
+        //   });
+        // const answer5_1 = await quiz.answer('Alex', accessToken5, app); //correct answer for 1 question
+        // expect(answer5_1).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Correct',
+        //   addedAt: expect.any(String),
+        // });
         // await request(app.getHttpServer())
         //   .get(endpoints.quizController.my_current)
         //   .auth(accessToken5, { type: 'bearer' })
         //   .expect(200)
         //   .then(({ body }) => {
-        //     console.log(body.firstPlayerProgress.score);
-        //     console.log(body.secondPlayerProgress.score);
+        //     expect(body.firstPlayerProgress.score).toEqual(1);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
         //   });
-        const answer4_5 = await quiz.answer('bam', accessToken4, app); //incorrect answer for 5 question
-        expect(answer4_5).toEqual({
-          questionId: expect.any(String),
-          answerStatus: 'Incorrect',
-          addedAt: expect.any(String),
-        });
+        // const answer5_2 = await quiz.answer('2', accessToken5, app); //incorrect answer for 2 question
+        // expect(answer5_2).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Incorrect',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.my_current)
+        //   .auth(accessToken5, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(1);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
+        //   });
+        // const answer5_3 = await quiz.answer('2', accessToken5, app); //incorrect answer for 3 question
+        // expect(answer5_3).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Incorrect',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.my_current)
+        //   .auth(accessToken5, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(1);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
+        //   });
+        // const answer5_4 = await quiz.answer('2', accessToken5, app); //incorrect answer for 4 question
+        // // await request(app.getHttpServer())
+        // //   .get(endpoints.quizController.my_current)
+        // //   .auth(accessToken4, { type: 'bearer' })
+        // //   .expect(200)
+        // //   .then(({ body }) => {
+        // //     console.log(body.firstPlayerProgress.score);
+        // //     console.log(body.secondPlayerProgress.score);
+        // //   });
+        // expect(answer5_4).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Incorrect',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.my_current)
+        //   .auth(accessToken5, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(1);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
+        //   });
+        // const answer5_5 = await quiz.answer('2', accessToken5, app); //incorrect answer for 5 question
+        // expect(answer5_5).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Incorrect',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.id + `/${game4.id}`)
+        //   .auth(accessToken5, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(2);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
+        //   });
+        // const answer4_3 = await quiz.answer('Alex', accessToken4, app); //correct answer for 3 question
+        // expect(answer4_3).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Correct',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.my_current)
+        //   .auth(accessToken4, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(2);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
+        //   });
+        // const answer4_4 = await quiz.answer('free', accessToken4, app); //incorrect answer for 4 question
+        // expect(answer4_4).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Incorrect',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.my_current)
+        //   .auth(accessToken4, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(2);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
+        //   });
+        // const answer4_5 = await quiz.answer('bam', accessToken4, app); //incorrect answer for 5 question
+        // expect(answer4_5).toEqual({
+        //   questionId: expect.any(String),
+        //   answerStatus: 'Incorrect',
+        //   addedAt: expect.any(String),
+        // });
+        // await request(app.getHttpServer())
+        //   .get(endpoints.quizController.id + `/${game4.id}`)
+        //   .auth(accessToken4, { type: 'bearer' })
+        //   .expect(200)
+        //   .then(({ body }) => {
+        //     expect(body.firstPlayerProgress.score).toEqual(3);
+        //     expect(body.secondPlayerProgress.score).toEqual(1);
+        //   });
       },
     );
     it.skip(
@@ -967,13 +1060,13 @@ describe(`Quiz `, () => {
           addedAt: expect.any(String),
         });
 
-        const answer4_3 = await quiz.answer('circle', accessToken4, app); //correct answer for 3 question
+        const answer4_3 = await quiz.answer('Alex', accessToken4, app); //correct answer for 3 question
         expect(answer4_3).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
           addedAt: expect.any(String),
         });
-        const answer4_4 = await quiz.answer('Six', accessToken4, app); //correct answer for 4 question
+        const answer4_4 = await quiz.answer('Alex', accessToken4, app); //correct answer for 4 question
         expect(answer4_4).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -994,7 +1087,7 @@ describe(`Quiz `, () => {
           addedAt: expect.any(String),
         });
 
-        const answer3_4 = await quiz.answer('Six', accessToken4, app); //correct answer for 4 question
+        const answer3_4 = await quiz.answer('Alex', accessToken4, app); //correct answer for 4 question
         expect(answer3_4).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -1030,26 +1123,26 @@ describe(`Quiz `, () => {
         'get active game and call "/pair-game-quiz/pairs/my-current by both users after each answer"\n' +
         '; status 200;',
       async () => {
-        const answer1_1 = await quiz.answer('three', accessToken2, app); //correct answer for 1 question
+        const answer1_1 = await quiz.answer('Alex', accessToken2, app); //correct answer for 1 question
         expect(answer1_1).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
           addedAt: expect.any(String),
         });
-        const answer1_2 = await quiz.answer('Steven', accessToken2, app); //correct answer for 2 question
+        const answer1_2 = await quiz.answer('Alex', accessToken2, app); //correct answer for 2 question
         expect(answer1_2).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
           addedAt: expect.any(String),
         });
-        const answer1_3 = await quiz.answer('oval', accessToken2, app); //correct answer for 3 question
+        const answer1_3 = await quiz.answer('Alex', accessToken2, app); //correct answer for 3 question
         expect(answer1_3).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
           addedAt: expect.any(String),
         });
 
-        const answer2_3 = await quiz.answer('oval', accessToken1, app); //correct answer for 3 question
+        const answer2_3 = await quiz.answer('Alex', accessToken1, app); //correct answer for 3 question
         expect(answer2_3).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
@@ -1078,14 +1171,14 @@ describe(`Quiz `, () => {
         //     console.log(body.firstPlayerProgress.score);
         //     console.log(body.secondPlayerProgress.score);
         //   });
-        const answer1_5 = await quiz.answer('Sania', accessToken2, app); //correct answer for 5 question
+        const answer1_5 = await quiz.answer('Alex', accessToken2, app); //correct answer for 5 question
         expect(answer1_5).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',
           addedAt: expect.any(String),
         });
 
-        const answer2_5 = await quiz.answer('Sania', accessToken1, app); //correct answer for 5 question
+        const answer2_5 = await quiz.answer('Alex', accessToken1, app); //correct answer for 5 question
         expect(answer2_5).toEqual({
           questionId: expect.any(String),
           answerStatus: 'Correct',

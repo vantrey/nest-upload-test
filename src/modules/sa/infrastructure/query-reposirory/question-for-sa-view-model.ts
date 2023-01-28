@@ -1,4 +1,4 @@
-export class QuestionViewModel {
+export class QuestionForSaViewModel {
   constructor(
     public id: string,
     public body: string,
@@ -7,4 +7,8 @@ export class QuestionViewModel {
     public createdAt: string,
     public updatedAt: string,
   ) {}
+}
+
+export class QuestionViewModel {
+  constructor(public id: string, public body: string) {}
 }

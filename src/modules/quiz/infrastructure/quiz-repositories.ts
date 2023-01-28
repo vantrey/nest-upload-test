@@ -53,7 +53,7 @@ export class QuizRepositories {
     // return true;
   }
 
-  async findAnyGameById(gameId: string): Promise<Game> {
+  async findGame(gameId: string): Promise<Game> {
     const game = await this.gameRepo.findOne({
       select: ['id', 'firstPlayerId', 'secondPlayerId'],
       where: { id: gameId },

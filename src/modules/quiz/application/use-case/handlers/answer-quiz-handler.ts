@@ -24,7 +24,7 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     //what question!
     const question = activeGame.questions[player.answers.length];
     //create instance answer
-    const instanceAnswer = Answer.createAnswer(answer, activeGame.id, question.id, player.id, player);
+    const instanceAnswer = Answer.createAnswer(answer, activeGame.id, question.id, player.userId, player);
     const savedAnswer = await this.quizRepo.saveAnswer(instanceAnswer);
     //checking the correct answer
     const result = question.correctAnswers.find((e) => e === answer);
@@ -70,8 +70,14 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
   }
 
   private async addBonusPoint(game: Game): Promise<boolean> {
-    const successAnswersFirstPlayer = await this.quizRepo.fastestFirstSuccessAnswer(game.firstPlayerId, game.id);
-    const successAnswersSecondPlayer = await this.quizRepo.fastestFirstSuccessAnswer(game.secondPlayerId, game.id);
+    const successAnswersFirstPlayer = await this.quizRepo.fastestFirstSuccessAnswer(
+      game.firstPlayerProgress.id,
+      game.id,
+    );
+    const successAnswersSecondPlayer = await this.quizRepo.fastestFirstSuccessAnswer(
+      game.secondPlayerProgress.id,
+      game.id,
+    );
     if (
       successAnswersFirstPlayer.length >= 1 &&
       successAnswersFirstPlayer[0].addedAt < successAnswersSecondPlayer[0].addedAt

@@ -12,7 +12,7 @@ import { UpdateBanInfoForBlogCommand } from '../application/use-cases/updateBanI
 import { SkipThrottle } from '@nestjs/throttler';
 import { CreateQuestionDto } from './input-dtos/create-Question-Dto-Model';
 import { CreateQuestionCommand } from '../application/use-cases/create-question-command';
-import { QuestionViewModel } from '../infrastructure/query-reposirory/question-View-Model';
+import { QuestionForSaViewModel } from '../infrastructure/query-reposirory/question-for-sa-view-model';
 import { DeleteQuestionCommand } from '../application/use-cases/delete-question-command';
 import { UpdateQuestionCommand } from '../application/use-cases/update-question-command';
 import { PublisherQuestionDto } from './input-dtos/publisher-question-Dto-Model';
@@ -53,12 +53,12 @@ export class SaController {
   @Get(`quiz/questions`)
   async getQuestions(
     @Query() paginationInputModel: PaginationQuestionDto,
-  ): Promise<PaginationViewModel<QuestionViewModel[]>> {
+  ): Promise<PaginationViewModel<QuestionForSaViewModel[]>> {
     return await this.questionQueryRepo.getQuestions(paginationInputModel);
   }
 
   @Post(`quiz/questions`)
-  async createQuestion(@Body() questionInputModel: CreateQuestionDto): Promise<QuestionViewModel> {
+  async createQuestion(@Body() questionInputModel: CreateQuestionDto): Promise<QuestionForSaViewModel> {
     return this.commandBus.execute(new CreateQuestionCommand(questionInputModel));
   }
 
