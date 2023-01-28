@@ -114,10 +114,14 @@ export class QuizQueryRepositories {
     });
     // return this.mappedGameForView(game);
     const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.userId, game.firstPlayerProgress.login);
-    // const answersFirstPlayer = await Promise.all(
-    //   game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
-    // );
-    const firstPlayerProgress = new GamePlayerProgressViewModel([], firstPlayer, game.firstPlayerProgress.score);
+    const answersFirstPlayer = await Promise.all(
+      game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
+    );
+    const firstPlayerProgress = new GamePlayerProgressViewModel(
+      answersFirstPlayer,
+      firstPlayer,
+      game.firstPlayerProgress.score,
+    );
     return new GameViewModel(
       game.id,
       firstPlayerProgress,
