@@ -37,4 +37,5 @@ lerna-debug.log*
 .env
 .vercel
 
-./test
+
+/test/
