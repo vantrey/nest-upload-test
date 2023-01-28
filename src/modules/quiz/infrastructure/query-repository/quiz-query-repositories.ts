@@ -5,10 +5,7 @@ import { Player } from '../../../../entities/player.entity';
 import { Question } from '../../../../entities/question.entity';
 import { Answer } from '../../../../entities/answer.entity';
 import { AnswerViewModel, GamePlayerProgressViewModel, GameViewModel, PLayerViewModel } from './game-View-Model';
-import {
-  QuestionForSaViewModel,
-  QuestionViewModel,
-} from '../../../sa/infrastructure/query-reposirory/question-for-sa-view-model';
+import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/question-for-sa-view-model';
 
 export class QuizQueryRepositories {
   constructor(
@@ -28,7 +25,7 @@ export class QuizQueryRepositories {
   }
 
   private async mappedGameForView(game: Game): Promise<GameViewModel> {
-    const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.id, game.firstPlayerProgress.login);
+    const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.userId, game.firstPlayerProgress.login);
     const answersFirstPlayer = await Promise.all(
       game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
     );
@@ -36,7 +33,7 @@ export class QuizQueryRepositories {
       game.secondPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
     );
     const questions = await Promise.all(game.questions.map((q) => this.mappedQuestionForView(q)));
-    const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.id, game.secondPlayerProgress.login);
+    const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.userId, game.secondPlayerProgress.login);
     const firstPlayerProgress = new GamePlayerProgressViewModel(
       answersFirstPlayer,
       firstPlayer,
@@ -143,7 +140,7 @@ export class QuizQueryRepositories {
       where: { id: gameId },
     });
     // return this.mappedGameForView(game);
-    const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.id, game.firstPlayerProgress.login);
+    const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.userId, game.firstPlayerProgress.login);
     const answersFirstPlayer = await Promise.all(
       game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
     );

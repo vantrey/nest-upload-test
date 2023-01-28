@@ -882,7 +882,7 @@ describe(`Quiz `, () => {
         '; status 200;',
       async () => {
         await quiz.connection(accessToken4, app);
-        game4 = await quiz.connection(accessToken5, app);
+        // game4 = await quiz.connection(accessToken5, app);
         // const answer4_1 = await quiz.answer('Alex', accessToken4, app); //correct answer for 1 question
         // expect(answer4_1).toEqual({
         //   questionId: expect.any(String),
