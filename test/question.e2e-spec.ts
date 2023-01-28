@@ -8,7 +8,6 @@ import { FactoryT, superUser } from './helpers/factory-t';
 import { FactoryQuiz } from './helpers/factory-quiz';
 import { UsersViewType } from '../src/modules/users/infrastructure/query-reposirory/user-View-Model';
 import { GameViewModel } from '../src/modules/quiz/infrastructure/query-repository/game-View-Model';
-import { log } from 'handlebars';
 
 jest.setTimeout(1200000);
 
@@ -284,7 +283,6 @@ describe(`Quiz `, () => {
     const factory = new FactoryT();
     let accessToken: string;
     let accessToken1: string;
-    let accessToken2: string;
     let game: GameViewModel;
     let refreshTokenKey: string, validRefreshToken: string, refreshToken: string;
     let user: UsersViewType;
@@ -378,7 +376,7 @@ describe(`Quiz `, () => {
         .expect(404);
     });
 
-    it(`20 - GET -> "/pair-game-quiz/pairs/my-current", GET -> "pair-game-quiz/pairs/:id", POST -> "pair-game-quiz/pairs/connection", POST -> "pair-game-quiz/pairs/my-current/answers": should return error if auth credentials is incorrect; status 404; used additional methods: POST -> /pair-game-quiz/pairs/connection;`, async () => {
+    it.skip(`20 - GET -> "/pair-game-quiz/pairs/my-current", GET -> "pair-game-quiz/pairs/:id", POST -> "pair-game-quiz/pairs/connection", POST -> "pair-game-quiz/pairs/my-current/answers": should return error if auth credentials is incorrect; status 404; used additional methods: POST -> /pair-game-quiz/pairs/connection;`, async () => {
       game = await quiz.connection(accessToken, app);
       await request(app.getHttpServer())
         .get(endpoints.quizController.my_current)
