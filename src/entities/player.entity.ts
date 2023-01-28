@@ -17,9 +17,6 @@ export class Player {
   statusesPlayer: boolean;
   @OneToMany(() => Answer, (q) => q.player, { eager: true })
   answers: Answer[];
-  //@OneToOne(() => Game)
-  // @JoinColumn()
-  // game: Game;
 
   constructor(login: string, userId: string, gameId: string) {
     this.userId = userId;
@@ -36,9 +33,5 @@ export class Player {
   }
   changeStatuses() {
     this.statusesPlayer = true;
-  }
-
-  addBonusPoint() {
-    this.score += 2;
   }
 }

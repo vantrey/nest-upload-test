@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUserIdBlogger } from '../../../decorators/current-user-id.param.decorator';
 import { ConnectionQuizCommand } from '../application/use-case/connection-quiz-command';
@@ -10,6 +10,8 @@ import { ValidateUuidPipeFor404Error } from '../../../validators/id-validation-p
 import { QuizQueryRepositories } from '../infrastructure/query-repository/quiz-query-repositories';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { AnswerViewModel, GameViewModel } from '../infrastructure/query-repository/game-View-Model';
+import { PaginationQuizDto } from './input-dtos/pagination-quiz-Dto';
+import { PaginationViewModel } from '../../../common/pagination-View-Model';
 
 @UseGuards(JwtAuthGuard)
 @Controller(`pair-game-quiz/pairs`)
@@ -19,6 +21,14 @@ export class QuizController {
     private readonly quizRepo: QuizRepositories,
     private readonly quizQueryRepo: QuizQueryRepositories,
   ) {}
+
+  @Get(`my`)
+  async myGames(
+    @CurrentUserIdBlogger() userId: string,
+    @Query() paginationInputModel: PaginationQuizDto,
+  ): Promise<PaginationViewModel<GameViewModel[]>> {
+    return this.quizQueryRepo.getGames(userId, paginationInputModel);
+  }
 
   @HttpCode(200)
   @Post(`connection`)

@@ -32,6 +32,7 @@ export const endpoints = {
     connection: `${quizController}/connection`,
     answer: `${quizController}/my-current/answers`,
     my_current: `${quizController}/my-current`,
+    my: `${quizController}/my`,
   },
   securityController,
   testingController: {

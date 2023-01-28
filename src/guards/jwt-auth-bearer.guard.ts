@@ -11,17 +11,13 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.getToken(request);
     const userId = await this.jwtService.getUserIdByToken(token);
     if (!userId) {
-      throw new UnauthorizedExceptionMY(
-        `Unauthorized user, did not come current userId`,
-      );
+      throw new UnauthorizedExceptionMY(`Unauthorized user, did not come current userId`);
     }
     request.userId = userId;
     return true;
   }
 
-  protected getToken(request: {
-    headers: Record<string, string | string[]>;
-  }): string {
+  protected getToken(request: { headers: Record<string, string | string[]> }): string {
     const authorization = request.headers['authorization'];
     if (!authorization || Array.isArray(authorization)) {
       throw new UnauthorizedExceptionMY('Did not come accessToken');

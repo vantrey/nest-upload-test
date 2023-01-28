@@ -7,10 +7,8 @@ export const CurrentUserId = createParamDecorator((data: unknown, context: Execu
   return request.userId;
 });
 
-export const CurrentUserIdBlogger = createParamDecorator(
-  (data: unknown, context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest();
-    if (!request.userId) throw new UnauthorizedExceptionMY(`UserId didn't come`);
-    return request.userId;
-  },
-);
+export const CurrentUserIdBlogger = createParamDecorator((data: unknown, context: ExecutionContext) => {
+  const request = context.switchToHttp().getRequest();
+  if (!request.userId) throw new UnauthorizedExceptionMY(`UserId didn't come`);
+  return request.userId;
+});

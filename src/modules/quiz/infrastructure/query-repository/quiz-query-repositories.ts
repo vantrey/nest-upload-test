@@ -6,6 +6,8 @@ import { Question } from '../../../../entities/question.entity';
 import { Answer } from '../../../../entities/answer.entity';
 import { AnswerViewModel, GamePlayerProgressViewModel, GameViewModel, PLayerViewModel } from './game-View-Model';
 import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/question-for-sa-view-model';
+import { PaginationViewModel } from '../../../../common/pagination-View-Model';
+import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz-Dto';
 
 export class QuizQueryRepositories {
   constructor(
@@ -142,5 +144,35 @@ export class QuizQueryRepositories {
       where: { id: gameId },
     });
     return this.mappedGameForView(game);
+  }
+
+  async getGames(userId: string, data: PaginationQuizDto): Promise<PaginationViewModel<GameViewModel[]>> {
+    const { pageNumber, pageSize, sortBy, sortDirection } = data;
+    let order;
+    if (sortDirection === 'asc') {
+      order = 'ASC';
+    } else {
+      order = 'DESC';
+    }
+
+    const [games, count] = await Promise.all([
+      this.gameRepo.find({
+        select: [],
+        relations: {
+          firstPlayerProgress: true,
+          secondPlayerProgress: true,
+          questions: true,
+        },
+        where: [{ firstPlayerId: userId }, { secondPlayerId: userId }],
+        order: { [sortBy]: order },
+        skip: data.skip,
+        take: pageSize,
+      }),
+      this.gameRepo.count({ where: [{ firstPlayerId: userId }, { secondPlayerId: userId }] }),
+    ]);
+    const mappedGames = games.map((game) => this.mappedGameForView(game));
+    const items = await Promise.all(mappedGames);
+    const pagesCountRes = Math.ceil(count / pageSize);
+    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, items);
   }
 }
