@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Player } from './player.entity';
 import { Question } from './question.entity';
+import { AnswerStatusesType } from './answer.entity';
 
 export enum GameStatusesType {
   PendingSecondPlayer = 'PendingSecondPlayer',
@@ -67,5 +68,64 @@ export class Game {
   finishDate() {
     this.status = GameStatusesType.Finished;
     this.finishGameDate = new Date();
+  }
+
+  isPlayerFinished(userId: string) {
+    //---player.answers.length === activeGame.questions.length
+    if (this.firstPlayerId === userId) {
+      if (this.questions.length === this.firstPlayerProgress.answers.length) return true;
+    }
+    if (this.secondPlayerId === userId) {
+      if (this.questions.length === this.secondPlayerProgress.answers.length) return true;
+    }
+  }
+
+  questionNumber(player: Player) {
+    // const question = activeGame.questions[player.answers.length];
+    return this.questions[player.answers.length];
+  }
+
+  checkAnswer(answer: string, question: Question) {
+    if (question.correctAnswers.find((e) => e === answer)) return true;
+  }
+
+  isGameFinished() {
+    if (
+      this.questions.length === this.firstPlayerProgress.answers.length &&
+      this.questions.length === this.secondPlayerProgress.answers.length
+    )
+      return true;
+  }
+
+  addBonusPoint() {
+    // const answersFirstPlayer = await this.quizRepo.findAnswers(game.firstPlayerProgress.id, game.id);
+    // const answersSecondPlayer = await this.quizRepo.findAnswers(game.secondPlayerProgress.id, game.id);
+    // const successAnswersFirstPlayer = await this.quizRepo.countSuccessAnswers(game.firstPlayerProgress.id, game.id);
+    // const successAnswersSecondPlayer = await this.quizRepo.countSuccessAnswers(game.secondPlayerProgress.id, game.id);
+    // if (successAnswersFirstPlayer >= 1 && answersFirstPlayer[4].addedAt < answersSecondPlayer[4].addedAt) {
+    //   const player = await this.quizRepo.findPlayer(game.firstPlayerId, game.id);
+    //   player.addPoint();
+    //   await this.quizRepo.savePlayer(player);
+    // }
+    // if (successAnswersSecondPlayer >= 1 && answersFirstPlayer[4].addedAt > answersSecondPlayer[4].addedAt) {
+    //   const player = await this.quizRepo.findPlayer(game.secondPlayerId, game.id);
+    //   player.addPoint();
+    //   await this.quizRepo.savePlayer(player);
+    // }
+    const successAnswersFirstPlayer = this.firstPlayerProgress.answers.filter(
+      (e) => e.answerStatus === AnswerStatusesType.Correct,
+    );
+    const successAnswersSecondPlayer = this.secondPlayerProgress.answers.filter(
+      (e) => e.answerStatus === AnswerStatusesType.Correct,
+    );
+    const answersFirstPlayer = this.firstPlayerProgress.answers.sort((a, b) => Number(b.addedAt) - Number(a.addedAt));
+    const answersSecondPlayer = this.secondPlayerProgress.answers.sort((a, b) => Number(b.addedAt) - Number(a.addedAt));
+    if (successAnswersFirstPlayer.length >= 1 && answersFirstPlayer[4].addedAt < answersSecondPlayer[4].addedAt) {
+      this.firstPlayerProgress.score += 1;
+    }
+    if (successAnswersSecondPlayer.length >= 1 && answersFirstPlayer[4].addedAt > answersSecondPlayer[4].addedAt) {
+      this.secondPlayerProgress.score += 1;
+    }
+    return;
   }
 }

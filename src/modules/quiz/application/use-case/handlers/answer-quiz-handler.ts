@@ -5,6 +5,7 @@ import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFil
 import { Answer } from '../../../../../entities/answer.entity';
 import { AnswerViewModel } from '../../../infrastructure/query-repository/game-View-Model';
 import { Game } from '../../../../../entities/game.entity';
+import { Player } from '../../../../../entities/player.entity';
 
 @CommandHandler(AnswerQuizCommand)
 export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
@@ -19,30 +20,37 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     //find active player
     const player = await this.quizRepo.findPlayer(userId, activeGame.id);
     //checking finish game
-    if (player.answers.length === activeGame.questions.length)
-      throw new ForbiddenExceptionMY('Current user is already participating in active pair');
+    if (activeGame.isPlayerFinished(userId))
+      throw new ForbiddenExceptionMY('Current user is already participating in active pair'); //++
+    //- if (player.answers.length === activeGame.questions.length)
+    //-   throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     //what question!
-    const question = activeGame.questions[player.answers.length];
+    const question = activeGame.questionNumber(player); //++
+    // const question = activeGame.questions[player.answers.length];
     //create instance answer
-    const instanceAnswer = Answer.createAnswer(answer, activeGame.id, question.id, player.userId, player);
+    const instanceAnswer = Player.createAnswer(answer, question.id, player);
+    // const instanceAnswer = Answer.createAnswer(answer, activeGame.id, question.id, player.userId, player);
     const savedAnswer = await this.quizRepo.saveAnswer(instanceAnswer);
     //checking the correct answer
-    const result = question.correctAnswers.find((e) => e === answer);
-    if (result) {
+    // const result = activeGame.checkAnswer(answer, question);
+    // const result = question.correctAnswers.find((e) => e === answer);
+    if (activeGame.checkAnswer(answer, question)) {
       //add correct answer
       savedAnswer.correctAnswer();
       await this.quizRepo.saveAnswer(savedAnswer);
       //find an active game
       const activeGame = await this.quizRepo.findActiveGameByUserId(userId);
       //checking the finish game!
-      if (activeGame.firstPlayerProgress.answers.length === 5 && activeGame.secondPlayerProgress.answers.length === 5) {
+      if (activeGame.isGameFinished()) {
         //add status "finished" the game
         activeGame.finishDate();
-        await this.quizRepo.saveGame(activeGame);
+        const finishedGame = await this.quizRepo.saveGame(activeGame);
         //add bonus a point
-        await this.addBonusPoint(activeGame);
+        finishedGame.addBonusPoint();
+        // await this.addBonusPoint(activeGame);
         //change status players => "finished"
-        await this.changeStatusesPlayer(activeGame);
+        await this.changeStatusesPlayer(finishedGame);
+        // await this.changeStatusesPlayer(activeGame);
       }
       const player = await this.quizRepo.findPlayerForAddPoint(userId, activeGame.id);
       //add a point
@@ -57,13 +65,16 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     //find an active game
     const game = await this.quizRepo.findActiveGameByUserId(userId);
     //checking the finish game!
-    if (game.firstPlayerProgress.answers.length === 5 && game.secondPlayerProgress.answers.length === 5) {
+    if (game.isGameFinished()) {
+      // if (game.firstPlayerProgress.answers.length === 5 && game.secondPlayerProgress.answers.length === 5) {
       //add status "finished" the game
       game.finishDate();
-      await this.quizRepo.saveGame(game);
-      await this.addBonusPoint(game);
+      const finishedGame = await this.quizRepo.saveGame(game);
+      // await this.addBonusPoint(game);
+      finishedGame.addBonusPoint();
       //change status players
-      await this.changeStatusesPlayer(game);
+      await this.changeStatusesPlayer(finishedGame);
+      // await this.changeStatusesPlayer(game);
     }
     //change status players
     return new AnswerViewModel(savedAnswer.questionId, savedAnswer.answerStatus, savedAnswer.addedAt.toISOString());

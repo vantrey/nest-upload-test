@@ -29,6 +29,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
         await this.deviceRepo.deleteDevicesForBannedUser(user.id);
         throw new UnauthorizedExceptionMY(`Did you get a ban!`);
       }
+
       //preparation data for token
       const deviceId = randomUUID();
       const userId = user.id;
@@ -38,6 +39,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       //preparation data for save device
       const dateCreatedToken = new Date(payloadNew.iat * 1000).toISOString();
       const dateExpiredToken = new Date(payloadNew.exp * 1000).toISOString();
+
       const newDevice = Device.createDevice(
         userId,
         ipAddress,

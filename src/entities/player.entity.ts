@@ -34,4 +34,8 @@ export class Player {
   changeStatuses() {
     this.statusesPlayer = true;
   }
+
+  static createAnswer(answer: string, id: string, player: Player) {
+    return new Answer(answer, player.gameId, id, player.userId, player);
+  }
 }

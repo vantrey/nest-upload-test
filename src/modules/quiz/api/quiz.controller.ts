@@ -22,14 +22,6 @@ export class QuizController {
     private readonly quizQueryRepo: QuizQueryRepositories,
   ) {}
 
-  @Get(`my`)
-  async myGames(
-    @CurrentUserIdBlogger() userId: string,
-    @Query() paginationInputModel: PaginationQuizDto,
-  ): Promise<PaginationViewModel<GameViewModel[]>> {
-    return this.quizQueryRepo.getGames(userId, paginationInputModel);
-  }
-
   @HttpCode(200)
   @Post(`connection`)
   async connectionQuiz(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
@@ -47,6 +39,14 @@ export class QuizController {
     const pendingGame = await this.quizRepo.findCurrentGame(userId);
     if (!pendingGame) throw new NotFoundExceptionMY('Not found game');
     return await this.quizQueryRepo.findCurrentGame(userId);
+  }
+
+  @Get(`my`)
+  async myGames(
+    @CurrentUserIdBlogger() userId: string,
+    @Query() paginationInputModel: PaginationQuizDto,
+  ): Promise<PaginationViewModel<GameViewModel[]>> {
+    return this.quizQueryRepo.getGames(userId, paginationInputModel);
   }
 
   @Get(`:id`)

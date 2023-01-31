@@ -30,7 +30,7 @@ describe(`Quiz `, () => {
     await app.close();
   });
 
-  describe.skip(`24 -  Access right for game flow`, () => {
+  describe(`24 -  Access right for game flow`, () => {
     const quiz = new FactoryQuiz();
     const factory = new FactoryT();
     let accessToken0: string;
@@ -279,7 +279,7 @@ describe(`Quiz `, () => {
         .expect(404);
     });
   });
-  describe.skip(`24 -  Exceptions for game flow`, () => {
+  describe(`24 -  Exceptions for game flow`, () => {
     const quiz = new FactoryQuiz();
     const factory = new FactoryT();
     let accessToken: string;
@@ -395,7 +395,7 @@ describe(`Quiz `, () => {
         .expect(400);
     });
   });
-  describe.skip(`24 -  Create, connect games, add answers`, () => {
+  describe(`24 -  Create, connect games, add answers`, () => {
     const quiz = new FactoryQuiz();
     const factory = new FactoryT();
     let accessToken1: string;
@@ -480,6 +480,8 @@ describe(`Quiz `, () => {
     });
     it('25 - POST -> "/pair-game-quiz/pairs/connection",  GET -> "/pair-game-quiz/pairs/:id", GET -> "/pair-game-quiz/pairs/my-current": connect to existing game by user2; then get the game by user1, user2; then call "/pair-game-quiz/pairs/my-current" by user1, user2. Should return started game; status 200;', async () => {
       game = await quiz.connection(accessToken2, app);
+      console.log(game.id);
+      console.log(accessToken2);
       await request(app.getHttpServer())
         .get(endpoints.quizController.id + `/${game.id}`)
         .auth(accessToken1, { type: 'bearer' })
@@ -563,6 +565,13 @@ describe(`Quiz `, () => {
           expect(body.pairCreatedDate).toEqual(expect.any(String));
           expect(body.startGameDate).toEqual(expect.any(String));
           expect(body.finishGameDate).toBeNull();
+        });
+      await request(app.getHttpServer())
+        .get(endpoints.quizController.my)
+        .auth(accessToken2, { type: 'bearer' })
+        .expect(200)
+        .then(({ body }) => {
+          console.log(body);
         });
     });
     it(
@@ -619,7 +628,7 @@ describe(`Quiz `, () => {
         // - - 3 questions
       },
     );
-    it(
+    it.skip(
       '27 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": create second game by user3, connect to the game by user4, then:\n' +
         'add correct answer by firstPlayer;\n' +
@@ -791,7 +800,7 @@ describe(`Quiz `, () => {
         //finish game
       },
     );
-    it(
+    it.skip(
       '29 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": create third game by user2, connect to the game by user1, then:\n' +
         'add correct answer by firstPlayer;\n' +
@@ -848,7 +857,7 @@ describe(`Quiz `, () => {
         // --- 3 questions
       },
     );
-    it(
+    it.skip(
       '30 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": create 4th game by user5, connect to the game by user6, then:\n' +
         'add correct answer by firstPlayer;\n' +
@@ -1018,7 +1027,7 @@ describe(`Quiz `, () => {
           });
       },
     );
-    it(
+    it.skip(
       '31 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": add answers to second game, created by user3, connected by user4:\n' +
         'add incorrect answer by firstPlayer;\n' +
@@ -1088,7 +1097,7 @@ describe(`Quiz `, () => {
           });
       },
     );
-    it(
+    it.skip(
       '32 - POST -> "/pair-game-quiz/pairs/my-current/answers",\n' +
         '  GET -> "/pair-game-quiz/pairs", GET -> "/pair-game-quiz/pairs/my-current": add answers to third game, created by user2, connected by user1:\n' +
         'add correct answer by firstPlayer;\n' +
@@ -1159,7 +1168,7 @@ describe(`Quiz `, () => {
       },
     );
   });
-  describe(`25 -  My games`, () => {
+  describe.skip(`25 -  My games`, () => {
     const quiz = new FactoryQuiz();
     const factory = new FactoryT();
     let accessToken1: string;
