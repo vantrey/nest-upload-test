@@ -130,6 +130,7 @@ export class Game {
       secondPlayer.addPoint();
       return secondPlayer;
     }
+    return;
   }
 
   isPlayerParticipate(userId: string) {

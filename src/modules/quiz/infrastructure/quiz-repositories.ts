@@ -3,7 +3,7 @@ import { Repository } from 'typeorm';
 import { Game, GameStatusesType } from '../../../entities/game.entity';
 import { Player } from '../../../entities/player.entity';
 import { Question } from '../../../entities/question.entity';
-import { Answer, AnswerStatusesType } from '../../../entities/answer.entity';
+import { Answer } from '../../../entities/answer.entity';
 
 export class QuizRepositories {
   constructor(
@@ -132,12 +132,6 @@ export class QuizRepositories {
       .catch(() => {
         return null;
       });
-  }
-
-  async countSuccessAnswers(userId: string, gameId: string): Promise<number> {
-    return this.answerRepo.count({
-      where: { playerId: userId, gameId: gameId, answerStatus: AnswerStatusesType.Correct },
-    });
   }
 
   async findPlayerForAddBonusPoint(userId: string, gameId: string): Promise<Player> {

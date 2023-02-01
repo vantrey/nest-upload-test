@@ -60,8 +60,8 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     if (game.isGameFinished()) {
       //add status "finished" the game
       game.finishGame();
-      await this.quizRepo.saveGame(game);
-      await this.addBonusPoint(game);
+      const savedGame = await this.quizRepo.saveGame(game);
+      await this.addBonusPoint(savedGame);
       //change status players
       await this.changeStatusesPlayer(game);
     }
@@ -73,7 +73,9 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     const firstPlayer = await this.quizRepo.findPlayerForAddBonusPoint(game.firstPlayerId, game.id);
     const secondPlayer = await this.quizRepo.findPlayerForAddBonusPoint(game.secondPlayerId, game.id);
     const playerWithAddedPoint = game.addBonusPoint(firstPlayer, secondPlayer);
-    await this.quizRepo.savePlayer(playerWithAddedPoint);
+    if (playerWithAddedPoint) {
+      await this.quizRepo.savePlayer(playerWithAddedPoint);
+    }
     return true;
   }
 
