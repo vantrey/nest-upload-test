@@ -85,7 +85,7 @@ export class Game {
     return this.questions[player.answers.length];
   }
 
-  checkAnswer(answer: string, question: Question) {
+  isAnswerCorrect(answer: string, question: Question) {
     if (question.correctAnswers.find((e) => e === answer)) return true;
   }
 
@@ -97,7 +97,7 @@ export class Game {
       return true;
   }
 
-  addBonusPoint() {
+  addBonusPoint(firstPlayer: Player, secondPlayer: Player): Player {
     // const answersFirstPlayer = await this.quizRepo.findAnswers(game.firstPlayerProgress.id, game.id);
     // const answersSecondPlayer = await this.quizRepo.findAnswers(game.secondPlayerProgress.id, game.id);
     // const successAnswersFirstPlayer = await this.quizRepo.countSuccessAnswers(game.firstPlayerProgress.id, game.id);
@@ -118,14 +118,17 @@ export class Game {
     const successAnswersSecondPlayer = this.secondPlayerProgress.answers.filter(
       (e) => e.answerStatus === AnswerStatusesType.Correct,
     );
-    const answersFirstPlayer = this.firstPlayerProgress.answers.sort((a, b) => Number(b.addedAt) - Number(a.addedAt));
-    const answersSecondPlayer = this.secondPlayerProgress.answers.sort((a, b) => Number(b.addedAt) - Number(a.addedAt));
+    const answersFirstPlayer = this.firstPlayerProgress.answers.sort((a, b) => Number(a.addedAt) - Number(b.addedAt));
+    const answersSecondPlayer = this.secondPlayerProgress.answers.sort((a, b) => Number(a.addedAt) - Number(b.addedAt));
     if (successAnswersFirstPlayer.length >= 1 && answersFirstPlayer[4].addedAt < answersSecondPlayer[4].addedAt) {
-      this.firstPlayerProgress.score += 1;
+      // this.firstPlayerProgress.score += 1;
+      firstPlayer.addPoint();
+      return firstPlayer;
     }
     if (successAnswersSecondPlayer.length >= 1 && answersFirstPlayer[4].addedAt > answersSecondPlayer[4].addedAt) {
-      this.secondPlayerProgress.score += 1;
+      // this.secondPlayerProgress.score += 1;
+      secondPlayer.addPoint();
+      return secondPlayer;
     }
-    return;
   }
 }

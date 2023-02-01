@@ -139,11 +139,11 @@ export class QuizRepositories {
     });
   }
 
-  async findAnswers(userId: string, gameId: string): Promise<Answer[]> {
-    return this.answerRepo.find({
-      select: ['addedAt'],
-      where: { playerId: userId, gameId: gameId },
-      order: { addedAt: 'ASC' },
+  async findPlayerForAddBonusPoint(userId: string, gameId: string): Promise<Player> {
+    return this.playerRepo.findOne({
+      select: [],
+      relations: { answers: true },
+      where: { userId: userId, gameId: gameId },
     });
   }
 }
