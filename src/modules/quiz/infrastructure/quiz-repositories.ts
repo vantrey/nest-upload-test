@@ -55,7 +55,8 @@ export class QuizRepositories {
 
   async findGame(gameId: string): Promise<Game> {
     const game = await this.gameRepo.findOne({
-      select: ['id', 'firstPlayerId', 'secondPlayerId'],
+      select: [],
+      relations: { firstPlayerProgress: true, secondPlayerProgress: true, questions: true },
       where: { id: gameId },
     });
     if (!game) return null;

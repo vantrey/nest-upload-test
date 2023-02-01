@@ -22,7 +22,7 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     if (activeGame.isPlayerFinished(userId))
       throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     //what question!
-    const question = activeGame.questionNumber(player);
+    const question = activeGame.numberQuestion(player);
     //create instance answer
     const instanceAnswer = Player.createAnswer(answer, question.id, player);
     // const instanceAnswer = Answer.createAnswer(answer, activeGame.id, question.id, player.userId, player);
@@ -37,7 +37,7 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       //checking the finish game!
       if (activeGame.isGameFinished()) {
         //add status "finished" the game
-        activeGame.finishDate();
+        activeGame.finishGame();
         await this.quizRepo.saveGame(activeGame);
         //add bonus a point
         await this.addBonusPoint(activeGame);
@@ -59,7 +59,7 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     //checking the finish game!
     if (game.isGameFinished()) {
       //add status "finished" the game
-      game.finishDate();
+      game.finishGame();
       await this.quizRepo.saveGame(game);
       await this.addBonusPoint(game);
       //change status players

@@ -56,7 +56,7 @@ export class QuizController {
   ): Promise<GameViewModel> {
     const activeGame = await this.quizRepo.findGame(id);
     if (!activeGame) throw new NotFoundExceptionMY('Not found active game');
-    if (activeGame.firstPlayerId !== userId && activeGame.secondPlayerId !== userId)
+    if (activeGame.isPlayerParticipate(userId))
       throw new ForbiddenExceptionMY('The player did not participate in the game');
     return this.quizQueryRepo.getGameById(userId, id);
   }

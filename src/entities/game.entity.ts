@@ -65,7 +65,7 @@ export class Game {
     this.secondPlayerId = userId;
   }
 
-  finishDate() {
+  finishGame() {
     this.status = GameStatusesType.Finished;
     this.finishGameDate = new Date();
   }
@@ -80,7 +80,7 @@ export class Game {
     }
   }
 
-  questionNumber(player: Player) {
+  numberQuestion(player: Player) {
     // const question = activeGame.questions[player.answers.length];
     return this.questions[player.answers.length];
   }
@@ -130,5 +130,9 @@ export class Game {
       secondPlayer.addPoint();
       return secondPlayer;
     }
+  }
+
+  isPlayerParticipate(userId: string) {
+    if (this.firstPlayerId !== userId && this.secondPlayerId !== userId) return true;
   }
 }
