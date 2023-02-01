@@ -90,7 +90,7 @@ export class QuizRepositories {
     return this.questionRepo.find({
       select: ['id', 'body'],
       where: { published: true },
-      order: { createdAt: 'ASC' },
+      order: { createdAt: 'DESC' },
       take: 5,
     });
     // .createQueryBuilder('q')
