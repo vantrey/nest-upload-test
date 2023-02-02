@@ -5,6 +5,8 @@ import * as process from 'process';
 
 export const getConfiguration = () => ({
   PORT: parseInt(process.env.PORTT, 10) || 3010,
+  serverUrl: { SERVER_URL: process.env.SERVER_URL },
+  dev: { NODE_ENV: process.env.NODE_ENV },
   tokens: {
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
     REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,

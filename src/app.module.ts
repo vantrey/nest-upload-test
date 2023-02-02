@@ -89,6 +89,8 @@ import { QuizController } from './modules/quiz/api/quiz.controller';
 import { ConnectionQuizHandler } from './modules/quiz/application/use-case/handlers/connection-quiz-handler';
 import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz-handler';
 import { QuizQueryRepositories } from './modules/quiz/infrastructure/query-repository/quiz-query-repositories';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 const controllers = [
   AuthController,
@@ -211,6 +213,10 @@ const entities = [
       },
     }),
     TypeOrmModule.forFeature([...entities]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'swagger-static'),
+      serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/api',
+    }),
     MailModule,
     CqrsModule,
     TestingModule,
