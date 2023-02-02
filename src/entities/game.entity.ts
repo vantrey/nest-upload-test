@@ -98,20 +98,6 @@ export class Game {
   }
 
   addBonusPoint(firstPlayer: Player, secondPlayer: Player): Player {
-    // const answersFirstPlayer = await this.quizRepo.findAnswers(game.firstPlayerProgress.id, game.id);
-    // const answersSecondPlayer = await this.quizRepo.findAnswers(game.secondPlayerProgress.id, game.id);
-    // const successAnswersFirstPlayer = await this.quizRepo.countSuccessAnswers(game.firstPlayerProgress.id, game.id);
-    // const successAnswersSecondPlayer = await this.quizRepo.countSuccessAnswers(game.secondPlayerProgress.id, game.id);
-    // if (successAnswersFirstPlayer >= 1 && answersFirstPlayer[4].addedAt < answersSecondPlayer[4].addedAt) {
-    //   const player = await this.quizRepo.findPlayer(game.firstPlayerId, game.id);
-    //   player.addPoint();
-    //   await this.quizRepo.savePlayer(player);
-    // }
-    // if (successAnswersSecondPlayer >= 1 && answersFirstPlayer[4].addedAt > answersSecondPlayer[4].addedAt) {
-    //   const player = await this.quizRepo.findPlayer(game.secondPlayerId, game.id);
-    //   player.addPoint();
-    //   await this.quizRepo.savePlayer(player);
-    // }
     const successAnswersFirstPlayer = this.firstPlayerProgress.answers.filter(
       (e) => e.answerStatus === AnswerStatusesType.Correct,
     );

@@ -29,19 +29,17 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
         await this.deviceRepo.deleteDevicesForBannedUser(user.id);
         throw new UnauthorizedExceptionMY(`Did you get a ban!`);
       }
-
       //preparation data for token
       const deviceId = randomUUID();
-      const userId = user.id;
+      // const userId = user.id;
       //generation of a new pair of tokens
-      const token = await this.jwtService.createJwt(userId, deviceId);
+      const token = await this.jwtService.createJwt(user.id, deviceId);
       const payloadNew = await this.jwtService.verifyRefreshToken(token.refreshToken);
       //preparation data for save device
       const dateCreatedToken = new Date(payloadNew.iat * 1000).toISOString();
       const dateExpiredToken = new Date(payloadNew.exp * 1000).toISOString();
-
       const newDevice = Device.createDevice(
-        userId,
+        user.id,
         ipAddress,
         deviceName,
         dateCreatedToken,

@@ -30,6 +30,8 @@ export class Device {
     this.userId = userId;
     this.ip = ip;
     this.title = title;
+    // this.lastActiveDate = new Date(lastActiveDate * 1000).toISOString();
+    // this.expiredDate = new Date(expiredDate * 1000).toISOString();
     this.lastActiveDate = lastActiveDate;
     this.expiredDate = expiredDate;
     this.deviceId = deviceId;

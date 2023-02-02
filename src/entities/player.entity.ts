@@ -4,7 +4,7 @@ import { Answer } from './answer.entity';
 @Entity()
 export class Player {
   @PrimaryGeneratedColumn('uuid')
-  id: string; //userId
+  id: string;
   @Column({ type: 'uuid' })
   userId: string;
   @Column({ type: 'uuid' })
@@ -28,14 +28,15 @@ export class Player {
     return new Player(login, userId, gameId);
   }
 
+  static createAnswer(answer: string, id: string, player: Player) {
+    return new Answer(answer, player.gameId, id, player.userId, player);
+  }
+
   addPoint() {
     this.score += 1;
   }
+
   changeStatuses() {
     this.statusesPlayer = true;
-  }
-
-  static createAnswer(answer: string, id: string, player: Player) {
-    return new Answer(answer, player.gameId, id, player.userId, player);
   }
 }
