@@ -4,10 +4,7 @@ import { UnauthorizedExceptionMY } from '../../../helpers/My-HttpExceptionFilter
 import { PayloadType } from './payloadType';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from '../../../config/configuration';
-
-export class TokensType {
-  constructor(public accessToken: string, public refreshToken: string) {}
-}
+import { TokensType } from './tokensType.dto';
 
 @Injectable()
 export class JwtService {
@@ -18,13 +15,9 @@ export class JwtService {
     const accessToken = jwt.sign({ userId: userId }, secret.ACCESS_TOKEN_SECRET, {
       expiresIn: secret.EXPIRED_REFRESH,
     });
-    const refreshToken = jwt.sign(
-      { userId: userId, deviceId: deviceId },
-      secret.REFRESH_TOKEN_SECRET,
-      {
-        expiresIn: secret.EXPIRED_ACCESS,
-      },
-    );
+    const refreshToken = jwt.sign({ userId: userId, deviceId: deviceId }, secret.REFRESH_TOKEN_SECRET, {
+      expiresIn: secret.EXPIRED_ACCESS,
+    });
     return new TokensType(accessToken, refreshToken);
   }
 

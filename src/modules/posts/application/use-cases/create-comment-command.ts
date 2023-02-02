@@ -1,4 +1,4 @@
-import { CreateCommentDto } from '../../api/input-Dtos/create-Comment-Dto-Model';
+import { CreateCommentDto } from '../../api/input-Dtos/create-comment.dto';
 
 export class CreateCommentCommand {
   constructor(

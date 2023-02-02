@@ -3,16 +3,18 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUserIdBlogger } from '../../../decorators/current-user-id.param.decorator';
 import { ConnectionQuizCommand } from '../application/use-case/connection-quiz-command';
 import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
-import { AnswerDto } from './input-dtos/answer-Dto-Model';
+import { AnswerDto } from './input-dtos/create-answer.dto';
 import { AnswerQuizCommand } from '../application/use-case/answer-quiz-command';
 import { QuizRepositories } from '../infrastructure/quiz-repositories';
 import { ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
 import { QuizQueryRepositories } from '../infrastructure/query-repository/quiz-query-repositories';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { AnswerViewModel, GameViewModel } from '../infrastructure/query-repository/game-View-Model';
-import { PaginationQuizDto } from './input-dtos/pagination-quiz-Dto';
-import { PaginationViewModel } from '../../../common/pagination-View-Model';
+import { PaginationQuizDto } from './input-dtos/pagination-quiz.dto';
+import { PaginationViewDto } from '../../../common/pagination-View.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('PairQuizGame')
 @UseGuards(JwtAuthGuard)
 @Controller(`pair-game-quiz/pairs`)
 export class QuizController {
@@ -45,7 +47,7 @@ export class QuizController {
   async myGames(
     @CurrentUserIdBlogger() userId: string,
     @Query() paginationInputModel: PaginationQuizDto,
-  ): Promise<PaginationViewModel<GameViewModel[]>> {
+  ): Promise<PaginationViewDto<GameViewModel[]>> {
     return this.quizQueryRepo.getGames(userId, paginationInputModel);
   }
 
@@ -56,8 +58,7 @@ export class QuizController {
   ): Promise<GameViewModel> {
     const activeGame = await this.quizRepo.findGame(id);
     if (!activeGame) throw new NotFoundExceptionMY('Not found active game');
-    if (activeGame.isPlayerParticipate(userId))
-      throw new ForbiddenExceptionMY('The player did not participate in the game');
+    if (activeGame.isPlayerParticipate(userId)) throw new ForbiddenExceptionMY('The player did not participate in the game');
     return this.quizQueryRepo.getGameById(userId, id);
   }
 }

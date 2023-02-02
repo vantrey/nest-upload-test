@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreatePostCommand } from '../create-post-command';
-import { PostViewModel } from '../../../../posts/infrastructure/query-repositories/post-View-Model';
+import { PostViewDto } from '../../../../posts/infrastructure/query-repositories/post-view.dto';
 import { PostsRepositories } from '../../../../posts/infrastructure/posts-repositories';
 import { PostsQueryRepositories } from '../../../../posts/infrastructure/query-repositories/posts-query.reposit';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
@@ -15,7 +15,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     private readonly postsQueryRepo: PostsQueryRepositories,
   ) {}
 
-  async execute(command: CreatePostCommand): Promise<PostViewModel> {
+  async execute(command: CreatePostCommand): Promise<PostViewDto> {
     const { userId, blogId } = command;
     const { title, shortDescription, content } = command.postInputModel;
     const blog = await this.blogsRepo.findBlog(blogId);

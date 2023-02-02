@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConnectionQuizCommand } from '../connection-quiz-command';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { QuizRepositories } from '../../../infrastructure/quiz-repositories';
 import { Player } from '../../../../../entities/player.entity';
 import { Game } from '../../../../../entities/game.entity';

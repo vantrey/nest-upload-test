@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { PostsRepositories } from '../../../infrastructure/posts-repositories';
 import { UpdateLikeStatusCommand } from '../update-like-status-command';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { LikePost } from '../../../../../entities/like-post.entity';
 
 @CommandHandler(UpdateLikeStatusCommand)

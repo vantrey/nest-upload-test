@@ -1,15 +1,12 @@
 import { BadRequestExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NewPasswordCommand } from '../new-password-command';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
-import { UsersService } from '../../../../users/domain/users.service';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
+import { UsersService } from '../../../../sa-users/domain/users.service';
 
 @CommandHandler(NewPasswordCommand)
 export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
-  constructor(
-    private readonly usersRepo: UsersRepositories,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersRepo: UsersRepositories, private readonly usersService: UsersService) {}
 
   async execute(command: NewPasswordCommand): Promise<boolean> {
     const { newPassword, recoveryCode } = command.newPasswordInputModel;

@@ -1,27 +1,24 @@
 import { Controller, Get, Query, Param, UseGuards } from '@nestjs/common';
 import { BlogsQueryRepositories } from '../infrastructure/query-repository/blogs-query.repositories';
-import { BlogViewModel } from '../infrastructure/query-repository/blog-View-Model';
-import { PaginationBlogDto } from './input-Dtos/pagination-Blog-Dto';
-import { PaginationViewModel } from '../../../common/pagination-View-Model';
+import { PaginationBlogDto } from './input-Dtos/pagination-blog.dto';
+import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { PostsQueryRepositories } from '../../posts/infrastructure/query-repositories/posts-query.reposit';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
-import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-View-Model';
+import { PostViewDto } from '../../posts/infrastructure/query-repositories/post-view.dto';
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
 import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
 import { SkipThrottle } from '@nestjs/throttler';
+import { ApiTags } from '@nestjs/swagger';
+import { BlogViewModel } from '../infrastructure/query-repository/blog-view.dto';
 
+@ApiTags('Blogs')
 @SkipThrottle()
 @Controller(`blogs`)
 export class BlogsController {
-  constructor(
-    private readonly blogsQueryRepo: BlogsQueryRepositories,
-    private readonly postsQueryRepo: PostsQueryRepositories,
-  ) {}
+  constructor(private readonly blogsQueryRepo: BlogsQueryRepositories, private readonly postsQueryRepo: PostsQueryRepositories) {}
 
   @Get()
-  async findAll(
-    @Query() paginationInputModel: PaginationBlogDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async findAll(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel[]>> {
     return await this.blogsQueryRepo.findBlogs(paginationInputModel);
   }
 
@@ -31,15 +28,13 @@ export class BlogsController {
     @CurrentUserId() userId: string,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Query() paginationInputModel: PaginationBlogDto,
-  ): Promise<PaginationViewModel<PostViewModel[]>> {
+  ): Promise<PaginationViewDto<PostViewDto[]>> {
     await this.blogsQueryRepo.findBlog(blogId);
     return this.postsQueryRepo.findPosts(paginationInputModel, userId, blogId);
   }
 
   @Get(`:id`)
-  async findOne(
-    @Param(`id`, ValidateUuidPipe) id: string,
-  ): Promise<BlogViewModel> {
+  async findOne(@Param(`id`, ValidateUuidPipe) id: string): Promise<BlogViewModel> {
     return await this.blogsQueryRepo.findBlog(id);
   }
 }

@@ -1,6 +1,6 @@
 import { BadRequestExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { ConfirmByCodeCommand } from '../confirmation-by-code-command';
 
 @CommandHandler(ConfirmByCodeCommand)

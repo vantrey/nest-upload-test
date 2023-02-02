@@ -2,15 +2,12 @@ import { BadRequestExceptionMY } from '../../../../../helpers/My-HttpExceptionFi
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ResendingCommand } from '../resending-command';
 import { HttpException } from '@nestjs/common';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { MailService } from '../../../../mail/mail.service';
 
 @CommandHandler(ResendingCommand)
 export class ResendingHandler implements ICommandHandler<ResendingCommand> {
-  constructor(
-    private readonly usersRepo: UsersRepositories,
-    private readonly mailService: MailService,
-  ) {}
+  constructor(private readonly usersRepo: UsersRepositories, private readonly mailService: MailService) {}
 
   async execute(command: ResendingCommand): Promise<boolean> {
     const { email } = command.resendingInputModel;
@@ -32,10 +29,7 @@ export class ResendingHandler implements ICommandHandler<ResendingCommand> {
         await this.mailService.sendEmailRecoveryMessage(user.email, user.confirmationCode);
       } catch (error) {
         console.error(error);
-        throw new HttpException(
-          'Service is unavailable. Please try again later. We need saved User',
-          421,
-        );
+        throw new HttpException('Service is unavailable. Please try again later. We need saved User', 421);
       }
       return true;
     }

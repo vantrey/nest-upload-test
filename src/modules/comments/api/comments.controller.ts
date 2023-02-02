@@ -2,10 +2,10 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from '
 import { CommentsQueryRepositories } from '../infrastructure/query-repository/comments-query.repositories';
 import { CommentsViewType } from '../infrastructure/query-repository/comments-View-Model';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
-import { UpdateLikeStatusDto } from '../../posts/api/input-Dtos/update-Like-Status-Model';
+import { UpdateLikeStatusDto } from '../../posts/api/input-Dtos/update-Like-Status.dto';
 import { CommentsService } from '../domain/comments.service';
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
-import { UpdateCommentDto } from './input-Dtos/update-Comment-Dto-Model';
+import { UpdateCommentDto } from './input-Dtos/update-comment.dto';
 import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
 import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
 import { CommandBus } from '@nestjs/cqrs';
@@ -13,7 +13,9 @@ import { DeleteCommentCommand } from '../application/use-cases/delete-comment-co
 import { UpdateCommentCommand } from '../application/use-cases/update-comment-command';
 import { UpdateLikeStatusCommentCommand } from '../application/use-cases/update-like-status-comment-command';
 import { SkipThrottle } from '@nestjs/throttler';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Comments')
 @SkipThrottle()
 @Controller(`comments`)
 export class CommentsController {
@@ -31,9 +33,7 @@ export class CommentsController {
     @Param(`id`, ValidateUuidPipe) id: string,
     @Body() updateLikeStatusInputModel: UpdateLikeStatusDto,
   ): Promise<boolean> {
-    return await this.commandBus.execute(
-      new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId),
-    );
+    return await this.commandBus.execute(new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId));
   }
 
   @UseGuards(JwtAuthGuard)
@@ -51,20 +51,14 @@ export class CommentsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Delete(`/:id`)
-  async deleteCommentById(
-    @CurrentUserId() userId: string,
-    @Param(`id`, ValidateUuidPipe) id: string,
-  ): Promise<boolean> {
+  async deleteCommentById(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<boolean> {
     await this.commandBus.execute(new DeleteCommentCommand(id, userId));
     return true;
   }
 
   @UseGuards(JwtForGetGuard)
   @Get(`/:id`)
-  async findOne(
-    @CurrentUserId() userId: string,
-    @Param(`id`, ValidateUuidPipe) id: string,
-  ): Promise<CommentsViewType> {
+  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentsViewType> {
     return this.commentsQueryRepo.getComment(id, userId);
   }
 }

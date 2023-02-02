@@ -1,4 +1,4 @@
-import { UpdateCommentDto } from '../../api/input-Dtos/update-Comment-Dto-Model';
+import { UpdateCommentDto } from '../../api/input-Dtos/update-comment.dto';
 
 export class UpdateCommentCommand {
   constructor(

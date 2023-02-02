@@ -9,14 +9,13 @@ import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesCommand } from '../application/use-cases/delete-devices-command';
 import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id-command';
 import { SkipThrottle } from '@nestjs/throttler';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('SecurityDevices')
 @SkipThrottle()
 @Controller(`security`)
 export class DevicesController {
-  constructor(
-    private commandBus: CommandBus,
-    private readonly deviceQueryRepositories: DeviceQueryRepositories,
-  ) {}
+  constructor(private commandBus: CommandBus, private readonly deviceQueryRepositories: DeviceQueryRepositories) {}
 
   @UseGuards(RefreshGuard)
   @Get(`/devices`)
@@ -34,10 +33,7 @@ export class DevicesController {
   @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Delete(`/devices/:deviceId`)
-  async deleteByDeviceId(
-    @PayloadRefresh() payloadRefresh: PayloadType,
-    @Param(`deviceId`) deviceId: string,
-  ): Promise<boolean> {
+  async deleteByDeviceId(@PayloadRefresh() payloadRefresh: PayloadType, @Param(`deviceId`) deviceId: string): Promise<boolean> {
     return await this.commandBus.execute(new DeleteDeviceByIdCommand(deviceId, payloadRefresh));
   }
 }

@@ -1,4 +1,4 @@
-import { UpdateBlogDto } from '../../api/input-dtos/update-Blog-Dto-Model';
+import { UpdateBlogDto } from '../../api/input-dtos/update-blog.dto';
 
 export class UpdateBlogCommand {
   constructor(

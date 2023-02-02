@@ -2,10 +2,11 @@ import { UnauthorizedExceptionMY } from '../../../../../helpers/My-HttpException
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { DeviceRepositories } from '../../../../security/infrastructure/device-repositories';
 import { LoginCommand } from '../login-command';
-import { JwtService, TokensType } from '../../jwt.service';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
+import { JwtService } from '../../jwt.service';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { randomUUID } from 'crypto';
 import { Device } from '../../../../../entities/device.entity';
+import { TokensType } from '../../tokensType.dto';
 
 @CommandHandler(LoginCommand)
 export class LoginHandler implements ICommandHandler<LoginCommand> {
@@ -38,15 +39,7 @@ export class LoginHandler implements ICommandHandler<LoginCommand> {
       //preparation data for save device
       const dateCreatedToken = new Date(payloadNew.iat * 1000).toISOString();
       const dateExpiredToken = new Date(payloadNew.exp * 1000).toISOString();
-      const newDevice = Device.createDevice(
-        user.id,
-        ipAddress,
-        deviceName,
-        dateCreatedToken,
-        dateExpiredToken,
-        deviceId,
-        user,
-      );
+      const newDevice = Device.createDevice(user.id, ipAddress, deviceName, dateCreatedToken, dateExpiredToken, deviceId, user);
       //save
       await this.deviceRepo.saveDevice(newDevice);
       return token;

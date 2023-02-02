@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { PostViewModel } from './post-View-Model';
-import { ExtendedLikesInfoViewModel } from './likes-Info-View-Model';
-import { PaginationViewModel } from '../../../../common/pagination-View-Model';
+import { PostViewDto } from './post-view.dto';
+import { ExtendedLikesInfoViewModel } from './likes-Info-view.dto';
+import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
 import {
   BloggerCommentsViewType,
@@ -17,7 +17,7 @@ import { Repository } from 'typeorm';
 import { Comment } from '../../../../entities/comment.entity';
 import { LikePost, LikeStatusType } from '../../../../entities/like-post.entity';
 import { LikeComment } from '../../../../entities/like-comment.entity';
-import { PaginationDto } from '../../../../common/pagination-dto';
+import { PaginationDto } from '../../../../common/pagination.dto';
 
 @Injectable()
 export class PostsQueryRepositories {
@@ -29,7 +29,7 @@ export class PostsQueryRepositories {
     @InjectRepository(BannedBlogUser) private readonly bannedBlogUserRepo: Repository<BannedBlogUser>,
   ) {}
 
-  private async postForView(post: Post, userId: string | null): Promise<PostViewModel> {
+  private async postForView(post: Post, userId: string | null): Promise<PostViewDto> {
     //find likes status
     let myStatus: string = LikeStatusType.None;
     if (userId) {
@@ -59,7 +59,7 @@ export class PostsQueryRepositories {
       return { addedAt: e.addedAt, userId: e.userId, login: e.user.login };
     });
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(countLike, countDislike, myStatus, newestLikes);
-    return new PostViewModel(
+    return new PostViewDto(
       post.id,
       post.title,
       post.shortDescription,
@@ -71,7 +71,7 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewModel<PostViewModel[]>> {
+  async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewDto<PostViewDto[]>> {
     const { sortDirection, sortBy, pageSize } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -101,10 +101,10 @@ export class PostsQueryRepositories {
     //counting blogs user
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found posts with pagination
-    return new PaginationViewModel(pagesCountRes, data.pageNumber, data.pageSize, count, itemsPosts);
+    return new PaginationViewDto(pagesCountRes, data.pageNumber, data.pageSize, count, itemsPosts);
   }
 
-  async findPost(id: string, userId: string | null): Promise<PostViewModel> {
+  async findPost(id: string, userId: string | null): Promise<PostViewDto> {
     //find post by id from uri params
     const post = await this.postRepo.findOne({
       select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt'],
@@ -117,7 +117,11 @@ export class PostsQueryRepositories {
     return this.postForView(post, userId);
   }
 
-  async findCommentsByIdPost(postId: string, data: PaginationDto, userId: string | null): Promise<PaginationViewModel<CommentsViewType[]>> {
+  async findCommentsByIdPost(
+    postId: string,
+    data: PaginationDto,
+    userId: string | null,
+  ): Promise<PaginationViewDto<CommentsViewType[]>> {
     const { sortDirection, sortBy, pageSize } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -143,7 +147,7 @@ export class PostsQueryRepositories {
     const itemsComments = await Promise.all(mappedComments);
     const pagesCountRes = Math.ceil(count / data.pageSize);
     //returning comment with pagination
-    return new PaginationViewModel(pagesCountRes, data.pageNumber, data.pageSize, count, itemsComments);
+    return new PaginationViewDto(pagesCountRes, data.pageNumber, data.pageSize, count, itemsComments);
   }
 
   private async commentByIdPostForView(object: Comment, userId: string | null): Promise<CommentsViewType> {
@@ -177,10 +181,10 @@ export class PostsQueryRepositories {
     return new CommentsViewType(object.id, object.content, object.userId, object.user.login, object.createdAt, likesInfo);
   }
 
-  async mappedPostForView(post: Post): Promise<PostViewModel> {
+  async mappedPostForView(post: Post): Promise<PostViewDto> {
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(0, 0, LikeStatusType.None, []);
     //returning created post with extended likes info for View
-    return new PostViewModel(
+    return new PostViewDto(
       post.id,
       post.title,
       post.shortDescription,
@@ -216,7 +220,7 @@ export class PostsQueryRepositories {
     // pages count
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found posts with pagination
-    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, items);
+    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
   }
 
   private async commentBloggerForPostView(object: Comment, userId: string) {

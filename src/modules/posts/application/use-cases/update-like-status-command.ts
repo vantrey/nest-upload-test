@@ -1,4 +1,4 @@
-import { UpdateLikeStatusDto } from '../../api/input-Dtos/update-Like-Status-Model';
+import { UpdateLikeStatusDto } from '../../api/input-Dtos/update-Like-Status.dto';
 
 export class UpdateLikeStatusCommand {
   constructor(

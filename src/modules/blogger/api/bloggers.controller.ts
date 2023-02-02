@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
-import { CreatePostDto } from '../../posts/api/input-Dtos/create-Post-Dto-Model';
+import { CreatePostDto } from '../../posts/api/input-Dtos/create-post.dto';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
-import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-View-Model';
+import { PostViewDto } from '../../posts/infrastructure/query-repositories/post-view.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../application/use-cases/create-blog-command';
 import { DeleteBlogCommand } from '../application/use-cases/delete-blog-command';
@@ -9,22 +9,26 @@ import { UpdateBlogCommand } from '../application/use-cases/update-blog-command'
 import { CreatePostCommand } from '../application/use-cases/create-post-command';
 import { BlogsQueryRepositories } from '../../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
-import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-Blog-Dto';
-import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-View-Model';
-import { PaginationViewModel } from '../../../common/pagination-View-Model';
+import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-blog.dto';
+import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { UpdatePostCommand } from '../application/use-cases/update-post-command';
 import { DeletePostCommand } from '../application/use-cases/delete-post-command';
 import { CurrentUserIdBlogger } from '../../../decorators/current-user-id.param.decorator';
-import { CreateBlogDto } from './input-dtos/create-Blog-Dto-Model';
-import { UpdateBlogDto } from './input-dtos/update-Blog-Dto-Model';
-import { UpdateBanInfoForUserDto } from './input-dtos/update-ban-info-for-User-Dto-Model';
+import { CreateBlogDto } from './input-dtos/create-blog.dto';
+import { UpdateBlogDto } from './input-dtos/update-blog.dto';
+import { UpdateBanInfoForUserDto } from './input-dtos/update-ban-info-for-user.dto';
 import { UpdateBanUserForCurrentBlogCommand } from '../application/use-cases/update-ban-User-For-Current-Blog-command';
 import { PostsQueryRepositories } from '../../posts/infrastructure/query-repositories/posts-query.reposit';
 import { ForbiddenExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { SkipThrottle } from '@nestjs/throttler';
-import { PaginationUsersByLoginDto } from '../../blogs/api/input-Dtos/pagination-Users-By-Login-Dto';
-import { PaginationDto } from '../../../common/pagination-dto';
+import { PaginationUsersByLoginDto } from '../../blogs/api/input-Dtos/pagination-users-by-login.dto';
+import { PaginationDto } from '../../../common/pagination.dto';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
+import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-view.dto';
 
+@ApiTags('Blogger')
+@ApiBearerAuth()
 @SkipThrottle()
 @UseGuards(JwtAuthGuard)
 @Controller(`blogger`)
@@ -56,12 +60,17 @@ export class BloggersController {
     return await this.commandBus.execute(new UpdateBlogCommand(userId, blogId, blogInputModel));
   }
 
+  @ApiResponse({ status: 201, description: 'Returns the newly created post', type: PostViewDto })
+  @ApiResponse({ status: 400, description: 'Incorrect input data for create post', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'User not Unauthorized' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
+  @ApiResponse({ status: 404, description: 'Not found blog' })
   @Post(`blogs/:blogId/posts`)
   async createPost(
     @CurrentUserIdBlogger() userId: string,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Body() postInputModel: CreatePostDto,
-  ): Promise<PostViewModel> {
+  ): Promise<PostViewDto> {
     return this.commandBus.execute(new CreatePostCommand(postInputModel, blogId, userId));
   }
 
@@ -86,6 +95,9 @@ export class BloggersController {
     return await this.commandBus.execute(new DeletePostCommand(userId, blogId, postId));
   }
 
+  @ApiResponse({ status: 201, description: 'Returns the newly created blog', type: BlogViewModel })
+  @ApiResponse({ status: 400, description: 'Incorrect input data for create blog', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'User not Unauthorized' })
   @Post(`blogs`)
   async createBlog(@CurrentUserIdBlogger() userId: string, @Body() blogInputModel: CreateBlogDto): Promise<BlogViewModel> {
     const blogId = await this.commandBus.execute(new CreateBlogCommand(userId, blogInputModel));
@@ -96,7 +108,7 @@ export class BloggersController {
   async findAll(
     @CurrentUserIdBlogger() userId: string,
     @Query() paginationInputModel: PaginationBlogDto,
-  ): Promise<PaginationViewModel<BlogViewModel[]>> {
+  ): Promise<PaginationViewDto<BlogViewModel[]>> {
     return await this.blogsQueryRepo.findBlogsForCurrentBlogger(paginationInputModel, userId);
   }
 

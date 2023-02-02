@@ -6,8 +6,8 @@ import { Question } from '../../../../entities/question.entity';
 import { Answer } from '../../../../entities/answer.entity';
 import { AnswerViewModel, GamePlayerProgressViewModel, GameViewModel, PLayerViewModel } from './game-View-Model';
 import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/question-for-sa-view-model';
-import { PaginationViewModel } from '../../../../common/pagination-View-Model';
-import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz-Dto';
+import { PaginationViewDto } from '../../../../common/pagination-View.dto';
+import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz.dto';
 
 export class QuizQueryRepositories {
   constructor(
@@ -117,14 +117,8 @@ export class QuizQueryRepositories {
     });
     // return this.mappedGameForView(game);
     const firstPlayer = new PLayerViewModel(game.firstPlayerProgress.userId, game.firstPlayerProgress.login);
-    const answersFirstPlayer = await Promise.all(
-      game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)),
-    );
-    const firstPlayerProgress = new GamePlayerProgressViewModel(
-      answersFirstPlayer,
-      firstPlayer,
-      game.firstPlayerProgress.score,
-    );
+    const answersFirstPlayer = await Promise.all(game.firstPlayerProgress.answers.map((a) => this.mappedAnswerForView(a)));
+    const firstPlayerProgress = new GamePlayerProgressViewModel(answersFirstPlayer, firstPlayer, game.firstPlayerProgress.score);
     return new GameViewModel(
       game.id,
       firstPlayerProgress,
@@ -146,7 +140,7 @@ export class QuizQueryRepositories {
     return this.mappedGameForView(game);
   }
 
-  async getGames(userId: string, data: PaginationQuizDto): Promise<PaginationViewModel<GameViewModel[]>> {
+  async getGames(userId: string, data: PaginationQuizDto): Promise<PaginationViewDto<GameViewModel[]>> {
     const { pageNumber, pageSize, sortBy, sortDirection } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -173,6 +167,6 @@ export class QuizQueryRepositories {
     const mappedGames = games.map((game) => this.mappedGameForView(game));
     const items = await Promise.all(mappedGames);
     const pagesCountRes = Math.ceil(count / pageSize);
-    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, items);
+    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
   }
 }

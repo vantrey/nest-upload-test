@@ -3,8 +3,8 @@ import { ILike, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuestionForSaViewModel } from './question-for-sa-view-model';
 import { Question } from '../../../../entities/question.entity';
-import { PaginationViewModel } from '../../../../common/pagination-View-Model';
-import { PaginationQuestionDto } from '../../api/input-dtos/pagination-Question-Dto';
+import { PaginationViewDto } from '../../../../common/pagination-View.dto';
+import { PaginationQuestionDto } from '../../api/input-dtos/pagination-Question.dto';
 
 @Injectable()
 export class QuestionQueryRepository {
@@ -31,7 +31,7 @@ export class QuestionQueryRepository {
     return this.mappedForQuestion(user);
   }
 
-  async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewModel<QuestionForSaViewModel[]>> {
+  async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewDto<QuestionForSaViewModel[]>> {
     const { bodySearchTerm, publishedStatus, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -64,6 +64,6 @@ export class QuestionQueryRepository {
     const mappedBlogs = question.map((q) => this.mappedForQuestion(q));
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewModel(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
+    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
   }
 }

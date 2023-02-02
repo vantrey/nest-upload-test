@@ -1,26 +1,28 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { BlogsQueryRepositories } from '../../blogs/infrastructure/query-repository/blogs-query.repositories';
-import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-Blog-Dto';
-import { PaginationViewModel } from '../../../common/pagination-View-Model';
-import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-View-Model';
+import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-blog.dto';
+import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { BindBlogCommand } from '../application/use-cases/bindBlogCommand';
-import { UpdateBanInfoForBlogDto } from './input-dtos/update-ban-info-for-blog-Dto-Model';
+import { UpdateBanInfoForBlogDto } from './input-dtos/update-ban-info-for-blog.dto';
 import { UpdateBanInfoForBlogCommand } from '../application/use-cases/updateBanInfoForBlogCommand';
 import { SkipThrottle } from '@nestjs/throttler';
-import { CreateQuestionDto } from './input-dtos/create-Question-Dto-Model';
+import { CreateQuestionDto } from './input-dtos/create-Question.dto';
 import { CreateQuestionCommand } from '../application/use-cases/create-question-command';
 import { QuestionForSaViewModel } from '../infrastructure/query-reposirory/question-for-sa-view-model';
 import { DeleteQuestionCommand } from '../application/use-cases/delete-question-command';
 import { UpdateQuestionCommand } from '../application/use-cases/update-question-command';
-import { PublisherQuestionDto } from './input-dtos/publisher-question-Dto-Model';
+import { PublisherQuestionDto } from './input-dtos/publisher-question.dto';
 import { PublishQuestionCommand } from '../application/use-cases/publish-question-command';
-import { PaginationQuestionDto } from './input-dtos/pagination-Question-Dto';
+import { PaginationQuestionDto } from './input-dtos/pagination-Question.dto';
 import { QuestionQueryRepository } from '../infrastructure/query-reposirory/question-query.reposit';
+import { ApiTags } from '@nestjs/swagger';
+import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-view.dto';
 
 @SkipThrottle()
+@ApiTags('QuizQuestions & Blogs')
 @UseGuards(BasicAuthGuard)
 @Controller(`sa`)
 export class SaController {
@@ -46,14 +48,12 @@ export class SaController {
   }
 
   @Get(`blogs`)
-  async findAll(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewModel<BlogViewModel[]>> {
+  async findAll(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel[]>> {
     return await this.blogsQueryRepo.findBlogsForSa(paginationInputModel);
   }
 
   @Get(`quiz/questions`)
-  async getQuestions(
-    @Query() paginationInputModel: PaginationQuestionDto,
-  ): Promise<PaginationViewModel<QuestionForSaViewModel[]>> {
+  async getQuestions(@Query() paginationInputModel: PaginationQuestionDto): Promise<PaginationViewDto<QuestionForSaViewModel[]>> {
     return await this.questionQueryRepo.getQuestions(paginationInputModel);
   }
 

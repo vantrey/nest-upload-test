@@ -3,10 +3,10 @@ import { PostsRepositories } from '../../../infrastructure/posts-repositories';
 import { CreateCommentCommand } from '../create-comment-command';
 import { CommentsViewType } from '../../../../comments/infrastructure/query-repository/comments-View-Model';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
-import { UsersQueryRepositories } from '../../../../users/infrastructure/query-reposirory/users-query.reposit';
+import { UsersQueryRepositories } from '../../../../sa-users/infrastructure/query-reposirory/users-query.reposit';
 import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
 import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
-import { UsersRepositories } from '../../../../users/infrastructure/users-repositories';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { Comment } from '../../../../../entities/comment.entity';
 
 @CommandHandler(CreateCommentCommand)

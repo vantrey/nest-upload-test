@@ -1,4 +1,4 @@
-import { CreatePostDto } from '../../../posts/api/input-Dtos/create-Post-Dto-Model';
+import { CreatePostDto } from '../../../posts/api/input-Dtos/create-post.dto';
 
 export class UpdatePostCommand {
   constructor(

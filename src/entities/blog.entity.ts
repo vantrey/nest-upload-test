@@ -1,4 +1,4 @@
-import { UpdateBlogDto } from '../modules/blogger/api/input-dtos/update-Blog-Dto-Model';
+import { UpdateBlogDto } from '../modules/blogger/api/input-dtos/update-blog.dto';
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { User } from './user.entity';
 import { BannedBlogUser } from './banned-blog-user.entity';
