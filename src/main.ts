@@ -16,39 +16,17 @@ async function bootstrap() {
   const dev = configService.get('dev', { infer: true });
   const finishedApp = createdApp(app);
 
-  // const getInstagramSetupSwagger = (app: INestApplication) => {
-  //   const instagramOptions = new DocumentBuilder().setTitle('Blogger with quiz game').setVersion('1.0').build();
-  //
-  //   const instagramDocument = SwaggerModule.createDocument(app, instagramOptions, {
-  //     include: [UsersController],
-  //   });
-  //
-  //   return SwaggerModule.setup('api/sa', app, instagramDocument);
-  // };
-  //
-  // getInstagramSetupSwagger(finishedApp);
   const config = new DocumentBuilder()
     .setTitle('Blogger with quiz game')
     .setDescription('The blogger API description')
     .setVersion('1.0')
     .addBearerAuth()
-    .addCookieAuth()
     .addBasicAuth()
     .addTag('bloggers')
     .build();
-  //
-  // const config_sa = new DocumentBuilder()
-  //   .setTitle('Blogger with quiz game')
-  //   .setDescription('The blogger API description')
-  //   .setVersion('1.0')
-  //   .addBasicAuth()
-  //   .addTag('sa')
-  //   .build();
 
   const document = SwaggerModule.createDocument(finishedApp, config);
-  // const document_sa = SwaggerModule.createDocument(finishedApp, config_sa);
   SwaggerModule.setup('api', finishedApp, document);
-  // SwaggerModule.setup('api/sa', finishedApp, document_sa);
 
   await finishedApp.listen(port).then(async () => console.log(`Server is listening on ${await app.getUrl()}`));
 
