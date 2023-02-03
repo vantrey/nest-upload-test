@@ -7,10 +7,10 @@ import { TestingModule } from './modules/testing/testing.module';
 import { ConfigType, getConfiguration } from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './modules/sa-users/api/users.controller';
-import { CreateUserHandler } from './modules/sa-users/application/use-cases/handlers/create-user-handler';
-import { CreateUserSaHandler } from './modules/sa-users/application/use-cases/handlers/create-user-sa-handler';
-import { DeleteUserHandler } from './modules/sa-users/application/use-cases/handlers/delete-user-handler';
-import { UpdateBanInfoHandler } from './modules/sa-users/application/use-cases/handlers/update-ban-info-handler';
+import { CreateUserHandler } from './modules/sa-users/application/use-cases/handlers/create-user.handler';
+import { CreateUserSaHandler } from './modules/sa-users/application/use-cases/handlers/create-user-sa.handler';
+import { DeleteUserHandler } from './modules/sa-users/application/use-cases/handlers/delete-user.handler';
+import { UpdateBanInfoHandler } from './modules/sa-users/application/use-cases/handlers/update-ban-info.handler';
 import { JwtService } from './modules/auth/application/jwt.service';
 import { MailService } from './modules/mail/mail.service';
 import { UsersRepositories } from './modules/sa-users/infrastructure/users-repositories';
@@ -21,49 +21,49 @@ import { CommentsRepositories } from './modules/comments/infrastructure/comments
 import { BasicAuthGuard } from './guards/basic-auth.guard';
 import { UsersService } from './modules/sa-users/domain/users.service';
 import { CqrsModule } from '@nestjs/cqrs';
-import { DeleteDevicesHandler } from './modules/security/application/use-cases/handlers/delete-devices-handler';
-import { DeleteDeviceByIdHandler } from './modules/security/application/use-cases/handlers/delete-device-by-id-handler';
+import { DeleteDevicesHandler } from './modules/security/application/use-cases/handlers/delete-devices.handler';
+import { DeleteDeviceByIdHandler } from './modules/security/application/use-cases/handlers/delete-device-by-id.handler';
 import { DevicesController } from './modules/security/api/devices.controller';
 import { DeviceQueryRepositories } from './modules/security/infrastructure/query-repository/device-query.repositories';
-import { BindBlogHandler } from './modules/sa/application/use-cases/handlers/bind-blog-handler';
-import { UpdateBanInfoForBlogHandler } from './modules/sa/application/use-cases/handlers/update-ban-info-for-blog-handler';
+import { BindBlogHandler } from './modules/sa/application/use-cases/handlers/bind-blog.handler';
+import { UpdateBanInfoForBlogHandler } from './modules/sa/application/use-cases/handlers/update-ban-info-for-blog.handler';
 import { BlogsQueryRepositories } from './modules/blogs/infrastructure/query-repository/blogs-query.repositories';
 import { BlogsRepositories } from './modules/blogs/infrastructure/blogs.repositories';
 import { SaController } from './modules/sa/api/sa.controller';
 import { SaService } from './modules/sa/domain/sa.service';
-import { CreateCommentHandler } from './modules/posts/application/use-cases/handlers/create-comment-handler';
-import { UpdateLikeStatusPostHandler } from './modules/posts/application/use-cases/handlers/update-like-status-post-handler';
+import { CreateCommentHandler } from './modules/posts/application/use-cases/handlers/create-comment.handler';
+import { UpdateLikeStatusPostHandler } from './modules/posts/application/use-cases/handlers/update-like-status-post.handler';
 import { PostsQueryRepositories } from './modules/posts/infrastructure/query-repositories/posts-query.reposit';
 import { CommentsQueryRepositories } from './modules/comments/infrastructure/query-repository/comments-query.repositories';
 import { JwtAuthGuard } from './guards/jwt-auth-bearer.guard';
 import { JwtForGetGuard } from './guards/jwt-auth-bearer-for-get.guard';
 import { PostsController } from './modules/posts/api/posts.controller';
 import { PostsService } from './modules/posts/domain/posts.service';
-import { DeleteCommentHandler } from './modules/comments/application/use-cases/handlers/delete-comment-handler';
-import { UpdateCommentHandler } from './modules/comments/application/use-cases/handlers/update-comment-handler';
-import { UpdateLikeStatusCommentHandler } from './modules/comments/application/use-cases/handlers/update-like-status-comment-handler';
+import { DeleteCommentHandler } from './modules/comments/application/use-cases/handlers/delete-comment.handler';
+import { UpdateCommentHandler } from './modules/comments/application/use-cases/handlers/update-comment.handler';
+import { UpdateLikeStatusCommentHandler } from './modules/comments/application/use-cases/handlers/update-like-status-comment.handler';
 import { CommentsController } from './modules/comments/api/comments.controller';
 import { CommentsService } from './modules/comments/domain/comments.service';
 import { BlogsController } from './modules/blogs/api/blogs.controller';
 import { BlogsService } from './modules/blogs/domain/blogs.service';
 import { BasicStrategy } from './strategies/basic.strategy';
-import { CreateBlogHandler } from './modules/blogger/application/use-cases/handlers/create-blog-handler';
-import { DeleteBlogHandler } from './modules/blogger/application/use-cases/handlers/delete-blog-handler';
-import { UpdateBlogHandler } from './modules/blogger/application/use-cases/handlers/update-blog-handler';
-import { CreatePostHandler } from './modules/blogger/application/use-cases/handlers/create-post-handler';
-import { DeletePostHandler } from './modules/blogger/application/use-cases/handlers/delete-post-handler';
-import { UpdatePostHandler } from './modules/blogger/application/use-cases/handlers/update-post-handler';
-import { UpdateBanUserForCurrentBlogHandler } from './modules/blogger/application/use-cases/handlers/update-ban-user-for-current-blog-handler';
+import { CreateBlogHandler } from './modules/blogger/application/use-cases/handlers/create-blog.handler';
+import { DeleteBlogHandler } from './modules/blogger/application/use-cases/handlers/delete-blog.handler';
+import { UpdateBlogHandler } from './modules/blogger/application/use-cases/handlers/update-blog.handler';
+import { CreatePostHandler } from './modules/blogger/application/use-cases/handlers/create-post.handler';
+import { DeletePostHandler } from './modules/blogger/application/use-cases/handlers/delete-post.handler';
+import { UpdatePostHandler } from './modules/blogger/application/use-cases/handlers/update-post.handler';
+import { UpdateBanUserForCurrentBlogHandler } from './modules/blogger/application/use-cases/handlers/update-ban-user-for-current-blog.handler';
 import { BloggersController } from './modules/blogger/api/bloggers.controller';
 import { BlogUuidIdValidator } from './validators/is-uuid-id-validator.service';
 import { BloggersService } from './modules/blogger/domain/bloggers.service';
-import { LogoutHandler } from './modules/auth/application/use-cases/handlers/logout-handler';
-import { ResendingHandler } from './modules/auth/application/use-cases/handlers/resending-handler';
-import { ConfirmByCodeHandler } from './modules/auth/application/use-cases/handlers/confirmation-by-code-handler';
-import { NewPasswordHandler } from './modules/auth/application/use-cases/handlers/new-password-handler';
-import { RecoveryHandler } from './modules/auth/application/use-cases/handlers/recovery-handler';
-import { LoginHandler } from './modules/auth/application/use-cases/handlers/login-handler';
-import { RefreshHandler } from './modules/auth/application/use-cases/handlers/refresh-handler';
+import { LogoutHandler } from './modules/auth/application/use-cases/handlers/logout.handler';
+import { ResendingHandler } from './modules/auth/application/use-cases/handlers/resending.handler';
+import { ConfirmByCodeHandler } from './modules/auth/application/use-cases/handlers/confirmation-by-code.handler';
+import { NewPasswordHandler } from './modules/auth/application/use-cases/handlers/new-password.handler';
+import { RecoveryHandler } from './modules/auth/application/use-cases/handlers/recovery.handler';
+import { LoginHandler } from './modules/auth/application/use-cases/handlers/login.handler';
+import { RefreshHandler } from './modules/auth/application/use-cases/handlers/refresh.handler';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AuthController } from './modules/auth/api/auth.controller';
 import { User } from './entities/user.entity';
@@ -74,20 +74,20 @@ import { Post } from './entities/post.entity';
 import { LikeComment } from './entities/like-comment.entity';
 import { LikePost } from './entities/like-post.entity';
 import { Comment } from './entities/comment.entity';
-import { CreateQuestionHandler } from './modules/sa/application/use-cases/handlers/create-question-handler';
+import { CreateQuestionHandler } from './modules/sa/application/use-cases/handlers/create-question.handler';
 import { Question } from './entities/question.entity';
 import { QuestionRepository } from './modules/sa/infrastructure/question.reposit';
 import { QuestionQueryRepository } from './modules/sa/infrastructure/query-reposirory/question-query.reposit';
-import { DeleteQuestionHandler } from './modules/sa/application/use-cases/handlers/delete-question-handler';
-import { UpdateQuestionHandler } from './modules/sa/application/use-cases/handlers/update-question-handler';
-import { PublishQuestionHandler } from './modules/sa/application/use-cases/handlers/publish-question-handler';
+import { DeleteQuestionHandler } from './modules/sa/application/use-cases/handlers/delete-question.handler';
+import { UpdateQuestionHandler } from './modules/sa/application/use-cases/handlers/update-question.handler';
+import { PublishQuestionHandler } from './modules/sa/application/use-cases/handlers/publish-question.handler';
 import { Answer } from './entities/answer.entity';
 import { Player } from './entities/player.entity';
 import { Game } from './entities/game.entity';
 import { QuizRepositories } from './modules/quiz/infrastructure/quiz-repositories';
 import { QuizController } from './modules/quiz/api/quiz.controller';
-import { ConnectionQuizHandler } from './modules/quiz/application/use-case/handlers/connection-quiz-handler';
-import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz-handler';
+import { ConnectionQuizHandler } from './modules/quiz/application/use-case/handlers/connection-quiz.handler';
+import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz.handler';
 import { QuizQueryRepositories } from './modules/quiz/infrastructure/query-repository/quiz-query-repositories';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -173,20 +173,7 @@ const handlers = [
   ConnectionQuizHandler,
   AnswerQuizHandler,
 ];
-const entities = [
-  User,
-  Device,
-  Blog,
-  BannedBlogUser,
-  Post,
-  Comment,
-  LikePost,
-  LikeComment,
-  Question,
-  Answer,
-  Player,
-  Game,
-];
+const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, LikeComment, Question, Answer, Player, Game];
 
 @Module({
   imports: [

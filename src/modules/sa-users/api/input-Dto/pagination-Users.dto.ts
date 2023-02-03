@@ -20,13 +20,11 @@ export class PaginationUsersDto extends PaginationDto {
    */
   @IsString()
   @IsOptional()
-  // @ApiProperty()
-  searchLoginTerm: string = '';
+  searchLoginTerm?: string = '';
   /**
    *  Search term for user Email: Email should contain this term in any position
    */
   @IsString()
   @IsOptional()
-  // @ApiProperty()
-  searchEmailTerm: string = '';
+  searchEmailTerm?: string = '';
 }

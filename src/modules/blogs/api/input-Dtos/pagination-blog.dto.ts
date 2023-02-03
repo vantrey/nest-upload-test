@@ -7,5 +7,5 @@ export class PaginationBlogDto extends PaginationDto {
    */
   @IsString()
   @IsOptional()
-  searchNameTerm: string = '';
+  searchNameTerm?: string = '';
 }

@@ -1,10 +1,10 @@
 import { Body, Controller, Get, HttpCode, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUserIdBlogger } from '../../../decorators/current-user-id.param.decorator';
-import { ConnectionQuizCommand } from '../application/use-case/connection-quiz-command';
+import { ConnectionQuizCommand } from '../application/use-case/connection-quiz.command';
 import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
 import { AnswerDto } from './input-dtos/create-answer.dto';
-import { AnswerQuizCommand } from '../application/use-case/answer-quiz-command';
+import { AnswerQuizCommand } from '../application/use-case/answer-quiz.command';
 import { QuizRepositories } from '../infrastructure/quiz-repositories';
 import { ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
 import { QuizQueryRepositories } from '../infrastructure/query-repository/quiz-query-repositories';

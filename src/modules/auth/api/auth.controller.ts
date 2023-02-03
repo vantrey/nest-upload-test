@@ -14,15 +14,15 @@ import { MeViewDto } from '../infrastructure/me-view.dto';
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
 import { SkipThrottle } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../../sa-users/application/use-cases/create-user-command';
-import { LogoutCommand } from '../application/use-cases/logout-command';
-import { ResendingCommand } from '../application/use-cases/resending-command';
-import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code-command';
-import { NewPasswordCommand } from '../application/use-cases/new-password-command';
-import { RecoveryCommand } from '../application/use-cases/recovery-command';
-import { LoginCommand } from '../application/use-cases/login-command';
-import { RefreshCommand } from '../application/use-cases/refresh-command';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateUserCommand } from '../../sa-users/application/use-cases/create-user.command';
+import { LogoutCommand } from '../application/use-cases/logout.command';
+import { ResendingCommand } from '../application/use-cases/resending.command';
+import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.command';
+import { NewPasswordCommand } from '../application/use-cases/new-password.command';
+import { RecoveryCommand } from '../application/use-cases/recovery.command';
+import { LoginCommand } from '../application/use-cases/login.command';
+import { RefreshCommand } from '../application/use-cases/refresh.command';
+import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokensType } from '../application/tokensType.dto';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { TokenTypeSwaggerDto } from '../../../swagger/token-type-swagger.dto';
@@ -32,6 +32,7 @@ import { TokenTypeSwaggerDto } from '../../../swagger/token-type-swagger.dto';
 export class AuthController {
   constructor(private readonly usersQueryRepositories: UsersQueryRepositories, private commandBus: CommandBus) {}
 
+  @ApiHeader({ name: 'password-recovery' })
   @ApiOperation({ summary: 'Password recovery via Email confirmation. Email should be sent with RecoveryCode inside' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'Incorrect input data by field' })

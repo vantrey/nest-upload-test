@@ -5,24 +5,25 @@ import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-blog.dt
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
-import { BindBlogCommand } from '../application/use-cases/bindBlogCommand';
+import { BindBlogCommand } from '../application/use-cases/bind-blog.command';
 import { UpdateBanInfoForBlogDto } from './input-dtos/update-ban-info-for-blog.dto';
-import { UpdateBanInfoForBlogCommand } from '../application/use-cases/updateBanInfoForBlogCommand';
+import { UpdateBanInfoForBlogCommand } from '../application/use-cases/update-ban-info-for-blog.command';
 import { SkipThrottle } from '@nestjs/throttler';
 import { CreateQuestionDto } from './input-dtos/create-Question.dto';
-import { CreateQuestionCommand } from '../application/use-cases/create-question-command';
+import { CreateQuestionCommand } from '../application/use-cases/create-question.command';
 import { QuestionForSaViewModel } from '../infrastructure/query-reposirory/question-for-sa-view.dto';
-import { DeleteQuestionCommand } from '../application/use-cases/delete-question-command';
-import { UpdateQuestionCommand } from '../application/use-cases/update-question-command';
+import { DeleteQuestionCommand } from '../application/use-cases/delete-question.command';
+import { UpdateQuestionCommand } from '../application/use-cases/update-question.command';
 import { PublisherQuestionDto } from './input-dtos/publisher-question.dto';
-import { PublishQuestionCommand } from '../application/use-cases/publish-question-command';
+import { PublishQuestionCommand } from '../application/use-cases/publish-question.command';
 import { PaginationQuestionDto } from './input-dtos/pagination-Question.dto';
 import { QuestionQueryRepository } from '../infrastructure/query-reposirory/question-query.reposit';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-view.dto';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 
+@ApiBasicAuth()
 @SkipThrottle()
 @ApiTags('QuizQuestions & Blogs')
 @UseGuards(BasicAuthGuard)

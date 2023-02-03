@@ -11,23 +11,20 @@ window.onload = function() {
   "swaggerDoc": {
     "openapi": "3.0.0",
     "paths": {
-      "/": {
-        "get": {
-          "operationId": "AppController_getHello",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": ""
-            }
-          }
-        }
-      },
       "/auth/password-recovery": {
         "post": {
           "operationId": "AuthController_recovery",
           "summary": "Password recovery via Email confirmation. Email should be sent with RecoveryCode inside",
           "description": "",
-          "parameters": [],
+          "parameters": [
+            {
+              "name": "password-recovery",
+              "in": "header",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
           "requestBody": {
             "required": true,
             "content": {
@@ -404,7 +401,7 @@ window.onload = function() {
             },
             {
               "name": "searchLoginTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for user Login: Login should contain this term in any position",
               "schema": {
@@ -414,7 +411,7 @@ window.onload = function() {
             },
             {
               "name": "searchEmailTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for user Email: Email should contain this term in any position",
               "schema": {
@@ -636,6 +633,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         }
       },
@@ -682,6 +684,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         }
       },
@@ -693,7 +700,7 @@ window.onload = function() {
           "parameters": [
             {
               "name": "searchNameTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for blog Name: Name should contain this term in any position",
               "schema": {
@@ -777,6 +784,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         }
       },
@@ -803,7 +815,7 @@ window.onload = function() {
             },
             {
               "name": "bodySearchTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for body",
               "schema": {
@@ -887,6 +899,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         },
         "post": {
@@ -921,6 +938,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         }
       },
@@ -952,6 +974,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         },
         "put": {
@@ -1001,6 +1028,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         }
       },
@@ -1049,6 +1081,11 @@ window.onload = function() {
           },
           "tags": [
             "QuizQuestions & Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
           ]
         }
       },
@@ -1140,7 +1177,7 @@ window.onload = function() {
           "parameters": [
             {
               "name": "searchNameTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for blog Name: Name should contain this term in any position",
               "schema": {
@@ -1240,7 +1277,7 @@ window.onload = function() {
             },
             {
               "name": "searchNameTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for blog Name: Name should contain this term in any position",
               "schema": {
@@ -1606,7 +1643,7 @@ window.onload = function() {
           "parameters": [
             {
               "name": "searchNameTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for blog Name: Name should contain this term in any position",
               "schema": {
@@ -1989,7 +2026,7 @@ window.onload = function() {
             },
             {
               "name": "searchLoginTerm",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Search term for user Login: Login should contain this term in any position",
               "schema": {
@@ -2803,22 +2840,6 @@ window.onload = function() {
             }
           ]
         }
-      },
-      "/testing/all-data": {
-        "delete": {
-          "operationId": "TestingController_deleteDB",
-          "summary": "Clear database: delete all data from all tables/collections",
-          "description": "",
-          "parameters": [],
-          "responses": {
-            "204": {
-              "description": "success"
-            }
-          },
-          "tags": [
-            "Testing"
-          ]
-        }
       }
     },
     "info": {
@@ -2827,12 +2848,7 @@ window.onload = function() {
       "version": "1.0",
       "contact": {}
     },
-    "tags": [
-      {
-        "name": "bloggers",
-        "description": ""
-      }
-    ],
+    "tags": [],
     "servers": [],
     "components": {
       "securitySchemes": {

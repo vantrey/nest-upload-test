@@ -20,5 +20,5 @@ export class PaginationQuestionDto extends PaginationDto {
    */
   @IsString()
   @IsOptional()
-  bodySearchTerm: string = '';
+  bodySearchTerm?: string = '';
 }

@@ -3,9 +3,9 @@ import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ConfigType } from './config/configuration';
 import { createdApp } from './helpers/createdApp';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { createWriteStream } from 'fs';
 import { get } from 'http';
+import { getSetupSwagger } from './swagger/getSetupSwagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -13,24 +13,11 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService<ConfigType>);
   const port = configService.get('PORT', { infer: true });
-  const dev = configService.get('dev', { infer: true });
   const finishedApp = createdApp(app);
-
-  const config = new DocumentBuilder()
-    .setTitle('Blogger with quiz game')
-    .setDescription('The blogger API description')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .addBasicAuth()
-    .addTag('bloggers')
-    .build();
-
-  const document = SwaggerModule.createDocument(finishedApp, config);
-  SwaggerModule.setup('api', finishedApp, document);
-
+  getSetupSwagger(finishedApp);
   await finishedApp.listen(port).then(async () => console.log(`Server is listening on ${await app.getUrl()}`));
-
   // get the swagger json file (if app is running in development mode)
+  const dev = configService.get('dev', { infer: true });
   if (dev.NODE_ENV === 'development') {
     const serverUrl = `http://localhost:${port}`;
     // write swagger ui files
@@ -57,16 +44,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
-/*export const getInstagramSetupSwagger = (app: INestApplication) => {
-    const instagramOptions = new DocumentBuilder()
-        .setTitle('Instagram API Docs')
-        .setVersion('1.0')
-        .build();
-
-    const instagramDocument = SwaggerModule.createDocument(app, instagramOptions, {
-        include: [InstagramModule],
-    });
-
-    return SwaggerModule.setup('api/instagram', app, instagramDocument);
-}*/

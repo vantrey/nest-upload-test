@@ -9,8 +9,8 @@ import { CurrentUserId } from '../../../decorators/current-user-id.param.decorat
 import { CreateCommentDto } from './input-Dtos/create-comment.dto';
 import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateCommentCommand } from '../application/use-cases/create-comment-command';
-import { UpdateLikeStatusCommand } from '../application/use-cases/update-like-status-command';
+import { CreateCommentCommand } from '../application/use-cases/create-comment.command';
+import { UpdateLikeStatusCommand } from '../application/use-cases/update-like-status.command';
 import { SkipThrottle } from '@nestjs/throttler';
 import { PaginationDto } from '../../../common/pagination.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';

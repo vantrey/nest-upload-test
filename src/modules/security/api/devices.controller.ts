@@ -6,8 +6,8 @@ import { PayloadRefresh } from '../../../decorators/payload-refresh.param.decora
 import { PayloadType } from '../../auth/application/payloadType';
 import { CurrentUserIdDevice } from '../../../decorators/current-device.param.decorator';
 import { CommandBus } from '@nestjs/cqrs';
-import { DeleteDevicesCommand } from '../application/use-cases/delete-devices-command';
-import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id-command';
+import { DeleteDevicesCommand } from '../application/use-cases/delete-devices.command';
+import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id.command';
 import { SkipThrottle } from '@nestjs/throttler';
 import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 

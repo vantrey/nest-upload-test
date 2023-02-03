@@ -7,5 +7,5 @@ export class PaginationUsersByLoginDto extends PaginationDto {
    */
   @IsString()
   @IsOptional()
-  searchLoginTerm: string = '';
+  searchLoginTerm?: string = '';
 }
