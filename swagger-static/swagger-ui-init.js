@@ -631,13 +631,13 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-Blogs"
           ]
         }
       },
@@ -682,13 +682,13 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-Blogs"
           ]
         }
       },
@@ -782,13 +782,13 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-Blogs"
           ]
         }
       },
@@ -897,13 +897,13 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-QuizQuestions"
           ]
         },
         "post": {
@@ -936,13 +936,13 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-QuizQuestions"
           ]
         }
       },
@@ -972,13 +972,13 @@ window.onload = function() {
               "description": "Not found the question by id"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-QuizQuestions"
           ]
         },
         "put": {
@@ -1026,13 +1026,13 @@ window.onload = function() {
               "description": "Not found the question by id"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-QuizQuestions"
           ]
         }
       },
@@ -1079,13 +1079,13 @@ window.onload = function() {
               "description": "Unauthorized"
             }
           },
-          "tags": [
-            "QuizQuestions & Blogs"
-          ],
           "security": [
             {
               "basic": []
             }
+          ],
+          "tags": [
+            "Sa-QuizQuestions"
           ]
         }
       },
@@ -1115,6 +1115,11 @@ window.onload = function() {
           },
           "tags": [
             "SecurityDevices"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         },
         "delete": {
@@ -1132,6 +1137,11 @@ window.onload = function() {
           },
           "tags": [
             "SecurityDevices"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
@@ -1166,6 +1176,11 @@ window.onload = function() {
           },
           "tags": [
             "SecurityDevices"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
@@ -1483,13 +1498,13 @@ window.onload = function() {
               }
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         }
       },
@@ -1539,13 +1554,13 @@ window.onload = function() {
               "description": "You are not the owner of the blog"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         },
         "delete": {
@@ -1576,13 +1591,13 @@ window.onload = function() {
               "description": "Not found blog"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         }
       },
@@ -1627,13 +1642,13 @@ window.onload = function() {
               "description": "User not Unauthorized"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         },
         "get": {
@@ -1725,13 +1740,13 @@ window.onload = function() {
               "description": "User not Unauthorized"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         }
       },
@@ -1791,13 +1806,13 @@ window.onload = function() {
               "description": "Not found blog"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         }
       },
@@ -1858,13 +1873,13 @@ window.onload = function() {
               "description": "Not found blog"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         },
         "delete": {
@@ -1903,13 +1918,13 @@ window.onload = function() {
               "description": "Not found blog"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Blogs"
           ]
         }
       },
@@ -1956,13 +1971,13 @@ window.onload = function() {
               "description": "User not Unauthorized"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Users"
           ]
         }
       },
@@ -2064,13 +2079,13 @@ window.onload = function() {
               "description": "User not Unauthorized"
             }
           },
-          "tags": [
-            "Blogger"
-          ],
           "security": [
             {
               "bearer": []
             }
+          ],
+          "tags": [
+            "Blogger-Users"
           ]
         }
       },
@@ -2845,11 +2860,16 @@ window.onload = function() {
     "info": {
       "title": "Blogger with quiz game",
       "description": "The blogger API description",
-      "version": "1.0",
-      "contact": {}
+      "version": "h25.blogger",
+      "contact": {},
+      "termsOfService": "http://localhost:5003/api-json"
     },
     "tags": [],
-    "servers": [],
+    "servers": [
+      {
+        "url": "https://nest-with-type-orm.vercel.app"
+      }
+    ],
     "components": {
       "securitySchemes": {
         "bearer": {

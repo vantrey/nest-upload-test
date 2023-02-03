@@ -26,7 +26,7 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     //create instance answer
     const instanceAnswer = Player.createAnswer(answer, question.id, player);
     // const instanceAnswer = Answer.createAnswer(answer, activeGame.id, question.id, player.userId, player);
-    const savedAnswer = await this.quizRepo.saveAnswer(instanceAnswer);
+    const savedAnswer = await this.quizRepo.saveAnswer(instanceAnswer); //---
     //checking the correct answer
     if (activeGame.isAnswerCorrect(answer, question)) {
       //add correct answer

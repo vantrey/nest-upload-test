@@ -25,7 +25,6 @@ import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated'
 
 @ApiBasicAuth()
 @SkipThrottle()
-@ApiTags('QuizQuestions & Blogs')
 @UseGuards(BasicAuthGuard)
 @Controller(`sa`)
 export class SaController {
@@ -35,6 +34,7 @@ export class SaController {
     private commandBus: CommandBus,
   ) {}
 
+  @ApiTags('Sa-Blogs')
   @ApiOperation({ summary: 'Ban/unban blog' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
@@ -48,6 +48,7 @@ export class SaController {
     return this.commandBus.execute(new UpdateBanInfoForBlogCommand(updateBanInfoForBlogModel, blogId));
   }
 
+  @ApiTags('Sa-Blogs')
   @ApiOperation({ summary: `Bind Blog with User (if blog doesn't have n owner yet)` })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
@@ -61,6 +62,7 @@ export class SaController {
     return await this.commandBus.execute(new BindBlogCommand(blogId, userId));
   }
 
+  @ApiTags('Sa-Blogs')
   @ApiOperation({ summary: 'Returns all blogs with pagination' })
   @ApiOkResponsePaginated(BlogViewModel)
   @ApiResponse({ status: 200, description: 'The found record', type: BlogViewModel })
@@ -70,6 +72,7 @@ export class SaController {
     return await this.blogsQueryRepo.findBlogsForSa(paginationInputModel);
   }
 
+  @ApiTags('Sa-QuizQuestions')
   @ApiOperation({ summary: 'Returns all questions with pagination and filtering' })
   @ApiOkResponsePaginated(QuestionForSaViewModel)
   @ApiResponse({ status: 200, description: 'The found record', type: QuestionForSaViewModel })
@@ -79,6 +82,7 @@ export class SaController {
     return await this.questionQueryRepo.getQuestions(paginationInputModel);
   }
 
+  @ApiTags('Sa-QuizQuestions')
   @ApiOperation({ summary: 'Create question' })
   @ApiResponse({ status: 201, description: 'success', type: QuestionForSaViewModel })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -87,6 +91,7 @@ export class SaController {
     return this.commandBus.execute(new CreateQuestionCommand(questionInputModel));
   }
 
+  @ApiTags('Sa-QuizQuestions')
   @ApiOperation({ summary: 'Delete question' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -97,6 +102,7 @@ export class SaController {
     return await this.commandBus.execute(new DeleteQuestionCommand(id));
   }
 
+  @ApiTags('Sa-QuizQuestions')
   @ApiOperation({ summary: 'Update question' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
@@ -111,6 +117,7 @@ export class SaController {
     return this.commandBus.execute(new UpdateQuestionCommand(id, questionInputModel));
   }
 
+  @ApiTags('Sa-QuizQuestions')
   @ApiOperation({ summary: 'Publish/unpublish question' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })

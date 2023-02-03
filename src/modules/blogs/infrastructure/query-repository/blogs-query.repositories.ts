@@ -136,12 +136,6 @@ export class BlogsQueryRepositories {
     if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
     // return new BlogViewModel(blog.id, blog.name, blog.description, blog.websiteUrl, blog.createdAt);
     return new BlogViewModel(blog.id, blog.name, blog.description, blog.websiteUrl, blog.createdAt);
-    // blogView.id;
-    // blogView.name;
-    // blogView.description;
-    // blogView.websiteUrl;
-    // blogView.createdAt;
-    // return blogView;
   }
 
   async findBlogWithMap(id: string): Promise<Blog> {

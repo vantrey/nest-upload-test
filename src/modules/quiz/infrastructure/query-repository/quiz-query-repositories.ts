@@ -33,7 +33,6 @@ export class QuizQueryRepositories {
       where: { playerId: game.firstPlayerProgress.id, gameId: game.id },
       order: { addedAt: 'ASC' },
     });
-
     const answersSecondPlayer = await this.answerRepo.find({
       select: ['questionId', 'answerStatus', 'addedAt'],
       where: { playerId: game.secondPlayerProgress.id, gameId: game.id },

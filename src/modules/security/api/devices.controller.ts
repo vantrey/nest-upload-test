@@ -9,9 +9,11 @@ import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesCommand } from '../application/use-cases/delete-devices.command';
 import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id.command';
 import { SkipThrottle } from '@nestjs/throttler';
-import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('SecurityDevices')
+@ApiBearerAuth()
+@UseGuards(RefreshGuard)
 @SkipThrottle()
 @Controller(`security`)
 export class DevicesController {
@@ -20,7 +22,6 @@ export class DevicesController {
   @ApiOperation({ summary: 'Returns all devices with active sessions for current user' })
   @ApiOkResponse({ status: 200, description: 'success', type: DeviceViewModel, isArray: true })
   @ApiResponse({ status: 401, description: 'JWT refreshToken inside cookie is missing, expired or incorrect' })
-  @UseGuards(RefreshGuard)
   @Get(`/devices`)
   async findDevices(@CurrentUserIdDevice() userId: string): Promise<DeviceViewModel[]> {
     return await this.deviceQueryRepositories.findDevices(userId);
@@ -29,7 +30,6 @@ export class DevicesController {
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 401, description: 'JWT refreshToken inside cookie is missing, expired or incorrect' })
   @ApiOperation({ summary: "Terminate all other (exclude current) device's sessions" })
-  @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Delete(`/devices`)
   async deleteDevices(@PayloadRefresh() payloadRefresh: PayloadType): Promise<boolean> {
@@ -41,7 +41,6 @@ export class DevicesController {
   @ApiResponse({ status: 403, description: 'You are not the owner of the device ' })
   @ApiResponse({ status: 404, description: 'Not found post' })
   @ApiOperation({ summary: 'Terminate specified device session' })
-  @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Delete(`/devices/:deviceId`)
   async deleteByDeviceId(@PayloadRefresh() payloadRefresh: PayloadType, @Param(`deviceId`) deviceId: string): Promise<boolean> {

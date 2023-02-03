@@ -22,10 +22,10 @@ import { NewPasswordCommand } from '../application/use-cases/new-password.comman
 import { RecoveryCommand } from '../application/use-cases/recovery.command';
 import { LoginCommand } from '../application/use-cases/login.command';
 import { RefreshCommand } from '../application/use-cases/refresh.command';
-import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokensType } from '../application/tokensType.dto';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { TokenTypeSwaggerDto } from '../../../swagger/token-type-swagger.dto';
+import { ApiBearerAuth, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller(`auth`)

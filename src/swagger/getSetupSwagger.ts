@@ -5,9 +5,12 @@ import { AppModule } from '../app.module';
 export const getSetupSwagger = (app: INestApplication) => {
   const options = new DocumentBuilder()
     .setTitle('Blogger with quiz game')
+    .addServer('https://nest-with-type-orm.vercel.app')
+    .setTermsOfService('http://localhost:5003/api-json')
     .setDescription('The blogger API description')
-    .setVersion('1.0')
+    .setVersion('h25.blogger')
     .addBearerAuth()
+    // .addCookieAuth('refreshToken')
     .addBasicAuth()
     .build();
 

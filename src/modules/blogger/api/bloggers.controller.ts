@@ -30,7 +30,6 @@ import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated'
 import { BloggerCommentsViewModel } from '../../comments/infrastructure/query-repository/comments-view.dto';
 import { UsersForBanBlogView } from '../../sa-users/infrastructure/query-reposirory/user-ban-for-blog-view.dto';
 
-@ApiTags('Blogger')
 @ApiBearerAuth()
 @SkipThrottle()
 @UseGuards(JwtAuthGuard)
@@ -42,6 +41,7 @@ export class BloggersController {
     private commandBus: CommandBus,
   ) {}
 
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Returns all comments for all posts inside ll current user blogs' })
   @ApiOkResponsePaginated(BloggerCommentsViewModel)
   @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
@@ -53,6 +53,7 @@ export class BloggersController {
     return await this.postsQueryRepo.getCommentsBloggerForPosts(userId, paginationInputModel);
   }
 
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Update existing Blog by id with InputModel' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
@@ -68,6 +69,7 @@ export class BloggersController {
     return await this.commandBus.execute(new UpdateBlogCommand(userId, blogId, blogInputModel));
   }
 
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Delete blog specified by id' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
@@ -79,6 +81,7 @@ export class BloggersController {
     return await this.commandBus.execute(new DeleteBlogCommand(blogId, userId));
   }
 
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Create new Blog' })
   @ApiResponse({ status: 201, description: 'Returns the newly created blog', type: BlogViewModel })
   @ApiResponse({ status: 400, description: 'Incorrect input data for create blog', type: ApiErrorResultDto })
@@ -89,6 +92,7 @@ export class BloggersController {
     return this.blogsQueryRepo.findBlog(blogId);
   }
 
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Returns all blogs (current blogger) with pagination' })
   @ApiOkResponsePaginated(BlogViewModel)
   @ApiResponse({ status: 401, description: 'User not Unauthorized' })
@@ -100,6 +104,7 @@ export class BloggersController {
     return await this.blogsQueryRepo.findBlogsForCurrentBlogger(paginationInputModel, userId);
   }
 
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Create new Post for specified blog' })
   @ApiResponse({ status: 201, description: 'Returns the newly created post', type: PostViewModel })
   @ApiResponse({ status: 400, description: 'Incorrect input data for create post', type: ApiErrorResultDto })
@@ -115,6 +120,7 @@ export class BloggersController {
     return this.commandBus.execute(new CreatePostCommand(postInputModel, blogId, userId));
   }
 
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Update existing ost by id with InputModel' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'Incorrect input data for update post', type: ApiErrorResultDto })
@@ -131,6 +137,8 @@ export class BloggersController {
   ): Promise<boolean> {
     return await this.commandBus.execute(new UpdatePostCommand(userId, blogId, postId, postInputModel));
   }
+
+  @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Delete post specified by id blog' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 401, description: 'User not Unauthorized' })
@@ -146,6 +154,7 @@ export class BloggersController {
     return await this.commandBus.execute(new DeletePostCommand(userId, blogId, postId));
   }
 
+  @ApiTags('Blogger-Users')
   @ApiOperation({ summary: 'Ban/unban user' })
   @ApiResponse({ status: 204, description: 'success' })
   @ApiResponse({ status: 400, description: 'Incorrect input data for update post', type: ApiErrorResultDto })
@@ -160,6 +169,7 @@ export class BloggersController {
     return await this.commandBus.execute(new UpdateBanUserForCurrentBlogCommand(userId, id, banUserForCurrentBlogInputModel));
   }
 
+  @ApiTags('Blogger-Users')
   @ApiOperation({ summary: 'Returns all banned users or blog' })
   @ApiOkResponsePaginated(UsersForBanBlogView)
   @ApiResponse({ status: 401, description: 'User not Unauthorized' })
