@@ -9,12 +9,14 @@ import { QuizRepositories } from '../infrastructure/quiz-repositories';
 import { ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
 import { QuizQueryRepositories } from '../infrastructure/query-repository/quiz-query-repositories';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
-import { AnswerViewModel, GameViewModel } from '../infrastructure/query-repository/game-View-Model';
+import { AnswerViewModel, GameViewModel } from '../infrastructure/query-repository/game-view.dto';
 import { PaginationQuizDto } from './input-dtos/pagination-quiz.dto';
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 
 @ApiTags('PairQuizGame')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller(`pair-game-quiz/pairs`)
 export class QuizController {
@@ -24,18 +26,31 @@ export class QuizController {
     private readonly quizQueryRepo: QuizQueryRepositories,
   ) {}
 
+  @ApiOperation({
+    summary: 'Connect current user to existing random pending pair or create new pair which will be waiting second player',
+  })
+  @ApiResponse({ status: 200, description: 'success', type: GameViewModel })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Current user is already participating in active pair' })
   @HttpCode(200)
   @Post(`connection`)
   async connectionQuiz(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
     return this.commandBus.execute(new ConnectionQuizCommand(userId));
   }
 
+  @ApiOperation({ summary: 'Send answer for next not answered question in active pair' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Current user is already participating in active pair' })
   @HttpCode(200)
   @Post(`my-current/answers`)
   async answer(@CurrentUserIdBlogger() userId: string, @Body() inputAnswerModel: AnswerDto): Promise<AnswerViewModel> {
     return this.commandBus.execute(new AnswerQuizCommand(userId, inputAnswerModel));
   }
 
+  @ApiOperation({ summary: 'Returns current unfinished user game' })
+  @ApiResponse({ status: 200, description: 'success', type: GameViewModel })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Not found active pair for current user' })
   @Get(`my-current`)
   async getCurrentGame(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
     const pendingGame = await this.quizRepo.findCurrentGame(userId);
@@ -43,6 +58,9 @@ export class QuizController {
     return await this.quizQueryRepo.findCurrentGame(userId);
   }
 
+  @ApiOperation({ summary: 'Returns all my games (closed games and current)' })
+  @ApiResponse({ status: 200, description: 'success', type: GameViewModel })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get(`my`)
   async myGames(
     @CurrentUserIdBlogger() userId: string,
@@ -51,6 +69,12 @@ export class QuizController {
     return this.quizQueryRepo.getGames(userId, paginationInputModel);
   }
 
+  @ApiOperation({ summary: 'Returns game by id' })
+  @ApiResponse({ status: 200, description: 'success', type: GameViewModel })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Current user is already participating in active pair' })
+  @ApiResponse({ status: 404, description: 'Not found game' })
   @Get(`:id`)
   async getPairGame(
     @CurrentUserIdBlogger() userId: string,

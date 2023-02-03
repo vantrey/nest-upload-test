@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizRepositories } from '../../../infrastructure/quiz-repositories';
 import { AnswerQuizCommand } from '../answer-quiz-command';
 import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
-import { AnswerViewModel } from '../../../infrastructure/query-repository/game-View-Model';
+import { AnswerViewModel } from '../../../infrastructure/query-repository/game-view.dto';
 import { Game } from '../../../../../entities/game.entity';
 import { Player } from '../../../../../entities/player.entity';
 

@@ -4,8 +4,8 @@ import { Game, GameStatusesType } from '../../../../entities/game.entity';
 import { Player } from '../../../../entities/player.entity';
 import { Question } from '../../../../entities/question.entity';
 import { Answer } from '../../../../entities/answer.entity';
-import { AnswerViewModel, GamePlayerProgressViewModel, GameViewModel, PLayerViewModel } from './game-View-Model';
-import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/question-for-sa-view-model';
+import { AnswerViewModel, GamePlayerProgressViewModel, GameViewModel, PLayerViewModel } from './game-view.dto';
+import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/question-for-sa-view.dto';
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz.dto';
 

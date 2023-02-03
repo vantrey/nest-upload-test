@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DeviceViewModel } from './device-View-Model';
+import { DeviceViewModel } from './device-view.dto';
 import { Device } from '../../../../entities/device.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -11,11 +11,11 @@ export class DeviceQueryRepositories {
     private readonly deviceRepo: Repository<Device>,
   ) {}
 
-  // private deviceForView(object: Device): DeviceViewModel {
-  //   return new DeviceViewModel(object.ip, object.title, object.lastActiveDate, object.deviceId);
+  // private deviceForView(object: Device): DeviceViewDto {
+  //   return new DeviceViewDto(object.ip, object.title, object.lastActiveDate, object.deviceId);
   // }
 
-  // async findDevices(userId: string): Promise<DeviceViewModel[]> {
+  // async findDevices(userId: string): Promise<DeviceViewDto[]> {
   //   const devices = await this.deviceModel.find({ userId: userId });
   //   if (!devices) {
   //     throw new Error('server all');

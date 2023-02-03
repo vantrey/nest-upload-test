@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CreatePostDto } from '../../posts/api/input-Dtos/create-post.dto';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
-import { PostViewDto } from '../../posts/infrastructure/query-repositories/post-view.dto';
+import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-view.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../application/use-cases/create-blog-command';
 import { DeleteBlogCommand } from '../application/use-cases/delete-blog-command';
@@ -60,7 +60,7 @@ export class BloggersController {
     return await this.commandBus.execute(new UpdateBlogCommand(userId, blogId, blogInputModel));
   }
 
-  @ApiResponse({ status: 201, description: 'Returns the newly created post', type: PostViewDto })
+  @ApiResponse({ status: 201, description: 'Returns the newly created post', type: PostViewModel })
   @ApiResponse({ status: 400, description: 'Incorrect input data for create post', type: ApiErrorResultDto })
   @ApiResponse({ status: 401, description: 'User not Unauthorized' })
   @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
@@ -70,7 +70,7 @@ export class BloggersController {
     @CurrentUserIdBlogger() userId: string,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Body() postInputModel: CreatePostDto,
-  ): Promise<PostViewDto> {
+  ): Promise<PostViewModel> {
     return this.commandBus.execute(new CreatePostCommand(postInputModel, blogId, userId));
   }
 

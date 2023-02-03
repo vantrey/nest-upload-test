@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepositories } from '../../../infrastructure/posts-repositories';
 import { CreateCommentCommand } from '../create-comment-command';
-import { CommentsViewType } from '../../../../comments/infrastructure/query-repository/comments-View-Model';
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { UsersQueryRepositories } from '../../../../sa-users/infrastructure/query-reposirory/users-query.reposit';
 import { CommentsRepositories } from '../../../../comments/infrastructure/comments.repositories';
 import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
 import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { Comment } from '../../../../../entities/comment.entity';
+import { CommentViewType } from '../../../../comments/infrastructure/query-repository/comment-view.dto';
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler implements ICommandHandler<CreateCommentCommand> {
@@ -19,7 +19,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
     private readonly usersRepositories: UsersRepositories,
   ) {}
 
-  async execute(command: CreateCommentCommand): Promise<CommentsViewType> {
+  async execute(command: CreateCommentCommand): Promise<CommentViewType> {
     const { content } = command.inputCommentModel;
     const { id } = command;
     const { userId } = command;

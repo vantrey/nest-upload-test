@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CommentsViewType, LikesInfoViewModel } from './query-repository/comments-View-Model';
 import { Comment } from '../../../entities/comment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LikeStatusType } from '../../../entities/like-post.entity';
 import { LikeComment } from '../../../entities/like-comment.entity';
+import { CommentViewType } from './query-repository/comment-view.dto';
+import { LikeInfoViewModel } from './query-repository/like-info-view.dto';
 
 @Injectable()
 export class CommentsRepositories {
@@ -15,12 +16,12 @@ export class CommentsRepositories {
     private readonly likeCommentRepo: Repository<LikeComment>,
   ) {}
 
-  async saveComment(newComment: Comment): Promise<CommentsViewType> {
+  async saveComment(newComment: Comment): Promise<CommentViewType> {
     const createdComment = await this.commentRepo.save(newComment);
     //default items
-    const likesInfo = new LikesInfoViewModel(0, 0, LikeStatusType.None);
+    const likesInfo = new LikeInfoViewModel(0, 0, LikeStatusType.None);
     //returning comment for View
-    return new CommentsViewType(
+    return new CommentViewType(
       createdComment.id,
       newComment.content,
       newComment.userId,

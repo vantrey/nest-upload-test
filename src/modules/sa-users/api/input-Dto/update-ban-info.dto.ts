@@ -1,15 +1,15 @@
 import { IsBoolean, IsOptional, IsString, Length } from 'class-validator';
-import { Trim } from "../../../../helpers/decorator-trim";
+import { Trim } from '../../../../helpers/decorator-trim';
 
 export class UpdateBanInfoDto {
   /**
-   * isBanned: User
+   * rue - for ban user, false - for unban user
    */
   @IsBoolean()
   @IsOptional()
-  isBanned = true;
+  isBanned: boolean = false;
   /**
-   * password: password User
+   * Password User
    */
   @Trim()
   @Length(20)

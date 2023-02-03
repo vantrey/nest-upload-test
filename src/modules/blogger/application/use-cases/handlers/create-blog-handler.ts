@@ -12,7 +12,7 @@ export class CreateBlogHandler implements ICommandHandler<CreateBlogCommand> {
   async execute(command: CreateBlogCommand): Promise<string> {
     const { name, description, websiteUrl } = command.blogInputModel;
     const { userId } = command;
-    //finding the user for check ex
+    //finding the user for check
     const user = await this.usersRepo.findUserByIdWithMapped(userId);
     if (user.id !== userId) throw new UnauthorizedExceptionMY(`user with id: ${userId} Unauthorized`);
     //preparation Blog for save in DB

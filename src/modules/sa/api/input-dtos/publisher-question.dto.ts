@@ -6,6 +6,5 @@ export class PublisherQuestionDto {
    */
   @IsBoolean()
   @IsOptional()
-  published = true;
-  // published: boolean;
+  published: boolean = true;
 }

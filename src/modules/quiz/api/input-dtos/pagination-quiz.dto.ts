@@ -21,7 +21,7 @@ export class PaginationQuizDto {
   @Trim()
   @IsString()
   @IsOptional()
-  sortBy = 'pairCreatedDate';
+  sortBy: string = 'pairCreatedDate';
   /**
    * Sort by desc or asc
    */

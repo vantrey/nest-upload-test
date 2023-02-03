@@ -1,6 +1,6 @@
 import { ExtendedLikesInfoViewModel } from './likes-Info-view.dto';
 
-export class PostViewDto {
+export class PostViewModel {
   public id: string;
   public title: string;
   public shortDescription: string;

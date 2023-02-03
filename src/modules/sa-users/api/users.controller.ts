@@ -28,6 +28,10 @@ export class UsersController {
     private commandBus: CommandBus,
   ) {}
 
+  @ApiOperation({ summary: 'Ban/unban user' })
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(204)
   @Put(`/:userId/ban`)
   async updateBanInfo(
@@ -37,19 +41,21 @@ export class UsersController {
     return this.commandBus.execute(new UpdateBanInfoCommand(updateBanInfoModel, userId));
   }
 
+  @ApiOperation({ summary: 'Returns all users with pagination' })
+  @ApiResponse({ status: 200, description: 'The found record', type: UserViewModel })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @Get()
+  async findUsers(@Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel[]>> {
+    return this.usersQueryRepositories.findUsers(paginationInputModel);
+  }
+
+  @ApiOperation({ summary: 'Add new user o the system' })
   @ApiResponse({ status: 201, description: 'create new user', type: UserViewModel })
   @ApiResponse({ status: 400, description: 'If the inputModel has incorrect values', type: ApiErrorResultDto })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Post()
   async createUser(@Body() userInputModel: CreateUserDto): Promise<UserViewModel> {
     return this.commandBus.execute(new CreateUserSaCommand(userInputModel));
-  }
-
-  @ApiResponse({ status: 200, description: 'The found record', type: UserViewModel })
-  // @ApiResponse({ status: 200, description: 'The found record', type: PaginationViewDto<UserViewModel> })
-  @Get()
-  async findUsers(@Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel[]>> {
-    return this.usersQueryRepositories.findUsers(paginationInputModel);
   }
 
   @ApiOperation({ summary: 'Delete user specified by id' })

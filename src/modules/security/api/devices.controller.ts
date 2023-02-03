@@ -1,7 +1,7 @@
 import { Controller, Delete, Get, HttpCode, Param, UseGuards } from '@nestjs/common';
 import { DeviceQueryRepositories } from '../infrastructure/query-repository/device-query.repositories';
 import { RefreshGuard } from '../../../guards/jwt-auth-refresh.guard';
-import { DeviceViewModel } from '../infrastructure/query-repository/device-View-Model';
+import { DeviceViewModel } from '../infrastructure/query-repository/device-view.dto';
 import { PayloadRefresh } from '../../../decorators/payload-refresh.param.decorator';
 import { PayloadType } from '../../auth/application/payloadType';
 import { CurrentUserIdDevice } from '../../../decorators/current-device.param.decorator';
@@ -9,7 +9,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesCommand } from '../application/use-cases/delete-devices-command';
 import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id-command';
 import { SkipThrottle } from '@nestjs/throttler';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('SecurityDevices')
 @SkipThrottle()
@@ -17,12 +17,18 @@ import { ApiTags } from '@nestjs/swagger';
 export class DevicesController {
   constructor(private commandBus: CommandBus, private readonly deviceQueryRepositories: DeviceQueryRepositories) {}
 
+  @ApiOperation({ summary: 'Returns all devices with active sessions for current user' })
+  @ApiResponse({ status: 200, description: 'success', type: DeviceViewModel })
+  @ApiResponse({ status: 401, description: 'JWT refreshToken inside cookie is missing, expired or incorrect' })
   @UseGuards(RefreshGuard)
   @Get(`/devices`)
   async findDevices(@CurrentUserIdDevice() userId: string): Promise<DeviceViewModel[]> {
     return await this.deviceQueryRepositories.findDevices(userId);
   }
 
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 401, description: 'JWT refreshToken inside cookie is missing, expired or incorrect' })
+  @ApiOperation({ summary: "Terminate all other (exclude current) device's sessions" })
   @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Delete(`/devices`)
@@ -30,6 +36,11 @@ export class DevicesController {
     return await this.commandBus.execute(new DeleteDevicesCommand(payloadRefresh));
   }
 
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 401, description: 'JWT refreshToken inside cookie is missing, expired or incorrect' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of the device ' })
+  @ApiResponse({ status: 404, description: 'Not found post' })
+  @ApiOperation({ summary: 'Terminate specified device session' })
   @UseGuards(RefreshGuard)
   @HttpCode(204)
   @Delete(`/devices/:deviceId`)

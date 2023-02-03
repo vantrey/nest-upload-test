@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Put, UseGuards } from '@nestjs/common';
 import { CommentsQueryRepositories } from '../infrastructure/query-repository/comments-query.repositories';
-import { CommentsViewType } from '../infrastructure/query-repository/comments-View-Model';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { UpdateLikeStatusDto } from '../../posts/api/input-Dtos/update-Like-Status.dto';
 import { CommentsService } from '../domain/comments.service';
@@ -13,7 +12,9 @@ import { DeleteCommentCommand } from '../application/use-cases/delete-comment-co
 import { UpdateCommentCommand } from '../application/use-cases/update-comment-command';
 import { UpdateLikeStatusCommentCommand } from '../application/use-cases/update-like-status-comment-command';
 import { SkipThrottle } from '@nestjs/throttler';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
+import { CommentViewType } from '../infrastructure/query-repository/comment-view.dto';
 
 @ApiTags('Comments')
 @SkipThrottle()
@@ -25,6 +26,12 @@ export class CommentsController {
     private readonly commentsQueryRepo: CommentsQueryRepositories,
   ) {}
 
+  @ApiOperation({ summary: 'Make like/unlike/dislike/undislike operation' })
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Not found comment' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Put(`/:id/like-status`)
@@ -36,6 +43,13 @@ export class CommentsController {
     return await this.commandBus.execute(new UpdateLikeStatusCommentCommand(id, updateLikeStatusInputModel, userId));
   }
 
+  @ApiOperation({ summary: 'Update existing comment by id with InputModel' })
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of the comment' })
+  @ApiResponse({ status: 404, description: 'Not found comment' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Put(`/:id`)
@@ -48,6 +62,12 @@ export class CommentsController {
     return true;
   }
 
+  @ApiOperation({ summary: 'Delete comment specified by id' })
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of the comment' })
+  @ApiResponse({ status: 404, description: 'Not found comment' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Delete(`/:id`)
@@ -56,9 +76,12 @@ export class CommentsController {
     return true;
   }
 
+  @ApiOperation({ summary: 'Return comment by id' })
+  @ApiResponse({ status: 200, description: 'success', type: CommentViewType })
+  @ApiResponse({ status: 404, description: 'Not found comment' })
   @UseGuards(JwtForGetGuard)
   @Get(`/:id`)
-  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentsViewType> {
+  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentViewType> {
     return this.commentsQueryRepo.getComment(id, userId);
   }
 }

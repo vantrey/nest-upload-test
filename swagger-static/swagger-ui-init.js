@@ -331,7 +331,7 @@ window.onload = function() {
       "/sa/users/{userId}/ban": {
         "put": {
           "operationId": "UsersController_updateBanInfo",
-          "summary": "",
+          "summary": "Ban/unban user",
           "description": "",
           "parameters": [
             {
@@ -355,55 +355,10 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "boolean"
-                  }
-                }
-              }
-            }
-          },
-          "tags": [
-            "Sa-Users"
-          ],
-          "security": [
-            {
-              "basic": []
-            }
-          ]
-        }
-      },
-      "/sa/users": {
-        "post": {
-          "operationId": "UsersController_createUser",
-          "summary": "",
-          "description": "",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateUserDto"
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "create new user",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/UserViewModel"
-                  }
-                }
-              }
+              "description": "success"
             },
             "400": {
-              "description": "If the inputModel has incorrect values",
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
@@ -424,10 +379,12 @@ window.onload = function() {
               "basic": []
             }
           ]
-        },
+        }
+      },
+      "/sa/users": {
         "get": {
           "operationId": "UsersController_findUsers",
-          "summary": "",
+          "summary": "Returns all users with pagination",
           "description": "",
           "parameters": [
             {
@@ -486,6 +443,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -510,6 +477,58 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            }
+          },
+          "tags": [
+            "Sa-Users"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
+          ]
+        },
+        "post": {
+          "operationId": "UsersController_createUser",
+          "summary": "Add new user o the system",
+          "description": "",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateUserDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "create new user",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/UserViewModel"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "If the inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
@@ -561,7 +580,7 @@ window.onload = function() {
       "/sa/blogs/{blogId}/ban": {
         "put": {
           "operationId": "SaController_updateBanInfoForBlog",
-          "summary": "",
+          "summary": "Ban/unban blog",
           "description": "",
           "parameters": [
             {
@@ -585,14 +604,20 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
@@ -603,7 +628,7 @@ window.onload = function() {
       "/sa/blogs/{blogId}/bind-with-user/{userId}": {
         "put": {
           "operationId": "SaController_bindBlog",
-          "summary": "",
+          "summary": "Bind Blog with User (if blog doesn't have n owner yet)",
           "description": "",
           "parameters": [
             {
@@ -625,14 +650,20 @@ window.onload = function() {
           ],
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "object"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
@@ -642,8 +673,8 @@ window.onload = function() {
       },
       "/sa/blogs": {
         "get": {
-          "operationId": "SaController_findAll",
-          "summary": "",
+          "operationId": "SaController_findBlogsForSa",
+          "summary": "Returns all blogs with pagination",
           "description": "",
           "parameters": [
             {
@@ -677,6 +708,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -693,7 +734,17 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "The found record",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BlogViewModel"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
@@ -704,7 +755,7 @@ window.onload = function() {
       "/sa/quiz/questions": {
         "get": {
           "operationId": "SaController_getQuestions",
-          "summary": "",
+          "summary": "Returns all questions with pagination and filtering",
           "description": "",
           "parameters": [
             {
@@ -753,6 +804,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -769,7 +830,17 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "The found record",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/QuestionForSaViewModel"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
@@ -778,7 +849,7 @@ window.onload = function() {
         },
         "post": {
           "operationId": "SaController_createQuestion",
-          "summary": "",
+          "summary": "Create question",
           "description": "",
           "parameters": [],
           "requestBody": {
@@ -793,7 +864,7 @@ window.onload = function() {
           },
           "responses": {
             "201": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
@@ -801,6 +872,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
@@ -811,7 +885,7 @@ window.onload = function() {
       "/sa/quiz/questions/{id}": {
         "delete": {
           "operationId": "SaController_deleteQuestion",
-          "summary": "",
+          "summary": "Delete question",
           "description": "",
           "parameters": [
             {
@@ -825,14 +899,13 @@ window.onload = function() {
           ],
           "responses": {
             "204": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "boolean"
-                  }
-                }
-              }
+              "description": "success"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found the question by id"
             }
           },
           "tags": [
@@ -841,7 +914,7 @@ window.onload = function() {
         },
         "put": {
           "operationId": "SaController_updateQuestion",
-          "summary": "",
+          "summary": "Update question",
           "description": "",
           "parameters": [
             {
@@ -865,14 +938,23 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found the question by id"
             }
           },
           "tags": [
@@ -883,7 +965,7 @@ window.onload = function() {
       "/sa/quiz/questions/{id}/publish": {
         "put": {
           "operationId": "SaController_publishQuestion",
-          "summary": "",
+          "summary": "Publish/unpublish question",
           "description": "",
           "parameters": [
             {
@@ -907,14 +989,20 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
@@ -925,22 +1013,22 @@ window.onload = function() {
       "/security/devices": {
         "get": {
           "operationId": "DevicesController_findDevices",
-          "summary": "",
+          "summary": "Returns all devices with active sessions for current user",
           "description": "",
           "parameters": [],
           "responses": {
             "200": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/DeviceViewModel"
-                    }
+                    "$ref": "#/components/schemas/DeviceViewModel"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "JWT refreshToken inside cookie is missing, expired or incorrect"
             }
           },
           "tags": [
@@ -949,19 +1037,15 @@ window.onload = function() {
         },
         "delete": {
           "operationId": "DevicesController_deleteDevices",
-          "summary": "",
+          "summary": "Terminate all other (exclude current) device's sessions",
           "description": "",
           "parameters": [],
           "responses": {
             "204": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "boolean"
-                  }
-                }
-              }
+              "description": "success"
+            },
+            "401": {
+              "description": "JWT refreshToken inside cookie is missing, expired or incorrect"
             }
           },
           "tags": [
@@ -972,7 +1056,7 @@ window.onload = function() {
       "/security/devices/{deviceId}": {
         "delete": {
           "operationId": "DevicesController_deleteByDeviceId",
-          "summary": "",
+          "summary": "Terminate specified device session",
           "description": "",
           "parameters": [
             {
@@ -986,14 +1070,16 @@ window.onload = function() {
           ],
           "responses": {
             "204": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "boolean"
-                  }
-                }
-              }
+              "description": "success"
+            },
+            "401": {
+              "description": "JWT refreshToken inside cookie is missing, expired or incorrect"
+            },
+            "403": {
+              "description": "You are not the owner of the device "
+            },
+            "404": {
+              "description": "Not found post"
             }
           },
           "tags": [
@@ -1003,8 +1089,8 @@ window.onload = function() {
       },
       "/blogs": {
         "get": {
-          "operationId": "BlogsController_findAll",
-          "summary": "",
+          "operationId": "BlogsController_findBlogs",
+          "summary": "Returns blogs with pagination",
           "description": "",
           "parameters": [
             {
@@ -1038,6 +1124,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -1054,7 +1150,14 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BlogViewModel"
+                  }
+                }
+              }
             }
           },
           "tags": [
@@ -1065,7 +1168,7 @@ window.onload = function() {
       "/blogs/{blogId}/posts": {
         "get": {
           "operationId": "BlogsController_findPosts",
-          "summary": "",
+          "summary": "Returns all posts for specified blog with pagination",
           "description": "",
           "parameters": [
             {
@@ -1107,6 +1210,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -1123,7 +1236,14 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PostViewModel"
+                  }
+                }
+              }
             }
           },
           "tags": [
@@ -1134,7 +1254,7 @@ window.onload = function() {
       "/blogs/{id}": {
         "get": {
           "operationId": "BlogsController_findOne",
-          "summary": "",
+          "summary": "Returns blog by id",
           "description": "",
           "parameters": [
             {
@@ -1148,7 +1268,7 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
@@ -1156,6 +1276,9 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "404": {
+              "description": "Not found blog"
             }
           },
           "tags": [
@@ -1187,6 +1310,16 @@ window.onload = function() {
               "schema": {
                 "default": 1,
                 "type": "number"
+              }
+            },
+            {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
               }
             },
             {
@@ -1332,7 +1465,7 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/PostViewDto"
+                    "$ref": "#/components/schemas/PostViewModel"
                   }
                 }
               }
@@ -1551,6 +1684,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -1662,6 +1805,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -1704,7 +1857,7 @@ window.onload = function() {
       "/posts/{postId}/like-status": {
         "put": {
           "operationId": "PostsController_updateLikeStatus",
-          "summary": "",
+          "summary": "Make like/unlike/dislike/undislike operation",
           "description": "",
           "parameters": [
             {
@@ -1728,25 +1881,39 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "object"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found post"
             }
           },
           "tags": [
             "Posts"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/posts/{postId}/comments": {
         "get": {
           "operationId": "PostsController_findComments",
-          "summary": "",
+          "summary": "Returns all comments for specified post with pagination",
           "description": "",
           "parameters": [
             {
@@ -1778,6 +1945,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -1794,7 +1971,17 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/CommentViewType"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Not found post"
             }
           },
           "tags": [
@@ -1803,7 +1990,7 @@ window.onload = function() {
         },
         "post": {
           "operationId": "PostsController_createComment",
-          "summary": "",
+          "summary": "Create new comment",
           "description": "",
           "parameters": [
             {
@@ -1827,25 +2014,46 @@ window.onload = function() {
           },
           "responses": {
             "201": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "object"
+                    "$ref": "#/components/schemas/CommentViewType"
                   }
                 }
               }
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found post"
             }
           },
           "tags": [
             "Posts"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/posts": {
         "get": {
           "operationId": "PostsController_findAll",
-          "summary": "",
+          "summary": "Returns all posts with pagination",
           "description": "",
           "parameters": [
             {
@@ -1869,6 +2077,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -1885,7 +2103,14 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PostViewModel"
+                  }
+                }
+              }
             }
           },
           "tags": [
@@ -1896,7 +2121,7 @@ window.onload = function() {
       "/posts/{id}": {
         "get": {
           "operationId": "PostsController_findOne",
-          "summary": "",
+          "summary": "Return post by id",
           "description": "",
           "parameters": [
             {
@@ -1910,11 +2135,11 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/PostViewDto"
+                    "$ref": "#/components/schemas/PostViewModel"
                   }
                 }
               }
@@ -1928,7 +2153,7 @@ window.onload = function() {
       "/comments/{id}/like-status": {
         "put": {
           "operationId": "CommentsController_updateLikeStatus",
-          "summary": "",
+          "summary": "Make like/unlike/dislike/undislike operation",
           "description": "",
           "parameters": [
             {
@@ -1952,25 +2177,39 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found comment"
             }
           },
           "tags": [
             "Comments"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/comments/{id}": {
         "put": {
           "operationId": "CommentsController_updateCommentsById",
-          "summary": "",
+          "summary": "Update existing comment by id with InputModel",
           "description": "",
           "parameters": [
             {
@@ -1994,23 +2233,40 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the comment"
+            },
+            "404": {
+              "description": "Not found comment"
             }
           },
           "tags": [
             "Comments"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         },
         "delete": {
           "operationId": "CommentsController_deleteCommentById",
-          "summary": "",
+          "summary": "Delete comment specified by id",
           "description": "",
           "parameters": [
             {
@@ -2024,23 +2280,30 @@ window.onload = function() {
           ],
           "responses": {
             "204": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "boolean"
-                  }
-                }
-              }
+              "description": "success"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the comment"
+            },
+            "404": {
+              "description": "Not found comment"
             }
           },
           "tags": [
             "Comments"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         },
         "get": {
           "operationId": "CommentsController_findOne",
-          "summary": "",
+          "summary": "Return comment by id",
           "description": "",
           "parameters": [
             {
@@ -2054,14 +2317,17 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/CommentsViewType"
+                    "$ref": "#/components/schemas/CommentViewType"
                   }
                 }
               }
+            },
+            "404": {
+              "description": "Not found comment"
             }
           },
           "tags": [
@@ -2072,12 +2338,12 @@ window.onload = function() {
       "/pair-game-quiz/pairs/connection": {
         "post": {
           "operationId": "QuizController_connectionQuiz",
-          "summary": "",
+          "summary": "Connect current user to existing random pending pair or create new pair which will be waiting second player",
           "description": "",
           "parameters": [],
           "responses": {
             "200": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
@@ -2085,17 +2351,28 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Current user is already participating in active pair"
             }
           },
           "tags": [
             "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/pair-game-quiz/pairs/my-current/answers": {
         "post": {
           "operationId": "QuizController_answer",
-          "summary": "",
+          "summary": "Send answer for next not answered question in active pair",
           "description": "",
           "parameters": [],
           "requestBody": {
@@ -2118,22 +2395,33 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Current user is already participating in active pair"
             }
           },
           "tags": [
             "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/pair-game-quiz/pairs/my-current": {
         "get": {
           "operationId": "QuizController_getCurrentGame",
-          "summary": "",
+          "summary": "Returns current unfinished user game",
           "description": "",
           "parameters": [],
           "responses": {
             "200": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
@@ -2141,17 +2429,28 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found active pair for current user"
             }
           },
           "tags": [
             "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/pair-game-quiz/pairs/my": {
         "get": {
           "operationId": "QuizController_myGames",
-          "summary": "",
+          "summary": "Returns all my games (closed games and current)",
           "description": "",
           "parameters": [
             {
@@ -2175,6 +2474,16 @@ window.onload = function() {
               }
             },
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "pairCreatedDate",
+                "type": "string"
+              }
+            },
+            {
               "name": "sortDirection",
               "required": true,
               "in": "query",
@@ -2191,18 +2500,33 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GameViewModel"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
             }
           },
           "tags": [
             "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/pair-game-quiz/pairs/{id}": {
         "get": {
           "operationId": "QuizController_getPairGame",
-          "summary": "",
+          "summary": "Returns game by id",
           "description": "",
           "parameters": [
             {
@@ -2216,7 +2540,7 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
@@ -2224,22 +2548,46 @@ window.onload = function() {
                   }
                 }
               }
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Current user is already participating in active pair"
+            },
+            "404": {
+              "description": "Not found game"
             }
           },
           "tags": [
             "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
       "/testing/all-data": {
         "delete": {
           "operationId": "TestingController_deleteDB",
-          "summary": "",
+          "summary": "Clear database: delete all data from all tables/collections",
           "description": "",
           "parameters": [],
           "responses": {
             "204": {
-              "description": ""
+              "description": "success"
             }
           },
           "tags": [
@@ -2431,13 +2779,14 @@ window.onload = function() {
           "type": "object",
           "properties": {
             "isBanned": {
-              "type": "object",
-              "description": "isBanned: User",
-              "default": true
+              "type": "boolean",
+              "description": "rue - for ban user, false - for unban user",
+              "default": false
             },
             "banReason": {
               "type": "string",
-              "description": "password: password User"
+              "description": "Password User",
+              "minLength": 20
             }
           },
           "required": [
@@ -2503,47 +2852,6 @@ window.onload = function() {
             "isBanned"
           ]
         },
-        "CreateQuestionDto": {
-          "type": "object",
-          "properties": {
-            "body": {
-              "type": "string",
-              "description": "body: Text of question, for example: How many continents are there"
-            },
-            "correctAnswers": {
-              "description": "correctAnswers: All variants of possible correct answers for current questions Examples: [6, 'six', 'шесть', 'дофига'] In Postgres save this data in JSON column",
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
-          "required": [
-            "body",
-            "correctAnswers"
-          ]
-        },
-        "QuestionForSaViewModel": {
-          "type": "object",
-          "properties": {}
-        },
-        "PublisherQuestionDto": {
-          "type": "object",
-          "properties": {
-            "published": {
-              "type": "object",
-              "description": "published: True if question is completed and can be used in the Quiz game",
-              "default": true
-            }
-          },
-          "required": [
-            "published"
-          ]
-        },
-        "DeviceViewModel": {
-          "type": "object",
-          "properties": {}
-        },
         "BlogViewModel": {
           "type": "object",
           "properties": {
@@ -2571,48 +2879,94 @@ window.onload = function() {
             "createdAt"
           ]
         },
-        "UpdateBlogDto": {
+        "QuestionForSaViewModel": {
           "type": "object",
           "properties": {
-            "name": {
-              "type": "string",
-              "description": "name: Blog name for update"
+            "id": {
+              "type": "string"
             },
-            "description": {
-              "type": "string",
-              "description": "description"
+            "body": {
+              "type": "string"
             },
-            "websiteUrl": {
-              "type": "string",
-              "description": "websiteUrl: Blog website Url"
+            "correctAnswers": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "published": {
+              "type": "boolean"
+            },
+            "createdAt": {
+              "type": "string"
+            },
+            "updatedAt": {
+              "type": "string"
             }
           },
           "required": [
-            "name",
-            "description",
-            "websiteUrl"
+            "id",
+            "body",
+            "correctAnswers",
+            "published",
+            "createdAt",
+            "updatedAt"
           ]
         },
-        "CreatePostDto": {
+        "CreateQuestionDto": {
           "type": "object",
           "properties": {
-            "title": {
+            "body": {
               "type": "string",
-              "description": "Title for create Post"
+              "description": "body: Text of question, for example: How many continents are there"
             },
-            "shortDescription": {
-              "type": "string",
-              "description": "Short description for create Post"
-            },
-            "content": {
-              "type": "string",
-              "description": "content for create Post"
+            "correctAnswers": {
+              "description": "correctAnswers: All variants of possible correct answers for current questions Examples: [6, 'six', 'шесть', 'дофига'] In Postgres save this data in JSON column",
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             }
           },
           "required": [
+            "body",
+            "correctAnswers"
+          ]
+        },
+        "PublisherQuestionDto": {
+          "type": "object",
+          "properties": {
+            "published": {
+              "type": "boolean",
+              "description": "published: True if question is completed and can be used in the Quiz game",
+              "default": true
+            }
+          },
+          "required": [
+            "published"
+          ]
+        },
+        "DeviceViewModel": {
+          "type": "object",
+          "properties": {
+            "ip": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "lastActiveDate": {
+              "type": "string"
+            },
+            "deviceId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "ip",
             "title",
-            "shortDescription",
-            "content"
+            "lastActiveDate",
+            "deviceId"
           ]
         },
         "LikeDetailsViewModel": {
@@ -2660,7 +3014,7 @@ window.onload = function() {
             "newestLikes"
           ]
         },
-        "PostViewDto": {
+        "PostViewModel": {
           "type": "object",
           "properties": {
             "id": {
@@ -2697,6 +3051,50 @@ window.onload = function() {
             "blogName",
             "createdAt",
             "extendedLikesInfo"
+          ]
+        },
+        "UpdateBlogDto": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "name: Blog name for update"
+            },
+            "description": {
+              "type": "string",
+              "description": "description"
+            },
+            "websiteUrl": {
+              "type": "string",
+              "description": "websiteUrl: Blog website Url"
+            }
+          },
+          "required": [
+            "name",
+            "description",
+            "websiteUrl"
+          ]
+        },
+        "CreatePostDto": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title for create Post"
+            },
+            "shortDescription": {
+              "type": "string",
+              "description": "Short description for create Post"
+            },
+            "content": {
+              "type": "string",
+              "description": "content for create Post"
+            }
+          },
+          "required": [
+            "title",
+            "shortDescription",
+            "content"
           ]
         },
         "CreateBlogDto": {
@@ -2771,6 +3169,56 @@ window.onload = function() {
             "likeStatus"
           ]
         },
+        "LikeInfoViewModel": {
+          "type": "object",
+          "properties": {
+            "likesCount": {
+              "type": "number"
+            },
+            "dislikesCount": {
+              "type": "number"
+            },
+            "myStatus": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "likesCount",
+            "dislikesCount",
+            "myStatus"
+          ]
+        },
+        "CommentViewType": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "userId": {
+              "type": "string"
+            },
+            "userLogin": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            },
+            "likesInfo": {
+              "$ref": "#/components/schemas/LikeInfoViewModel"
+            }
+          },
+          "required": [
+            "id",
+            "content",
+            "userId",
+            "userLogin",
+            "createdAt",
+            "likesInfo"
+          ]
+        },
         "CreateCommentDto": {
           "type": "object",
           "properties": {
@@ -2795,13 +3243,127 @@ window.onload = function() {
             "content"
           ]
         },
-        "CommentsViewType": {
+        "AnswerViewModel": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "questionId": {
+              "type": "string"
+            },
+            "answerStatus": {
+              "enum": [
+                "Correct",
+                "Incorrect"
+              ],
+              "type": "string"
+            },
+            "addedAt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "questionId",
+            "answerStatus",
+            "addedAt"
+          ]
+        },
+        "PLayerViewModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "login": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "login"
+          ]
+        },
+        "GamePlayerProgressViewModel": {
+          "type": "object",
+          "properties": {
+            "answers": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/AnswerViewModel"
+              }
+            },
+            "player": {
+              "$ref": "#/components/schemas/PLayerViewModel"
+            },
+            "score": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "answers",
+            "player",
+            "score"
+          ]
+        },
+        "QuestionShortViewModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "body": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "body"
+          ]
         },
         "GameViewModel": {
           "type": "object",
-          "properties": {}
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "firstPlayerProgress": {
+              "$ref": "#/components/schemas/GamePlayerProgressViewModel"
+            },
+            "secondPlayerProgress": {
+              "$ref": "#/components/schemas/GamePlayerProgressViewModel"
+            },
+            "questions": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/QuestionShortViewModel"
+              }
+            },
+            "status": {
+              "enum": [
+                "PendingSecondPlayer",
+                "Active",
+                "Finished"
+              ],
+              "type": "string"
+            },
+            "pairCreatedDate": {
+              "type": "string"
+            },
+            "startGameDate": {
+              "type": "string"
+            },
+            "finishGameDate": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "firstPlayerProgress",
+            "secondPlayerProgress",
+            "questions",
+            "status",
+            "pairCreatedDate",
+            "startGameDate",
+            "finishGameDate"
+          ]
         },
         "AnswerDto": {
           "type": "object",
@@ -2814,10 +3376,6 @@ window.onload = function() {
           "required": [
             "answer"
           ]
-        },
-        "AnswerViewModel": {
-          "type": "object",
-          "properties": {}
         }
       }
     }

@@ -5,7 +5,7 @@ import { QuizRepositories } from '../../../infrastructure/quiz-repositories';
 import { Player } from '../../../../../entities/player.entity';
 import { Game } from '../../../../../entities/game.entity';
 import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
-import { GameViewModel } from '../../../infrastructure/query-repository/game-View-Model';
+import { GameViewModel } from '../../../infrastructure/query-repository/game-view.dto';
 import { QuizQueryRepositories } from '../../../infrastructure/query-repository/quiz-query-repositories';
 
 @CommandHandler(ConnectionQuizCommand)

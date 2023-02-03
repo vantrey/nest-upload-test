@@ -1,8 +1,7 @@
 import { Body, Controller, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { PostsQueryRepositories } from '../infrastructure/query-repositories/posts-query.reposit';
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
-import { PostViewDto } from '../infrastructure/query-repositories/post-view.dto';
-import { CommentsViewType } from '../../comments/infrastructure/query-repository/comments-View-Model';
+import { PostViewModel } from '../infrastructure/query-repositories/post-view.dto';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
 import { UpdateLikeStatusDto } from './input-Dtos/update-Like-Status.dto';
@@ -14,7 +13,9 @@ import { CreateCommentCommand } from '../application/use-cases/create-comment-co
 import { UpdateLikeStatusCommand } from '../application/use-cases/update-like-status-command';
 import { SkipThrottle } from '@nestjs/throttler';
 import { PaginationDto } from '../../../common/pagination.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CommentViewType } from '../../comments/infrastructure/query-repository/comment-view.dto';
+import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 
 @ApiTags('Posts')
 @SkipThrottle()
@@ -22,6 +23,12 @@ import { ApiTags } from '@nestjs/swagger';
 export class PostsController {
   constructor(private readonly postsQueryRepo: PostsQueryRepositories, private commandBus: CommandBus) {}
 
+  @ApiOperation({ summary: 'Make like/unlike/dislike/undislike operation' })
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Not found post' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Put(`:postId/like-status`)
@@ -33,35 +40,51 @@ export class PostsController {
     return await this.commandBus.execute(new UpdateLikeStatusCommand(id, updateLikeStatusInputModel, userId));
   }
 
+  @ApiOperation({ summary: 'Returns all comments for specified post with pagination' })
+  @ApiResponse({ status: 200, description: 'success', type: CommentViewType })
+  @ApiResponse({ status: 404, description: 'Not found post' })
   @UseGuards(JwtForGetGuard)
   @Get(`:postId/comments`)
   async findComments(
     @CurrentUserId() userId: string,
     @Param(`postId`, ValidateUuidPipe) id: string,
     @Query() paginationInputModel: PaginationDto,
-  ): Promise<PaginationViewDto<CommentsViewType[]>> {
+  ): Promise<PaginationViewDto<CommentViewType[]>> {
     return await this.postsQueryRepo.findCommentsByIdPost(id, paginationInputModel, userId);
   }
 
+  @ApiOperation({ summary: 'Create new comment' })
+  @ApiResponse({ status: 201, description: 'success', type: CommentViewType })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Not found post' })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Post(`:postId/comments`)
   async createComment(
     @CurrentUserId() userId: string,
     @Param(`postId`, ValidateUuidPipe) id: string,
     @Body() inputCommentModel: CreateCommentDto,
-  ) {
+  ): Promise<CommentViewType> {
     return await this.commandBus.execute(new CreateCommentCommand(id, inputCommentModel, userId));
   }
 
+  @ApiOperation({ summary: 'Returns all posts with pagination' })
+  @ApiResponse({ status: 200, description: 'success', type: PostViewModel })
   @UseGuards(JwtForGetGuard)
   @Get()
-  async findAll(@CurrentUserId() userId: string, @Query() pagination: PaginationDto): Promise<PaginationViewDto<PostViewDto[]>> {
+  async findAll(
+    @CurrentUserId() userId: string,
+    @Query() pagination: PaginationDto,
+  ): Promise<PaginationViewDto<PostViewModel[]>> {
     return await this.postsQueryRepo.findPosts(pagination, userId);
   }
 
+  @ApiOperation({ summary: 'Return post by id' })
+  @ApiResponse({ status: 200, description: 'success', type: PostViewModel })
   @UseGuards(JwtForGetGuard)
   @Get(`:id`)
-  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<PostViewDto> {
+  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<PostViewModel> {
     return await this.postsQueryRepo.findPost(id, userId);
   }
 }

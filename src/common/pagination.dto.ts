@@ -25,7 +25,7 @@ export class PaginationDto {
   @Trim()
   @IsString()
   @IsOptional()
-  sortBy = 'createdAt';
+  sortBy: string = 'createdAt';
   /**
    * Sort by desc or asc
    */
