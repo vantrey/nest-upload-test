@@ -21,6 +21,7 @@ import { QuestionQueryRepository } from '../infrastructure/query-reposirory/ques
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-view.dto';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
+import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 
 @SkipThrottle()
 @ApiTags('QuizQuestions & Blogs')
@@ -52,23 +53,28 @@ export class SaController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @HttpCode(204)
   @Put(`blogs/:blogId/bind-with-user/:userId`)
-  async bindBlog(@Param(`blogId`, ValidateUuidPipe) blogId: string, @Param(`userId`, ValidateUuidPipe) userId: string) {
+  async bindBlog(
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
+    @Param(`userId`, ValidateUuidPipe) userId: string,
+  ): Promise<boolean> {
     return await this.commandBus.execute(new BindBlogCommand(blogId, userId));
   }
 
   @ApiOperation({ summary: 'Returns all blogs with pagination' })
+  @ApiOkResponsePaginated(BlogViewModel)
   @ApiResponse({ status: 200, description: 'The found record', type: BlogViewModel })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get(`blogs`)
-  async findBlogsForSa(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel[]>> {
+  async findBlogsForSa(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel>> {
     return await this.blogsQueryRepo.findBlogsForSa(paginationInputModel);
   }
 
   @ApiOperation({ summary: 'Returns all questions with pagination and filtering' })
+  @ApiOkResponsePaginated(QuestionForSaViewModel)
   @ApiResponse({ status: 200, description: 'The found record', type: QuestionForSaViewModel })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get(`quiz/questions`)
-  async getQuestions(@Query() paginationInputModel: PaginationQuestionDto): Promise<PaginationViewDto<QuestionForSaViewModel[]>> {
+  async getQuestions(@Query() paginationInputModel: PaginationQuestionDto): Promise<PaginationViewDto<QuestionForSaViewModel>> {
     return await this.questionQueryRepo.getQuestions(paginationInputModel);
   }
 

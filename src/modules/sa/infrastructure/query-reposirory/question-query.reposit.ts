@@ -31,7 +31,7 @@ export class QuestionQueryRepository {
     return this.mappedForQuestion(user);
   }
 
-  async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewDto<QuestionForSaViewModel[]>> {
+  async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewDto<QuestionForSaViewModel>> {
     const { bodySearchTerm, publishedStatus, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {

@@ -1,6 +1,6 @@
 import { LikeInfoViewModel } from './like-info-view.dto';
 
-export class CommentViewType {
+export class CommentViewModel {
   public id: string;
   public content: string;
   public userId: string;

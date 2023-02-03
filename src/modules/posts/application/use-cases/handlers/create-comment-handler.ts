@@ -7,7 +7,7 @@ import { CommentsRepositories } from '../../../../comments/infrastructure/commen
 import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
 import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
 import { Comment } from '../../../../../entities/comment.entity';
-import { CommentViewType } from '../../../../comments/infrastructure/query-repository/comment-view.dto';
+import { CommentViewModel } from '../../../../comments/infrastructure/query-repository/comment-view.dto';
 
 @CommandHandler(CreateCommentCommand)
 export class CreateCommentHandler implements ICommandHandler<CreateCommentCommand> {
@@ -19,7 +19,7 @@ export class CreateCommentHandler implements ICommandHandler<CreateCommentComman
     private readonly usersRepositories: UsersRepositories,
   ) {}
 
-  async execute(command: CreateCommentCommand): Promise<CommentViewType> {
+  async execute(command: CreateCommentCommand): Promise<CommentViewModel> {
     const { content } = command.inputCommentModel;
     const { id } = command;
     const { userId } = command;

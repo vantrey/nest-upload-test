@@ -9,7 +9,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { DeleteDevicesCommand } from '../application/use-cases/delete-devices-command';
 import { DeleteDeviceByIdCommand } from '../application/use-cases/delete-device-by-id-command';
 import { SkipThrottle } from '@nestjs/throttler';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('SecurityDevices')
 @SkipThrottle()
@@ -18,7 +18,7 @@ export class DevicesController {
   constructor(private commandBus: CommandBus, private readonly deviceQueryRepositories: DeviceQueryRepositories) {}
 
   @ApiOperation({ summary: 'Returns all devices with active sessions for current user' })
-  @ApiResponse({ status: 200, description: 'success', type: DeviceViewModel })
+  @ApiOkResponse({ status: 200, description: 'success', type: DeviceViewModel, isArray: true })
   @ApiResponse({ status: 401, description: 'JWT refreshToken inside cookie is missing, expired or incorrect' })
   @UseGuards(RefreshGuard)
   @Get(`/devices`)

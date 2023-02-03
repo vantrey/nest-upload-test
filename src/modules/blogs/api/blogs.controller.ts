@@ -10,6 +10,7 @@ import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
 import { SkipThrottle } from '@nestjs/throttler';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BlogViewModel } from '../infrastructure/query-repository/blog-view.dto';
+import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 
 @ApiTags('Blogs')
 @SkipThrottle()
@@ -18,13 +19,15 @@ export class BlogsController {
   constructor(private readonly blogsQueryRepo: BlogsQueryRepositories, private readonly postsQueryRepo: PostsQueryRepositories) {}
 
   @ApiOperation({ summary: 'Returns blogs with pagination' })
+  @ApiOkResponsePaginated(BlogViewModel)
   @ApiResponse({ status: 200, description: 'success', type: BlogViewModel })
   @Get()
-  async findBlogs(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel[]>> {
+  async findBlogs(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel>> {
     return await this.blogsQueryRepo.findBlogs(paginationInputModel);
   }
 
   @ApiOperation({ summary: 'Returns all posts for specified blog with pagination' })
+  @ApiOkResponsePaginated(PostViewModel)
   @ApiResponse({ status: 200, description: 'success', type: PostViewModel })
   @UseGuards(JwtForGetGuard)
   @Get(`:blogId/posts`)
@@ -32,7 +35,7 @@ export class BlogsController {
     @CurrentUserId() userId: string,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Query() paginationInputModel: PaginationBlogDto,
-  ): Promise<PaginationViewDto<PostViewModel[]>> {
+  ): Promise<PaginationViewDto<PostViewModel>> {
     await this.blogsQueryRepo.findBlog(blogId);
     return this.postsQueryRepo.findPosts(paginationInputModel, userId, blogId);
   }

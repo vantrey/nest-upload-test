@@ -469,11 +469,25 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": "The found record",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/UserViewModel"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/UserViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -734,11 +748,25 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": "The found record",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/BlogViewModel"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/BlogViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -830,11 +858,25 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": "The found record",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/QuestionForSaViewModel"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/QuestionForSaViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -1022,7 +1064,10 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/DeviceViewModel"
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DeviceViewModel"
+                    }
                   }
                 }
               }
@@ -1154,7 +1199,21 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/BlogViewModel"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/BlogViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -1240,7 +1299,21 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/PostViewModel"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/PostViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -1289,7 +1362,7 @@ window.onload = function() {
       "/blogger/blogs/comments": {
         "get": {
           "operationId": "BloggersController_getComments",
-          "summary": "",
+          "summary": "Returns all comments for all posts inside ll current user blogs",
           "description": "",
           "parameters": [
             {
@@ -1339,41 +1412,35 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
-            }
-          },
-          "tags": [
-            "Blogger"
-          ],
-          "security": [
-            {
-              "bearer": []
-            }
-          ]
-        }
-      },
-      "/blogger/blogs/{blogId}": {
-        "delete": {
-          "operationId": "BloggersController_deleteBlog",
-          "summary": "",
-          "description": "",
-          "parameters": [
-            {
-              "name": "blogId",
-              "required": true,
-              "in": "path",
-              "schema": {
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "204": {
-              "description": "",
+              "description": "success",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/BloggerCommentsViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
@@ -1387,10 +1454,12 @@ window.onload = function() {
               "bearer": []
             }
           ]
-        },
+        }
+      },
+      "/blogger/blogs/{blogId}": {
         "put": {
           "operationId": "BloggersController_updateBlog",
-          "summary": "",
+          "summary": "Update existing Blog by id with InputModel",
           "description": "",
           "parameters": [
             {
@@ -1414,14 +1483,209 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the blog"
+            }
+          },
+          "tags": [
+            "Blogger"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        },
+        "delete": {
+          "operationId": "BloggersController_deleteBlog",
+          "summary": "Delete blog specified by id",
+          "description": "",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "success"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the blog"
+            },
+            "404": {
+              "description": "Not found blog"
+            }
+          },
+          "tags": [
+            "Blogger"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        }
+      },
+      "/blogger/blogs": {
+        "post": {
+          "operationId": "BloggersController_createBlog",
+          "summary": "Create new Blog",
+          "description": "",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateBlogDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Returns the newly created blog",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BlogViewModel"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Incorrect input data for create blog",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "User not Unauthorized"
+            }
+          },
+          "tags": [
+            "Blogger"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        },
+        "get": {
+          "operationId": "BloggersController_findBlogsForCurrentBlogger",
+          "summary": "Returns all blogs (current blogger) with pagination",
+          "description": "",
+          "parameters": [
+            {
+              "name": "searchNameTerm",
+              "required": true,
+              "in": "query",
+              "description": "Search term for blog Name: Name should contain this term in any position",
+              "schema": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            {
+              "name": "pageSize",
+              "required": true,
+              "in": "query",
+              "description": "pageSize is portions size that should be returned",
+              "schema": {
+                "default": 10,
+                "type": "number"
+              }
+            },
+            {
+              "name": "pageNumber",
+              "required": true,
+              "in": "query",
+              "description": "pageNumber is number of portions that should be returned",
+              "schema": {
+                "default": 1,
+                "type": "number"
+              }
+            },
+            {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "Sort by parameters",
+              "schema": {
+                "default": "createdAt",
+                "type": "string"
+              }
+            },
+            {
+              "name": "sortDirection",
+              "required": true,
+              "in": "query",
+              "description": "Sort by desc or asc",
+              "schema": {
+                "default": "desc",
+                "enum": [
+                  "asc",
+                  "desc"
+                ],
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/BlogViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "User not Unauthorized"
             }
           },
           "tags": [
@@ -1437,7 +1701,7 @@ window.onload = function() {
       "/blogger/blogs/{blogId}/posts": {
         "post": {
           "operationId": "BloggersController_createPost",
-          "summary": "",
+          "summary": "Create new Post for specified blog",
           "description": "",
           "parameters": [
             {
@@ -1503,7 +1767,7 @@ window.onload = function() {
       "/blogger/blogs/{blogId}/posts/{postId}": {
         "put": {
           "operationId": "BloggersController_updatePost",
-          "summary": "",
+          "summary": "Update existing ost by id with InputModel",
           "description": "",
           "parameters": [
             {
@@ -1535,14 +1799,26 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "Incorrect input data for update post",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "User not Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the blog"
+            },
+            "404": {
+              "description": "Not found blog"
             }
           },
           "tags": [
@@ -1556,7 +1832,7 @@ window.onload = function() {
         },
         "delete": {
           "operationId": "BloggersController_deletePost",
-          "summary": "",
+          "summary": "Delete post specified by id blog",
           "description": "",
           "parameters": [
             {
@@ -1578,139 +1854,16 @@ window.onload = function() {
           ],
           "responses": {
             "204": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "boolean"
-                  }
-                }
-              }
-            }
-          },
-          "tags": [
-            "Blogger"
-          ],
-          "security": [
-            {
-              "bearer": []
-            }
-          ]
-        }
-      },
-      "/blogger/blogs": {
-        "post": {
-          "operationId": "BloggersController_createBlog",
-          "summary": "",
-          "description": "",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CreateBlogDto"
-                }
-              }
-            }
-          },
-          "responses": {
-            "201": {
-              "description": "Returns the newly created blog",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/BlogViewModel"
-                  }
-                }
-              }
-            },
-            "400": {
-              "description": "Incorrect input data for create blog",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/ApiErrorResultDto"
-                  }
-                }
-              }
+              "description": "success"
             },
             "401": {
               "description": "User not Unauthorized"
-            }
-          },
-          "tags": [
-            "Blogger"
-          ],
-          "security": [
-            {
-              "bearer": []
-            }
-          ]
-        },
-        "get": {
-          "operationId": "BloggersController_findAll",
-          "summary": "",
-          "description": "",
-          "parameters": [
-            {
-              "name": "searchNameTerm",
-              "required": true,
-              "in": "query",
-              "description": "Search term for blog Name: Name should contain this term in any position",
-              "schema": {
-                "default": "",
-                "type": "string"
-              }
             },
-            {
-              "name": "pageSize",
-              "required": true,
-              "in": "query",
-              "description": "pageSize is portions size that should be returned",
-              "schema": {
-                "default": 10,
-                "type": "number"
-              }
+            "403": {
+              "description": "You are not the owner of the blog"
             },
-            {
-              "name": "pageNumber",
-              "required": true,
-              "in": "query",
-              "description": "pageNumber is number of portions that should be returned",
-              "schema": {
-                "default": 1,
-                "type": "number"
-              }
-            },
-            {
-              "name": "sortBy",
-              "required": true,
-              "in": "query",
-              "description": "Sort by parameters",
-              "schema": {
-                "default": "createdAt",
-                "type": "string"
-              }
-            },
-            {
-              "name": "sortDirection",
-              "required": true,
-              "in": "query",
-              "description": "Sort by desc or asc",
-              "schema": {
-                "default": "desc",
-                "enum": [
-                  "asc",
-                  "desc"
-                ],
-                "type": "string"
-              }
-            }
-          ],
-          "responses": {
-            "200": {
-              "description": ""
+            "404": {
+              "description": "Not found blog"
             }
           },
           "tags": [
@@ -1726,7 +1879,7 @@ window.onload = function() {
       "/blogger/users/{id}/ban": {
         "put": {
           "operationId": "BloggersController_banUserForCurrentBlog",
-          "summary": "",
+          "summary": "Ban/unban user",
           "description": "",
           "parameters": [
             {
@@ -1750,14 +1903,20 @@ window.onload = function() {
           },
           "responses": {
             "204": {
-              "description": "",
+              "description": "success"
+            },
+            "400": {
+              "description": "Incorrect input data for update post",
               "content": {
                 "application/json": {
                   "schema": {
-                    "type": "boolean"
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "User not Unauthorized"
             }
           },
           "tags": [
@@ -1773,7 +1932,7 @@ window.onload = function() {
       "/blogger/users/blog/{id}": {
         "get": {
           "operationId": "BloggersController_getBanedUser",
-          "summary": "",
+          "summary": "Returns all banned users or blog",
           "description": "",
           "parameters": [
             {
@@ -1841,7 +2000,31 @@ window.onload = function() {
           ],
           "responses": {
             "200": {
-              "description": ""
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/UsersForBanBlogView"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "User not Unauthorized"
             }
           },
           "tags": [
@@ -1975,7 +2158,21 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/CommentViewType"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/CommentViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -2018,7 +2215,7 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/CommentViewType"
+                    "$ref": "#/components/schemas/CommentViewModel"
                   }
                 }
               }
@@ -2107,7 +2304,21 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/PostViewModel"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/PostViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -2321,7 +2532,7 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/CommentViewType"
+                    "$ref": "#/components/schemas/CommentViewModel"
                   }
                 }
               }
@@ -2504,7 +2715,21 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/GameViewModel"
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "data": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/GameViewModel"
+                            }
+                          }
+                        }
+                      }
+                    ]
                   }
                 }
               }
@@ -2794,6 +3019,33 @@ window.onload = function() {
             "banReason"
           ]
         },
+        "PaginationViewDto": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array"
+            },
+            "pagesCount": {
+              "type": "number"
+            },
+            "page": {
+              "type": "number"
+            },
+            "pageSize": {
+              "type": "number"
+            },
+            "totalCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "items",
+            "pagesCount",
+            "page",
+            "pageSize",
+            "totalCount"
+          ]
+        },
         "BanInfoType": {
           "type": "object",
           "properties": {
@@ -3053,6 +3305,94 @@ window.onload = function() {
             "extendedLikesInfo"
           ]
         },
+        "LikeInfoViewModel": {
+          "type": "object",
+          "properties": {
+            "likesCount": {
+              "type": "number"
+            },
+            "dislikesCount": {
+              "type": "number"
+            },
+            "myStatus": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "likesCount",
+            "dislikesCount",
+            "myStatus"
+          ]
+        },
+        "CommentatorInfoModel": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string"
+            },
+            "userLogin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "userId",
+            "userLogin"
+          ]
+        },
+        "PostInfoModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "blogId": {
+              "type": "string"
+            },
+            "blogName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "title",
+            "blogId",
+            "blogName"
+          ]
+        },
+        "BloggerCommentsViewModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            },
+            "likesInfo": {
+              "$ref": "#/components/schemas/LikeInfoViewModel"
+            },
+            "commentatorInfo": {
+              "$ref": "#/components/schemas/CommentatorInfoModel"
+            },
+            "postInfo": {
+              "$ref": "#/components/schemas/PostInfoModel"
+            }
+          },
+          "required": [
+            "id",
+            "content",
+            "createdAt",
+            "likesInfo",
+            "commentatorInfo",
+            "postInfo"
+          ]
+        },
         "UpdateBlogDto": {
           "type": "object",
           "properties": {
@@ -3073,28 +3413,6 @@ window.onload = function() {
             "name",
             "description",
             "websiteUrl"
-          ]
-        },
-        "CreatePostDto": {
-          "type": "object",
-          "properties": {
-            "title": {
-              "type": "string",
-              "description": "Title for create Post"
-            },
-            "shortDescription": {
-              "type": "string",
-              "description": "Short description for create Post"
-            },
-            "content": {
-              "type": "string",
-              "description": "content for create Post"
-            }
-          },
-          "required": [
-            "title",
-            "shortDescription",
-            "content"
           ]
         },
         "CreateBlogDto": {
@@ -3127,11 +3445,33 @@ window.onload = function() {
             "description"
           ]
         },
+        "CreatePostDto": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title for create Post"
+            },
+            "shortDescription": {
+              "type": "string",
+              "description": "Short description for create Post"
+            },
+            "content": {
+              "type": "string",
+              "description": "content for create Post"
+            }
+          },
+          "required": [
+            "title",
+            "shortDescription",
+            "content"
+          ]
+        },
         "UpdateBanInfoForUserDto": {
           "type": "object",
           "properties": {
             "isBanned": {
-              "type": "object",
+              "type": "boolean",
               "description": "isBanned: User",
               "default": true
             },
@@ -3149,6 +3489,25 @@ window.onload = function() {
             "isBanned",
             "banReason",
             "blogId"
+          ]
+        },
+        "UsersForBanBlogView": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "login": {
+              "type": "string"
+            },
+            "banInfo": {
+              "$ref": "#/components/schemas/BanInfoType"
+            }
+          },
+          "required": [
+            "id",
+            "login",
+            "banInfo"
           ]
         },
         "UpdateLikeStatusDto": {
@@ -3169,26 +3528,7 @@ window.onload = function() {
             "likeStatus"
           ]
         },
-        "LikeInfoViewModel": {
-          "type": "object",
-          "properties": {
-            "likesCount": {
-              "type": "number"
-            },
-            "dislikesCount": {
-              "type": "number"
-            },
-            "myStatus": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "likesCount",
-            "dislikesCount",
-            "myStatus"
-          ]
-        },
-        "CommentViewType": {
+        "CommentViewModel": {
           "type": "object",
           "properties": {
             "id": {

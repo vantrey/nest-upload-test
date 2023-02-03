@@ -4,10 +4,10 @@ import { ExtendedLikesInfoViewModel } from './likes-Info-view.dto';
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
 import {
-  BloggerCommentsViewType,
+  BloggerCommentsViewModel,
   CommentatorInfoModel,
   PostInfoModel,
-} from '../../../comments/infrastructure/query-repository/comments-View-Model';
+} from '../../../comments/infrastructure/query-repository/comments-view.dto';
 import { BannedBlogUser } from '../../../../entities/banned-blog-user.entity';
 import { Post } from '../../../../entities/post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,7 +16,7 @@ import { Comment } from '../../../../entities/comment.entity';
 import { LikePost, LikeStatusType } from '../../../../entities/like-post.entity';
 import { LikeComment } from '../../../../entities/like-comment.entity';
 import { PaginationDto } from '../../../../common/pagination.dto';
-import { CommentViewType } from '../../../comments/infrastructure/query-repository/comment-view.dto';
+import { CommentViewModel } from '../../../comments/infrastructure/query-repository/comment-view.dto';
 import { LikeInfoViewModel } from '../../../comments/infrastructure/query-repository/like-info-view.dto';
 
 @Injectable()
@@ -71,7 +71,7 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewDto<PostViewModel[]>> {
+  async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewDto<PostViewModel>> {
     const { sortDirection, sortBy, pageSize } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -121,7 +121,7 @@ export class PostsQueryRepositories {
     postId: string,
     data: PaginationDto,
     userId: string | null,
-  ): Promise<PaginationViewDto<CommentViewType[]>> {
+  ): Promise<PaginationViewDto<CommentViewModel>> {
     const { sortDirection, sortBy, pageSize } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -150,7 +150,7 @@ export class PostsQueryRepositories {
     return new PaginationViewDto(pagesCountRes, data.pageNumber, data.pageSize, count, itemsComments);
   }
 
-  private async commentByIdPostForView(object: Comment, userId: string | null): Promise<CommentViewType> {
+  private async commentByIdPostForView(object: Comment, userId: string | null): Promise<CommentViewModel> {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
       const result = await this.likeCommentRepo.findOneBy({
@@ -178,7 +178,7 @@ export class PostsQueryRepositories {
       }),
     ]);
     const likesInfo = new LikeInfoViewModel(countLike, countDislike, myStatus);
-    return new CommentViewType(object.id, object.content, object.userId, object.user.login, object.createdAt, likesInfo);
+    return new CommentViewModel(object.id, object.content, object.userId, object.user.login, object.createdAt, likesInfo);
   }
 
   async mappedPostForView(post: Post): Promise<PostViewModel> {
@@ -196,7 +196,10 @@ export class PostsQueryRepositories {
     );
   }
 
-  async getCommentsBloggerForPosts(userId: string, paginationInputModel: PaginationDto) {
+  async getCommentsBloggerForPosts(
+    userId: string,
+    paginationInputModel: PaginationDto,
+  ): Promise<PaginationViewDto<BloggerCommentsViewModel>> {
     const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
     let order;
     if (sortDirection === 'asc') {
@@ -253,6 +256,6 @@ export class PostsQueryRepositories {
     const likesInfo = new LikeInfoViewModel(countLike, countDislike, myStatus);
     const commentatorInfo = new CommentatorInfoModel(object.userId, object.user.login);
     const postInfo = new PostInfoModel(object.post.id, object.post.title, object.post.blogId, object.post.blogName);
-    return new BloggerCommentsViewType(object.id, object.content, object.createdAt, likesInfo, commentatorInfo, postInfo);
+    return new BloggerCommentsViewModel(object.id, object.content, object.createdAt, likesInfo, commentatorInfo, postInfo);
   }
 }

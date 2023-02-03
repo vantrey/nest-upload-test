@@ -5,7 +5,7 @@ import { LikeStatusType } from '../../../../entities/like-post.entity';
 import { LikeComment } from '../../../../entities/like-comment.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CommentViewType } from './comment-view.dto';
+import { CommentViewModel } from './comment-view.dto';
 import { LikeInfoViewModel } from './like-info-view.dto';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class CommentsQueryRepositories {
     private readonly likeCommentRepo: Repository<LikeComment>,
   ) {}
 
-  async getComment(commentId: string, userId: string | null): Promise<CommentViewType> {
+  async getComment(commentId: string, userId: string | null): Promise<CommentViewModel> {
     let myStatus: string = LikeStatusType.None;
     if (userId) {
       const result = await this.likeCommentRepo.findOneBy({
@@ -45,6 +45,6 @@ export class CommentsQueryRepositories {
     if (!comment) throw new NotFoundExceptionMY(`Not found for commentId: ${commentId}`);
     const likesInfo = new LikeInfoViewModel(countLike, countDislike, myStatus);
     //returning comment for View
-    return new CommentViewType(comment.id, comment.content, comment.userId, comment.user.login, comment.createdAt, likesInfo);
+    return new CommentViewModel(comment.id, comment.content, comment.userId, comment.user.login, comment.createdAt, likesInfo);
   }
 }

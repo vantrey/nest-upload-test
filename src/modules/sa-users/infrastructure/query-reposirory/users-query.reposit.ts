@@ -26,7 +26,7 @@ export class UsersQueryRepositories {
     return this.mappedForUser(user);
   }
 
-  async findUsers(data: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel[]>> {
+  async findUsers(data: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel>> {
     const { searchEmailTerm, searchLoginTerm, pageNumber, pageSize, sortBy, banStatus, sortDirection } = data;
     let order;
     if (sortDirection === 'asc') {

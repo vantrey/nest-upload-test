@@ -8,7 +8,7 @@ export class UpdateBanInfoForUserDto {
    */
   @IsBoolean()
   @IsOptional()
-  isBanned = true;
+  isBanned: boolean = true;
   /**
    * password: password User
    */

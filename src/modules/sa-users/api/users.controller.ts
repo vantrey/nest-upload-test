@@ -15,6 +15,7 @@ import { SkipThrottle } from '@nestjs/throttler';
 import { ApiBasicAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { UserViewModel } from '../infrastructure/query-reposirory/user-view.dto';
+import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 
 @ApiBasicAuth()
 @ApiTags('Sa-Users')
@@ -42,10 +43,10 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Returns all users with pagination' })
-  @ApiResponse({ status: 200, description: 'The found record', type: UserViewModel })
+  @ApiOkResponsePaginated(UserViewModel)
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get()
-  async findUsers(@Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel[]>> {
+  async findUsers(@Query() paginationInputModel: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel>> {
     return this.usersQueryRepositories.findUsers(paginationInputModel);
   }
 

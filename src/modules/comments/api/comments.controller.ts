@@ -14,7 +14,7 @@ import { UpdateLikeStatusCommentCommand } from '../application/use-cases/update-
 import { SkipThrottle } from '@nestjs/throttler';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
-import { CommentViewType } from '../infrastructure/query-repository/comment-view.dto';
+import { CommentViewModel } from '../infrastructure/query-repository/comment-view.dto';
 
 @ApiTags('Comments')
 @SkipThrottle()
@@ -77,11 +77,11 @@ export class CommentsController {
   }
 
   @ApiOperation({ summary: 'Return comment by id' })
-  @ApiResponse({ status: 200, description: 'success', type: CommentViewType })
+  @ApiResponse({ status: 200, description: 'success', type: CommentViewModel })
   @ApiResponse({ status: 404, description: 'Not found comment' })
   @UseGuards(JwtForGetGuard)
   @Get(`/:id`)
-  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentViewType> {
+  async findOne(@CurrentUserId() userId: string, @Param(`id`, ValidateUuidPipe) id: string): Promise<CommentViewModel> {
     return this.commentsQueryRepo.getComment(id, userId);
   }
 }

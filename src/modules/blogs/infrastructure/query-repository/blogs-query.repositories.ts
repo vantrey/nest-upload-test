@@ -40,7 +40,7 @@ export class BlogsQueryRepositories {
     return new UsersForBanBlogView(object.userId, object.login, banInfo);
   }
 
-  async findBlogs(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel[]>> {
+  async findBlogs(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -68,7 +68,7 @@ export class BlogsQueryRepositories {
     return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, blogs);
   }
 
-  async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel[]>> {
+  async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -99,7 +99,7 @@ export class BlogsQueryRepositories {
     return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
   }
 
-  async findBlogsForCurrentBlogger(data: PaginationBlogDto, userId: string): Promise<PaginationViewDto<BlogViewModel[]>> {
+  async findBlogsForCurrentBlogger(data: PaginationBlogDto, userId: string): Promise<PaginationViewDto<BlogViewModel>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -153,7 +153,7 @@ export class BlogsQueryRepositories {
   async getBannedUsersForBlog(
     blogId: string,
     paginationInputModel: PaginationUsersByLoginDto,
-  ): Promise<PaginationViewDto<UsersForBanBlogView[]>> {
+  ): Promise<PaginationViewDto<UsersForBanBlogView>> {
     const { searchLoginTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
     let order;
     if (sortDirection === 'asc') {

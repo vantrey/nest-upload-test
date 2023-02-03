@@ -140,7 +140,7 @@ export class QuizQueryRepositories {
     return this.mappedGameForView(game);
   }
 
-  async getGames(userId: string, data: PaginationQuizDto): Promise<PaginationViewDto<GameViewModel[]>> {
+  async getGames(userId: string, data: PaginationQuizDto): Promise<PaginationViewDto<GameViewModel>> {
     const { pageNumber, pageSize, sortBy, sortDirection } = data;
     let order;
     if (sortDirection === 'asc') {

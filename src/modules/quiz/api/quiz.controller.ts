@@ -14,6 +14,7 @@ import { PaginationQuizDto } from './input-dtos/pagination-quiz.dto';
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
+import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 
 @ApiTags('PairQuizGame')
 @ApiBearerAuth()
@@ -59,13 +60,14 @@ export class QuizController {
   }
 
   @ApiOperation({ summary: 'Returns all my games (closed games and current)' })
+  @ApiOkResponsePaginated(GameViewModel)
   @ApiResponse({ status: 200, description: 'success', type: GameViewModel })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get(`my`)
   async myGames(
     @CurrentUserIdBlogger() userId: string,
     @Query() paginationInputModel: PaginationQuizDto,
-  ): Promise<PaginationViewDto<GameViewModel[]>> {
+  ): Promise<PaginationViewDto<GameViewModel>> {
     return this.quizQueryRepo.getGames(userId, paginationInputModel);
   }
 
