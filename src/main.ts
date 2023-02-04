@@ -8,13 +8,13 @@ import { get } from 'http';
 import { getSetupSwagger } from './swagger/getSetupSwagger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: true,
-  });
+  const app = await NestFactory.create(AppModule);
+  app.enableCors();
   const configService = app.get(ConfigService<ConfigType>);
   const port = configService.get('PORT', { infer: true });
   const finishedApp = createdApp(app);
   getSetupSwagger(finishedApp);
+  app.enableCors();
   await finishedApp.listen(port).then(async () => console.log(`Server is listening on ${await app.getUrl()}`));
   // get the swagger json file (if app is running in development mode)
   const dev = configService.get('dev', { infer: true });
