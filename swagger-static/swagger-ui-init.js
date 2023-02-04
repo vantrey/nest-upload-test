@@ -476,7 +476,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/UserViewModel"
@@ -765,7 +765,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/BlogViewModel"
@@ -880,7 +880,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/QuestionForSaViewModel"
@@ -1257,7 +1257,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/BlogViewModel"
@@ -1357,7 +1357,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/PostViewModel"
@@ -1474,7 +1474,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/BloggerCommentsViewModel"
@@ -1723,7 +1723,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/BlogViewModel"
@@ -2062,7 +2062,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/UsersForBanBlogView"
@@ -2216,7 +2216,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/CommentViewModel"
@@ -2362,7 +2362,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/PostViewModel"
@@ -2773,7 +2773,7 @@ window.onload = function() {
                       },
                       {
                         "properties": {
-                          "data": {
+                          "items": {
                             "type": "array",
                             "items": {
                               "$ref": "#/components/schemas/GameViewModel"
