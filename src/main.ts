@@ -9,7 +9,7 @@ import { getSetupSwagger } from './swagger/getSetupSwagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: { credentials: true },
+    cors: true,
   });
   const configService = app.get(ConfigService<ConfigType>);
   const port = configService.get('PORT', { infer: true });
