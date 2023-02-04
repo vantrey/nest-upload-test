@@ -46,6 +46,7 @@ export class UsersQueryRepositories {
       advancedFilter = [{ login: ILike(`%${searchLoginTerm}%`) }, { email: ILike(`%${searchEmailTerm}%`) }];
     }
     const queryFilter = searchEmailTerm || searchLoginTerm ? advancedFilter : filter;
+    console.log('queryFilter', queryFilter); //todo
     const [users, count] = await Promise.all([
       this.userRepo.find({
         select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],

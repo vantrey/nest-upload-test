@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToMany, OneToOne, PrimaryGeneratedColum
 import { Player } from './player.entity';
 import { Question } from './question.entity';
 import { AnswerStatusesType } from './answer.entity';
+import { ForbiddenExceptionMY } from '../helpers/My-HttpExceptionFilter';
 
 export enum GameStatusesType {
   PendingSecondPlayer = 'PendingSecondPlayer',
@@ -121,5 +122,31 @@ export class Game {
 
   isPlayerParticipate(userId: string) {
     if (this.firstPlayerId !== userId && this.secondPlayerId !== userId) return true;
+  }
+
+  firstStageGame(userId: string, answer: string, player: Player) {
+    if (this.isPlayerFinished(userId)) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
+    if (this.firstPlayerId === userId) {
+      const numberQuestionFirstPlayer = this.questions[this.firstPlayerProgress.answers.length];
+      if (!this.isAnswerCorrect(answer, numberQuestionFirstPlayer)) {
+        const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
+        return { instanceAnswer, player };
+      }
+      player.addPoint();
+      const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
+      instanceAnswer.correctAnswer();
+      return { instanceAnswer, player };
+    }
+    if (this.secondPlayerId === userId) {
+      const numberQuestionSecondPlayer = this.questions[this.secondPlayerProgress.answers.length];
+      if (!this.isAnswerCorrect(answer, numberQuestionSecondPlayer)) {
+        const instanceAnswer = Player.createAnswer(answer, numberQuestionSecondPlayer.id, player);
+        return { instanceAnswer, player };
+      }
+      player.addPoint();
+      const instanceAnswer = Player.createAnswer(answer, numberQuestionSecondPlayer.id, player);
+      instanceAnswer.correctAnswer();
+      return { instanceAnswer, player };
+    }
   }
 }

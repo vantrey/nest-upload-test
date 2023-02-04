@@ -91,6 +91,7 @@ import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/
 import { QuizQueryRepositories } from './modules/quiz/infrastructure/query-repository/quiz-query-repositories';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { AnswerRQuizHandler } from './modules/quiz/application/use-case/handlers/answerR-quiz.handler';
 
 const controllers = [
   AuthController,
@@ -139,6 +140,7 @@ const adapters = [
   QuizQueryRepositories,
 ];
 const handlers = [
+  AnswerRQuizHandler,
   CreateUserHandler,
   CreateUserSaHandler,
   CreateBlogHandler,
