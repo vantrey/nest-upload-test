@@ -31,14 +31,16 @@ export class QuizQueryRepositories {
     const answersFirstPlayer = await this.answerRepo.find({
       select: ['questionId', 'answerStatus', 'addedAt'],
       where: { playerId: game.firstPlayerProgress.id, gameId: game.id },
-      order: { addedAt: 'DESC' },
+      order: { addedAt: 'ASC' },
     });
     const answersSecondPlayer = await this.answerRepo.find({
       select: ['questionId', 'answerStatus', 'addedAt'],
       where: { playerId: game.secondPlayerProgress.id, gameId: game.id },
-      order: { addedAt: 'DESC' },
+      order: { addedAt: 'ASC' },
     });
-    const questions = await Promise.all(game.questions.map((q) => this.mappedQuestionForView(q)));
+    const questions = await Promise.all(
+      game.questions.sort((a, b) => Number(a.createdAt) - Number(b.createdAt)).map((q) => this.mappedQuestionForView(q)),
+    );
     const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.userId, game.secondPlayerProgress.login);
     const firstPlayerProgress = new GamePlayerProgressViewModel(
       answersFirstPlayer.map((a) => this.mappedAnswerForView(a)),
