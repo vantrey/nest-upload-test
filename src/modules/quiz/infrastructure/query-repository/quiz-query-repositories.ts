@@ -31,12 +31,12 @@ export class QuizQueryRepositories {
     const answersFirstPlayer = await this.answerRepo.find({
       select: ['questionId', 'answerStatus', 'addedAt'],
       where: { playerId: game.firstPlayerProgress.id, gameId: game.id },
-      order: { addedAt: 'ASC' },
+      order: { addedAt: 'DESC' },
     });
     const answersSecondPlayer = await this.answerRepo.find({
       select: ['questionId', 'answerStatus', 'addedAt'],
       where: { playerId: game.secondPlayerProgress.id, gameId: game.id },
-      order: { addedAt: 'ASC' },
+      order: { addedAt: 'DESC' },
     });
     const questions = await Promise.all(game.questions.map((q) => this.mappedQuestionForView(q)));
     const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.userId, game.secondPlayerProgress.login);
