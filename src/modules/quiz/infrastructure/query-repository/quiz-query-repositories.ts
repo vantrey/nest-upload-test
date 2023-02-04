@@ -157,7 +157,7 @@ export class QuizQueryRepositories {
           questions: true,
         },
         where: [{ firstPlayerId: userId }, { secondPlayerId: userId }],
-        order: { [sortBy]: order },
+        order: { [sortBy]: order, pairCreatedDate: 'DESC' },
         skip: data.skip,
         take: pageSize,
       }),

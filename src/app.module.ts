@@ -87,11 +87,10 @@ import { Game } from './entities/game.entity';
 import { QuizRepositories } from './modules/quiz/infrastructure/quiz-repositories';
 import { QuizController } from './modules/quiz/api/quiz.controller';
 import { ConnectionQuizHandler } from './modules/quiz/application/use-case/handlers/connection-quiz.handler';
-import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz.handler';
 import { QuizQueryRepositories } from './modules/quiz/infrastructure/query-repository/quiz-query-repositories';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { AnswerRQuizHandler } from './modules/quiz/application/use-case/handlers/answerR-quiz.handler';
+import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz.handler';
 
 const controllers = [
   AuthController,
@@ -140,7 +139,6 @@ const adapters = [
   QuizQueryRepositories,
 ];
 const handlers = [
-  AnswerRQuizHandler,
   CreateUserHandler,
   CreateUserSaHandler,
   CreateBlogHandler,

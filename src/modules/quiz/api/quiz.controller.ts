@@ -14,7 +14,7 @@ import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
-import { AnswerRQuizCommand } from '../application/use-case/answerR-quiz.command';
+import { AnswerQuizCommand } from '../application/use-case/answer-quiz.command';
 
 @ApiTags('PairQuizGame')
 @ApiBearerAuth()
@@ -45,7 +45,7 @@ export class QuizController {
   @HttpCode(200)
   @Post(`my-current/answers`)
   async answer(@CurrentUserIdBlogger() userId: string, @Body() inputAnswerModel: AnswerDto): Promise<AnswerViewModel> {
-    return this.commandBus.execute(new AnswerRQuizCommand(userId, inputAnswerModel));
+    return this.commandBus.execute(new AnswerQuizCommand(userId, inputAnswerModel));
   }
 
   @ApiOperation({ summary: 'Returns current unfinished user game' })

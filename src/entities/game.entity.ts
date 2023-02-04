@@ -124,7 +124,7 @@ export class Game {
     if (this.firstPlayerId !== userId && this.secondPlayerId !== userId) return true;
   }
 
-  firstStageGame(userId: string, answer: string, player: Player) {
+  stageGame(userId: string, answer: string, player: Player) {
     if (this.isPlayerFinished(userId)) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     if (this.firstPlayerId === userId) {
       const numberQuestionFirstPlayer = this.questions[this.firstPlayerProgress.answers.length];
