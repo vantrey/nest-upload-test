@@ -2861,15 +2861,10 @@ window.onload = function() {
       "title": "Blogger with quiz game",
       "description": "The blogger API description",
       "version": "h25.blogger",
-      "contact": {},
-      "termsOfService": "http://localhost:5003/api-json"
+      "contact": {}
     },
     "tags": [],
-    "servers": [
-      {
-        "url": "https://nest-with-type-orm.vercel.app"
-      }
-    ],
+    "servers": [],
     "components": {
       "securitySchemes": {
         "bearer": {
@@ -3206,7 +3201,9 @@ window.onload = function() {
           "properties": {
             "body": {
               "type": "string",
-              "description": "body: Text of question, for example: How many continents are there"
+              "description": "body: Text of question, for example: How many continents are there",
+              "minLength": 10,
+              "maxLength": 500
             },
             "correctAnswers": {
               "description": "correctAnswers: All variants of possible correct answers for current questions Examples: [6, 'six', 'шесть', 'дофига'] In Postgres save this data in JSON column",
@@ -3434,15 +3431,21 @@ window.onload = function() {
           "properties": {
             "name": {
               "type": "string",
-              "description": "name: Blog name for update"
+              "description": "name: Blog name for update",
+              "minLength": 1,
+              "maxLength": 15
             },
             "description": {
               "type": "string",
-              "description": "description"
+              "description": "description",
+              "minLength": 1,
+              "maxLength": 500
             },
             "websiteUrl": {
               "type": "string",
-              "description": "websiteUrl: Blog website Url"
+              "description": "websiteUrl: Blog website Url",
+              "minLength": 1,
+              "maxLength": 100
             }
           },
           "required": [
@@ -3486,15 +3489,21 @@ window.onload = function() {
           "properties": {
             "title": {
               "type": "string",
-              "description": "Title for create Post"
+              "description": "Title for create Post",
+              "minLength": 1,
+              "maxLength": 30
             },
             "shortDescription": {
               "type": "string",
-              "description": "Short description for create Post"
+              "description": "Short description for create Post",
+              "minLength": 1,
+              "maxLength": 100
             },
             "content": {
               "type": "string",
-              "description": "content for create Post"
+              "description": "content for create Post",
+              "minLength": 1,
+              "maxLength": 1000
             }
           },
           "required": [
@@ -3600,7 +3609,9 @@ window.onload = function() {
           "properties": {
             "content": {
               "type": "string",
-              "description": "content for create Comment"
+              "description": "content for create Comment",
+              "minLength": 20,
+              "maxLength": 300
             }
           },
           "required": [
@@ -3612,7 +3623,9 @@ window.onload = function() {
           "properties": {
             "content": {
               "type": "string",
-              "description": "description for update comment"
+              "description": "description for update comment",
+              "minLength": 20,
+              "maxLength": 300
             }
           },
           "required": [
