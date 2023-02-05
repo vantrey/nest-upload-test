@@ -8,7 +8,7 @@ export const getSetupSwagger = (app: INestApplication) => {
     // .addServer('https://nest-with-type-orm.vercel.app')
     // .setTermsOfService('http://localhost:5003/api-json')
     .setDescription('The blogger API description')
-    .setVersion('h25.blogger')
+    .setVersion('h26.blogger')
     .addBearerAuth()
     // .addCookieAuth('refreshToken')
     .addBasicAuth()

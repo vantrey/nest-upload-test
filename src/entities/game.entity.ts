@@ -149,4 +149,23 @@ export class Game {
       return { instanceAnswer, player };
     }
   }
+
+  async stageSecondGame(firstPlayer: Player, secondPlayer: Player) {
+    this.addBonusPoint(firstPlayer, secondPlayer);
+    if (firstPlayer.score > secondPlayer.score) {
+      firstPlayer.addWinPoint();
+      secondPlayer.addLossPoint();
+      return { firstPlayer, secondPlayer };
+    }
+    if (firstPlayer.score < secondPlayer.score) {
+      firstPlayer.addLossPoint();
+      secondPlayer.addWinPoint();
+      return { firstPlayer, secondPlayer };
+    }
+    if (firstPlayer.score === secondPlayer.score) {
+      firstPlayer.addDrawPoint();
+      secondPlayer.addDrawPoint();
+      return { firstPlayer, secondPlayer };
+    }
+  }
 }

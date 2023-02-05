@@ -2,7 +2,6 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { QuizRepositories } from '../../../infrastructure/quiz-repositories';
 import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { AnswerViewModel } from '../../../infrastructure/query-repository/game-view.dto';
-import { Game } from '../../../../../entities/game.entity';
 import { AnswerQuizCommand } from '../answer-quiz.command';
 
 @CommandHandler(AnswerQuizCommand)
@@ -30,12 +29,10 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       games.finishGame();
       const firstPlayer = await this.quizRepo.findPlayerForAddBonusPoint(games.firstPlayerId, games.id);
       const secondPlayer = await this.quizRepo.findPlayerForAddBonusPoint(games.secondPlayerId, games.id);
-      const playerWithBonusPoint = games.addBonusPoint(firstPlayer, secondPlayer);
-      if (playerWithBonusPoint) {
-        await this.quizRepo.savePlayer(playerWithBonusPoint);
-      }
-      //change status players
-      await this.changeStatusesPlayer(games);
+      //add bonus point
+      const res = await games.stageSecondGame(firstPlayer, secondPlayer);
+      await this.quizRepo.savePlayer(res.firstPlayer);
+      await this.quizRepo.savePlayer(res.secondPlayer);
       await this.quizRepo.saveGame(games);
     }
     return new AnswerViewModel(
@@ -43,15 +40,5 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       result.instanceAnswer.answerStatus,
       result.instanceAnswer.addedAt.toISOString(),
     );
-  }
-
-  private async changeStatusesPlayer(game: Game): Promise<boolean> {
-    const firstPlayer = await this.quizRepo.findPlayer(game.firstPlayerId, game.id);
-    const secondPlayer = await this.quizRepo.findPlayer(game.secondPlayerId, game.id);
-    firstPlayer.changeStatuses();
-    secondPlayer.changeStatuses();
-    await this.quizRepo.savePlayer(firstPlayer);
-    await this.quizRepo.savePlayer(secondPlayer);
-    return true;
   }
 }

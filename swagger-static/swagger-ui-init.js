@@ -2800,6 +2800,34 @@ window.onload = function() {
           ]
         }
       },
+      "/pair-game-quiz/pairs/my-statistic": {
+        "get": {
+          "operationId": "QuizController_myStatistic",
+          "summary": "Get current user statistic",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/StatisticGameView"
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        }
+      },
       "/pair-game-quiz/pairs/{id}": {
         "get": {
           "operationId": "QuizController_getPairGame",
@@ -2860,7 +2888,7 @@ window.onload = function() {
     "info": {
       "title": "Blogger with quiz game",
       "description": "The blogger API description",
-      "version": "h25.blogger",
+      "version": "h26.blogger",
       "contact": {}
     },
     "tags": [],
@@ -3764,6 +3792,40 @@ window.onload = function() {
           },
           "required": [
             "answer"
+          ]
+        },
+        "StatisticGameView": {
+          "type": "object",
+          "properties": {
+            "sumScore": {
+              "type": "number",
+              "description": "Sum scores of all games //Сумма очков всех игр"
+            },
+            "avgScores": {
+              "type": "number",
+              "description": "Average score of all games rounded to 2 decimal places //Средний балл по всем играм округлен до 2 знаков после"
+            },
+            "gamesCount": {
+              "type": "number",
+              "description": "All played games count //Учитываются все сыгранные игры"
+            },
+            "winsCount": {
+              "type": "number"
+            },
+            "lossesCount": {
+              "type": "number"
+            },
+            "drawsCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "sumScore",
+            "avgScores",
+            "gamesCount",
+            "winsCount",
+            "lossesCount",
+            "drawsCount"
           ]
         }
       }

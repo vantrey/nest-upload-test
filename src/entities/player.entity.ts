@@ -13,6 +13,12 @@ export class Player {
   login: string;
   @Column({ type: 'int', default: 0 })
   score: number;
+  @Column({ type: 'int', default: 0 })
+  winScore: number;
+  @Column({ type: 'int', default: 0 })
+  lossScore: number;
+  @Column({ type: 'int', default: 0 })
+  drawScore: number;
   @Column({ type: 'boolean', default: false })
   statusesPlayer: boolean;
   @OneToMany(() => Answer, (q) => q.player, { eager: true })
@@ -36,7 +42,18 @@ export class Player {
     this.score += 1;
   }
 
-  changeStatuses() {
+  addWinPoint() {
+    this.winScore += 1;
+    this.statusesPlayer = true;
+  }
+
+  addLossPoint() {
+    this.lossScore += 1;
+    this.statusesPlayer = true;
+  }
+
+  addDrawPoint() {
+    this.drawScore += 1;
     this.statusesPlayer = true;
   }
 }

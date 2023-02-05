@@ -15,6 +15,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagg
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 import { AnswerQuizCommand } from '../application/use-case/answer-quiz.command';
+import { StatisticGameView } from '../infrastructure/query-repository/statistic-game-view.dto';
 
 @ApiTags('PairQuizGame')
 @ApiBearerAuth()
@@ -69,6 +70,13 @@ export class QuizController {
     @Query() paginationInputModel: PaginationQuizDto,
   ): Promise<PaginationViewDto<GameViewModel>> {
     return this.quizQueryRepo.getGames(userId, paginationInputModel);
+  }
+
+  @ApiOperation({ summary: 'Get current user statistic' })
+  @ApiResponse({ status: 200, description: 'success', type: StatisticGameView })
+  @Get(`my-statistic`)
+  async myStatistic(@CurrentUserIdBlogger() userId: string) /*: Promise<StatisticGameView>*/ {
+    return this.quizQueryRepo.getStatistic(userId);
   }
 
   @ApiOperation({ summary: 'Returns game by id' })

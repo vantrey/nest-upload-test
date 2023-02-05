@@ -8,6 +8,7 @@ import { AnswerViewModel, GamePlayerProgressViewModel, GameViewModel, PLayerView
 import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/question-for-sa-view.dto';
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz.dto';
+import { StatisticGameView } from './statistic-game-view.dto';
 
 export class QuizQueryRepositories {
   constructor(
@@ -169,5 +170,28 @@ export class QuizQueryRepositories {
     const items = await Promise.all(mappedGames);
     const pagesCountRes = Math.ceil(count / pageSize);
     return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+  }
+
+  async getStatistic(userId: string) {
+    const [res] = await Promise.all([
+      this.playerRepo
+        .createQueryBuilder('p')
+        .select('SUM(p.score)', 'sumScore')
+        .addSelect('AVG(p.score)', 'avgScores')
+        .addSelect('COUNT(*)', 'gamesCount')
+        .addSelect('SUM(p.winScore)', 'winsCount')
+        .addSelect('SUM(p.lossScore)', 'lossesCount')
+        .addSelect('SUM(p.drawScore)', 'drawsCount')
+        .where('p.userId = :userId', { userId })
+        .getRawOne(),
+    ]);
+    return new StatisticGameView(
+      +res.sumScore,
+      +Number(res.avgScores).toFixed(2),
+      +res.gamesCount,
+      +res.winsCount,
+      +res.lossesCount,
+      +res.drawsCount,
+    );
   }
 }
