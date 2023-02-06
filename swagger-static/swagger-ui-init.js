@@ -2598,88 +2598,68 @@ window.onload = function() {
           ]
         }
       },
-      "/pair-game-quiz/pairs/connection": {
-        "post": {
-          "operationId": "QuizController_connectionQuiz",
-          "summary": "Connect current user to existing random pending pair or create new pair which will be waiting second player",
-          "description": "",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "success",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/GameViewModel"
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "403": {
-              "description": "Current user is already participating in active pair"
-            }
-          },
-          "tags": [
-            "PairQuizGame"
-          ],
-          "security": [
-            {
-              "bearer": []
-            }
-          ]
-        }
-      },
-      "/pair-game-quiz/pairs/my-current/answers": {
-        "post": {
-          "operationId": "QuizController_answer",
-          "summary": "Send answer for next not answered question in active pair",
-          "description": "",
-          "parameters": [],
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AnswerDto"
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "$ref": "#/components/schemas/AnswerViewModel"
-                  }
-                }
-              }
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "403": {
-              "description": "Current user is already participating in active pair"
-            }
-          },
-          "tags": [
-            "PairQuizGame"
-          ],
-          "security": [
-            {
-              "bearer": []
-            }
-          ]
-        }
-      },
-      "/pair-game-quiz/pairs/my-current": {
+      "/pair-game-quiz/users/top": {
         "get": {
-          "operationId": "QuizController_getCurrentGame",
-          "summary": "Returns current unfinished user game",
+          "operationId": "QuizController_getTop",
+          "summary": "Get users top",
+          "description": "",
+          "parameters": [
+            {
+              "name": "pageSize",
+              "required": true,
+              "in": "query",
+              "description": "SORT    Default value : ?sort=avgScores desc&sort=sumScore desc\n\n\npageSize is portions size that should be returned",
+              "schema": {
+                "default": 10,
+                "type": "number"
+              }
+            },
+            {
+              "name": "pageNumber",
+              "required": true,
+              "in": "query",
+              "description": "pageNumber is number of portions that should be returned",
+              "schema": {
+                "default": 1,
+                "type": "number"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "allOf": [
+                      {
+                        "$ref": "#/components/schemas/PaginationViewDto"
+                      },
+                      {
+                        "properties": {
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "$ref": "#/components/schemas/TopPlayerViewDto"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "PairQuizGame"
+          ]
+        }
+      },
+      "/pair-game-quiz/users/my-statistic": {
+        "get": {
+          "operationId": "QuizController_myStatistic",
+          "summary": "Get current user statistic",
           "description": "",
           "parameters": [],
           "responses": {
@@ -2688,25 +2668,14 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/GameViewModel"
+                    "$ref": "#/components/schemas/StatisticGameView"
                   }
                 }
               }
-            },
-            "401": {
-              "description": "Unauthorized"
-            },
-            "404": {
-              "description": "Not found active pair for current user"
             }
           },
           "tags": [
             "PairQuizGame"
-          ],
-          "security": [
-            {
-              "bearer": []
-            }
           ]
         }
       },
@@ -2800,10 +2769,10 @@ window.onload = function() {
           ]
         }
       },
-      "/pair-game-quiz/users/my-statistic": {
+      "/pair-game-quiz/pairs/my-current": {
         "get": {
-          "operationId": "QuizController_myStatistic",
-          "summary": "Get current user statistic",
+          "operationId": "QuizController_getCurrentGame",
+          "summary": "Returns current unfinished user game",
           "description": "",
           "parameters": [],
           "responses": {
@@ -2812,10 +2781,16 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/StatisticGameView"
+                    "$ref": "#/components/schemas/GameViewModel"
                   }
                 }
               }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found active pair for current user"
             }
           },
           "tags": [
@@ -2872,6 +2847,84 @@ window.onload = function() {
             },
             "404": {
               "description": "Not found game"
+            }
+          },
+          "tags": [
+            "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        }
+      },
+      "/pair-game-quiz/pairs/connection": {
+        "post": {
+          "operationId": "QuizController_connectionQuiz",
+          "summary": "Connect current user to existing random pending pair or create new pair which will be waiting second player",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "success",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/GameViewModel"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Current user is already participating in active pair"
+            }
+          },
+          "tags": [
+            "PairQuizGame"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        }
+      },
+      "/pair-game-quiz/pairs/my-current/answers": {
+        "post": {
+          "operationId": "QuizController_answer",
+          "summary": "Send answer for next not answered question in active pair",
+          "description": "",
+          "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnswerDto"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/AnswerViewModel"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "Current user is already participating in active pair"
             }
           },
           "tags": [
@@ -3660,6 +3713,98 @@ window.onload = function() {
             "content"
           ]
         },
+        "PLayerViewModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "login": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "login"
+          ]
+        },
+        "TopPlayerViewDto": {
+          "type": "object",
+          "properties": {
+            "player": {
+              "description": "Sum scores of all games //Сумма очков всех игр",
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/PLayerViewModel"
+                }
+              ]
+            },
+            "sumScore": {
+              "type": "number",
+              "description": "Sum scores of all games //Сумма очков всех игр"
+            },
+            "avgScores": {
+              "type": "number",
+              "description": "Average score of all games rounded to 2 decimal places //Средний балл по всем играм округлен до 2 знаков после"
+            },
+            "gamesCount": {
+              "type": "number",
+              "description": "All played games count //Учитываются все сыгранные игры"
+            },
+            "winsCount": {
+              "type": "number"
+            },
+            "lossesCount": {
+              "type": "number"
+            },
+            "drawsCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "player",
+            "sumScore",
+            "avgScores",
+            "gamesCount",
+            "winsCount",
+            "lossesCount",
+            "drawsCount"
+          ]
+        },
+        "StatisticGameView": {
+          "type": "object",
+          "properties": {
+            "sumScore": {
+              "type": "number",
+              "description": "Sum scores of all games //Сумма очков всех игр"
+            },
+            "avgScores": {
+              "type": "number",
+              "description": "Average score of all games rounded to 2 decimal places //Средний балл по всем играм округлен до 2 знаков после"
+            },
+            "gamesCount": {
+              "type": "number",
+              "description": "All played games count //Учитываются все сыгранные игры"
+            },
+            "winsCount": {
+              "type": "number"
+            },
+            "lossesCount": {
+              "type": "number"
+            },
+            "drawsCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "sumScore",
+            "avgScores",
+            "gamesCount",
+            "winsCount",
+            "lossesCount",
+            "drawsCount"
+          ]
+        },
         "AnswerViewModel": {
           "type": "object",
           "properties": {
@@ -3681,21 +3826,6 @@ window.onload = function() {
             "questionId",
             "answerStatus",
             "addedAt"
-          ]
-        },
-        "PLayerViewModel": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "login": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "login"
           ]
         },
         "GamePlayerProgressViewModel": {
@@ -3792,40 +3922,6 @@ window.onload = function() {
           },
           "required": [
             "answer"
-          ]
-        },
-        "StatisticGameView": {
-          "type": "object",
-          "properties": {
-            "sumScore": {
-              "type": "number",
-              "description": "Sum scores of all games //Сумма очков всех игр"
-            },
-            "avgScores": {
-              "type": "number",
-              "description": "Average score of all games rounded to 2 decimal places //Средний балл по всем играм округлен до 2 знаков после"
-            },
-            "gamesCount": {
-              "type": "number",
-              "description": "All played games count //Учитываются все сыгранные игры"
-            },
-            "winsCount": {
-              "type": "number"
-            },
-            "lossesCount": {
-              "type": "number"
-            },
-            "drawsCount": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "sumScore",
-            "avgScores",
-            "gamesCount",
-            "winsCount",
-            "lossesCount",
-            "drawsCount"
           ]
         }
       }

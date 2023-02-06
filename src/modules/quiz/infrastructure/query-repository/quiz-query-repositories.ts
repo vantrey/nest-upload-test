@@ -9,6 +9,8 @@ import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/q
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz.dto';
 import { StatisticGameView } from './statistic-game-view.dto';
+import { PaginationQuizTopDto } from '../../api/input-dtos/pagination-quiz-top.dto';
+import { TopPlayerViewDto } from './top-player-view.dto';
 
 export class QuizQueryRepositories {
   constructor(
@@ -192,6 +194,46 @@ export class QuizQueryRepositories {
       +res.winsCount,
       +res.lossesCount,
       +res.drawsCount,
+    );
+  }
+
+  async getTop(data: PaginationQuizTopDto): Promise<PaginationViewDto<TopPlayerViewDto>> {
+    const { pageNumber, pageSize, skip } = data;
+    const [players] = await Promise.all([
+      this.playerRepo
+        .createQueryBuilder('p')
+        .select('SUM(p.score)', 'sumScore')
+        .addSelect('p.userId', 'id')
+        .addSelect('p.login', 'login')
+        .addSelect('AVG(p.score)', 'avgScores')
+        .addSelect('COUNT(*)', 'gamesCount')
+        .addSelect('SUM(p.winScore)', 'winsCount')
+        .addSelect('SUM(p.lossScore)', 'lossesCount')
+        .addSelect('SUM(p.drawScore)', 'drawsCount')
+        .groupBy('p.userId, p.login')
+        .orderBy('AVG(p.score)', 'DESC')
+        .addOrderBy('SUM(p.score)', 'DESC')
+        .take(pageSize)
+        .skip(skip)
+        .getRawMany(),
+    ]);
+    const mappedTopPlayer = players.map((player) => this.mappedTopPlayerGame(player));
+    const items = await Promise.all(mappedTopPlayer);
+    const count = players.length;
+    const pagesCountRes = Math.ceil(count / pageSize);
+    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+  }
+
+  private mappedTopPlayerGame(res: any): TopPlayerViewDto {
+    const player = new PLayerViewModel(res.id, res.login);
+    return new TopPlayerViewDto(
+      +res.sumScore,
+      +Number(res.avgScores).toFixed(2),
+      +res.gamesCount,
+      +res.winsCount,
+      +res.lossesCount,
+      +res.drawsCount,
+      player,
     );
   }
 }
