@@ -1,0 +1,1 @@
+SELECT "q"."id", "q"."body" FROM "question" "q" WHERE "q"."published" = true ORDER BY RANDOM () ASC LIMIT 5

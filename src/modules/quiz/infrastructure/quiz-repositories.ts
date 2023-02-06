@@ -87,17 +87,14 @@ export class QuizRepositories {
   }
 
   async findQuestions(): Promise<Question[]> {
-    return this.questionRepo.find({
-      select: ['id', 'body'],
-      where: { published: true },
-      order: { createdAt: 'DESC' },
-      take: 5,
-    });
-    // .createQueryBuilder('q')
-    // .select(['q.id, q.body'])
-    // .orderBy('RANDOM()')
-    // .take(5)
-    // .getMany();
+    return this.questionRepo
+      .createQueryBuilder('q')
+      .select('q.id, q.body')
+      .where('q.published = true')
+      .orderBy('RANDOM ()')
+      .addOrderBy('q.updatedAt', 'ASC')
+      .take(5)
+      .getRawMany();
   }
 
   //answer
@@ -121,17 +118,6 @@ export class QuizRepositories {
     });
     if (players.length === 0) return null;
     return players[0];
-  }
-
-  async findPlayerForAddPoint(userId: string, gameId: string): Promise<Player> {
-    return this.playerRepo
-      .findOne({
-        relations: { answers: true },
-        where: { userId: userId, gameId: gameId },
-      })
-      .catch(() => {
-        return null;
-      });
   }
 
   async findPlayerForAddBonusPoint(userId: string, gameId: string): Promise<Player> {

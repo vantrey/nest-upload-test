@@ -81,11 +81,6 @@ export class Game {
     }
   }
 
-  numberQuestion(player: Player) {
-    // const question = activeGame.questions[player.answers.length];
-    return this.questions[player.answers.length];
-  }
-
   isAnswerCorrect(answer: string, question: Question) {
     if (question.correctAnswers.find((e) => e === answer)) return true;
   }
@@ -127,7 +122,8 @@ export class Game {
   stageGame(userId: string, answer: string, player: Player) {
     if (this.isPlayerFinished(userId)) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     if (this.firstPlayerId === userId) {
-      const numberQuestionFirstPlayer = this.questions[this.firstPlayerProgress.answers.length];
+      let question = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
+      const numberQuestionFirstPlayer = question[this.firstPlayerProgress.answers.length];
       if (!this.isAnswerCorrect(answer, numberQuestionFirstPlayer)) {
         const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
         return { instanceAnswer, player };
@@ -138,7 +134,8 @@ export class Game {
       return { instanceAnswer, player };
     }
     if (this.secondPlayerId === userId) {
-      const numberQuestionSecondPlayer = this.questions[this.secondPlayerProgress.answers.length];
+      let question = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
+      const numberQuestionSecondPlayer = question[this.secondPlayerProgress.answers.length];
       if (!this.isAnswerCorrect(answer, numberQuestionSecondPlayer)) {
         const instanceAnswer = Player.createAnswer(answer, numberQuestionSecondPlayer.id, player);
         return { instanceAnswer, player };

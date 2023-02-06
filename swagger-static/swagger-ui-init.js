@@ -2800,7 +2800,7 @@ window.onload = function() {
           ]
         }
       },
-      "/pair-game-quiz/pairs/my-statistic": {
+      "/pair-game-quiz/users/my-statistic": {
         "get": {
           "operationId": "QuizController_myStatistic",
           "summary": "Get current user statistic",

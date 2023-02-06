@@ -20,7 +20,7 @@ import { StatisticGameView } from '../infrastructure/query-repository/statistic-
 @ApiTags('PairQuizGame')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
-@Controller(`pair-game-quiz/pairs`)
+@Controller(`pair-game-quiz`)
 export class QuizController {
   constructor(
     private commandBus: CommandBus,
@@ -35,7 +35,7 @@ export class QuizController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Current user is already participating in active pair' })
   @HttpCode(200)
-  @Post(`connection`)
+  @Post(`pairs/connection`)
   async connectionQuiz(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
     return this.commandBus.execute(new ConnectionQuizCommand(userId));
   }
@@ -44,7 +44,7 @@ export class QuizController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Current user is already participating in active pair' })
   @HttpCode(200)
-  @Post(`my-current/answers`)
+  @Post(`pairs/my-current/answers`)
   async answer(@CurrentUserIdBlogger() userId: string, @Body() inputAnswerModel: AnswerDto): Promise<AnswerViewModel> {
     return this.commandBus.execute(new AnswerQuizCommand(userId, inputAnswerModel));
   }
@@ -53,7 +53,7 @@ export class QuizController {
   @ApiResponse({ status: 200, description: 'success', type: GameViewModel })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Not found active pair for current user' })
-  @Get(`my-current`)
+  @Get(`pairs/my-current`)
   async getCurrentGame(@CurrentUserIdBlogger() userId: string): Promise<GameViewModel> {
     const pendingGame = await this.quizRepo.findCurrentGame(userId);
     if (!pendingGame) throw new NotFoundExceptionMY('Not found game');
@@ -64,7 +64,7 @@ export class QuizController {
   @ApiOkResponsePaginated(GameViewModel)
   @ApiResponse({ status: 200, description: 'success', type: GameViewModel })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  @Get(`my`)
+  @Get(`pairs/my`)
   async myGames(
     @CurrentUserIdBlogger() userId: string,
     @Query() paginationInputModel: PaginationQuizDto,
@@ -74,8 +74,8 @@ export class QuizController {
 
   @ApiOperation({ summary: 'Get current user statistic' })
   @ApiResponse({ status: 200, description: 'success', type: StatisticGameView })
-  @Get(`my-statistic`)
-  async myStatistic(@CurrentUserIdBlogger() userId: string) /*: Promise<StatisticGameView>*/ {
+  @Get(`users/my-statistic`)
+  async myStatistic(@CurrentUserIdBlogger() userId: string): Promise<StatisticGameView> {
     return this.quizQueryRepo.getStatistic(userId);
   }
 
@@ -85,7 +85,7 @@ export class QuizController {
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 403, description: 'Current user is already participating in active pair' })
   @ApiResponse({ status: 404, description: 'Not found game' })
-  @Get(`:id`)
+  @Get(`/pairs/:id`)
   async getPairGame(
     @CurrentUserIdBlogger() userId: string,
     @Param(`id`, ValidateUuidPipeFor404Error) id: string,

@@ -40,7 +40,7 @@ export class QuizQueryRepositories {
       order: { addedAt: 'ASC' },
     });
     const questions = await Promise.all(
-      game.questions.sort((a, b) => Number(b.createdAt) - Number(a.createdAt)).map((q) => this.mappedQuestionForView(q)),
+      game.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt)).map((q) => this.mappedQuestionForView(q)),
     );
     const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.userId, game.secondPlayerProgress.login);
     const firstPlayerProgress = new GamePlayerProgressViewModel(
@@ -172,7 +172,7 @@ export class QuizQueryRepositories {
     return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
   }
 
-  async getStatistic(userId: string) {
+  async getStatistic(userId: string): Promise<StatisticGameView> {
     const [res] = await Promise.all([
       this.playerRepo
         .createQueryBuilder('p')
