@@ -40,7 +40,7 @@ export class QuizQueryRepositories {
       order: { addedAt: 'ASC' },
     });
     const questions = await Promise.all(
-      game.questions.sort((a, b) => Number(a.createdAt) - Number(b.createdAt)).map((q) => this.mappedQuestionForView(q)),
+      game.questions.sort((a, b) => Number(b.createdAt) - Number(a.createdAt)).map((q) => this.mappedQuestionForView(q)),
     );
     const secondPlayer = new PLayerViewModel(game.secondPlayerProgress.userId, game.secondPlayerProgress.login);
     const firstPlayerProgress = new GamePlayerProgressViewModel(
