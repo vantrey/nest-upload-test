@@ -207,7 +207,6 @@ export class QuizQueryRepositories {
       lossesCount = 'SUM(p.lossScore)',
       drawsCount = 'SUM(p.drawScore)',
     }
-
     const defaultQuery = this.playerRepo
       .createQueryBuilder('p')
       .select(columns.sumScore, 'sumScore')
@@ -226,33 +225,19 @@ export class QuizQueryRepositories {
       const direction = rawDirection === 'ASC' ? 'ASC' : 'DESC';
       defaultQuery.addOrderBy(columns[column], direction);
     }
-
-    const [players] = await Promise.all([defaultQuery.take(pageSize).skip(skip).getRawMany()]);
-
-    // console.log('result', result);
-    // const [players] = await Promise.all([
-    //   this.playerRepo
-    //     .createQueryBuilder('p')
-    //     .select('SUM(p.score)', 'sumScore')
-    //     .addSelect('p.userId', 'id')
-    //     .addSelect('p.login', 'login')
-    //     .addSelect('AVG(p.score)', 'avgScores')
-    //     .addSelect('COUNT(*)', 'gamesCount')
-    //     .addSelect('SUM(p.winScore)', 'winsCount')
-    //     .addSelect('SUM(p.lossScore)', 'lossesCount')
-    //     .addSelect('SUM(p.drawScore)', 'drawsCount')
-    //     .groupBy('p.userId, p.login')
-    //     .testSort(q)
-    //     .addOrderBy('AVG(p.score)', 'DESC')
-    //     .addOrderBy('SUM(p.score)', 'DESC')
-    //
-    //     .take(pageSize)
-    //     .skip(skip)
-    //     .getRawMany(),
-    // ]);
+    const [players, value] = await Promise.all([
+      defaultQuery.skip(skip).take(pageSize).getRawMany(),
+      this.playerRepo
+        .createQueryBuilder('p')
+        .select(columns.sumScore, 'sumScore')
+        .addSelect('p.userId', 'id')
+        .addSelect('p.login', 'login')
+        .groupBy('p.userId, p.login')
+        .getRawMany(),
+    ]);
     const mappedTopPlayer = players.map((player) => this.mappedTopPlayerGame(player));
     const items = await Promise.all(mappedTopPlayer);
-    const count = players.length;
+    const count = value.length;
     const pagesCountRes = Math.ceil(count / pageSize);
     return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
   }
