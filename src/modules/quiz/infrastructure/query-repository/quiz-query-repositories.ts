@@ -198,25 +198,58 @@ export class QuizQueryRepositories {
   }
 
   async getTop(data: PaginationQuizTopDto): Promise<PaginationViewDto<TopPlayerViewDto>> {
-    const { pageNumber, pageSize, skip } = data;
-    const [players] = await Promise.all([
-      this.playerRepo
-        .createQueryBuilder('p')
-        .select('SUM(p.score)', 'sumScore')
-        .addSelect('p.userId', 'id')
-        .addSelect('p.login', 'login')
-        .addSelect('AVG(p.score)', 'avgScores')
-        .addSelect('COUNT(*)', 'gamesCount')
-        .addSelect('SUM(p.winScore)', 'winsCount')
-        .addSelect('SUM(p.lossScore)', 'lossesCount')
-        .addSelect('SUM(p.drawScore)', 'drawsCount')
-        .groupBy('p.userId, p.login')
-        .orderBy('AVG(p.score)', 'DESC')
-        .addOrderBy('SUM(p.score)', 'DESC')
-        .take(pageSize)
-        .skip(skip)
-        .getRawMany(),
-    ]);
+    const { sortBy, pageNumber, pageSize, skip } = data;
+    enum columns {
+      sumScore = 'SUM(p.score)',
+      avgScores = 'AVG(p.score)',
+      gamesCount = 'COUNT(*)',
+      winsCount = 'SUM(p.winScore)',
+      lossesCount = 'SUM(p.lossScore)',
+      drawsCount = 'SUM(p.drawScore)',
+    }
+
+    const defaultQuery = this.playerRepo
+      .createQueryBuilder('p')
+      .select(columns.sumScore, 'sumScore')
+      .addSelect('p.userId', 'id')
+      .addSelect('p.login', 'login')
+      .addSelect(columns.avgScores, 'avgScores')
+      .addSelect(columns.gamesCount, 'gamesCount')
+      .addSelect(columns.winsCount, 'winsCount')
+      .addSelect(columns.lossesCount, 'lossesCount')
+      .addSelect(columns.drawsCount, 'drawsCount')
+      .groupBy('p.userId, p.login');
+
+    for (const i of sortBy) {
+      const column = i.split(' ')[0];
+      const rawDirection = i.split(' ')[1].toUpperCase();
+      const direction = rawDirection === 'ASC' ? 'ASC' : 'DESC';
+      defaultQuery.addOrderBy(columns[column], direction);
+    }
+
+    const [players] = await Promise.all([defaultQuery.take(pageSize).skip(skip).getRawMany()]);
+
+    // console.log('result', result);
+    // const [players] = await Promise.all([
+    //   this.playerRepo
+    //     .createQueryBuilder('p')
+    //     .select('SUM(p.score)', 'sumScore')
+    //     .addSelect('p.userId', 'id')
+    //     .addSelect('p.login', 'login')
+    //     .addSelect('AVG(p.score)', 'avgScores')
+    //     .addSelect('COUNT(*)', 'gamesCount')
+    //     .addSelect('SUM(p.winScore)', 'winsCount')
+    //     .addSelect('SUM(p.lossScore)', 'lossesCount')
+    //     .addSelect('SUM(p.drawScore)', 'drawsCount')
+    //     .groupBy('p.userId, p.login')
+    //     .testSort(q)
+    //     .addOrderBy('AVG(p.score)', 'DESC')
+    //     .addOrderBy('SUM(p.score)', 'DESC')
+    //
+    //     .take(pageSize)
+    //     .skip(skip)
+    //     .getRawMany(),
+    // ]);
     const mappedTopPlayer = players.map((player) => this.mappedTopPlayerGame(player));
     const items = await Promise.all(mappedTopPlayer);
     const count = players.length;

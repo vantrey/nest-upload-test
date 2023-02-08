@@ -3,17 +3,17 @@ import { QuizRepositories } from '../../../infrastructure/quiz-repositories';
 import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { AnswerViewModel } from '../../../infrastructure/query-repository/game-view.dto';
 import { AnswerQuizCommand } from '../answer-quiz.command';
+import { DataSource } from 'typeorm';
 
 @CommandHandler(AnswerQuizCommand)
 export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
-  constructor(private readonly quizRepo: QuizRepositories) {}
+  constructor(private readonly quizRepo: QuizRepositories, private readonly dataSource: DataSource) {}
 
   async execute(command: AnswerQuizCommand): Promise<AnswerViewModel> {
     const { answer } = command.inputAnswerModel;
     const { userId } = command;
-    //find an active game
-    const activeGame = await this.quizRepo.findActiveGameByUserId(userId);
-    // console.log('…………', activeGame.questions);
+    //start ----
+    const activeGame = await this.quizRepo.findActiveGameByUserId(userId); //select for update
     if (!activeGame) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     //find active player
     const player = await this.quizRepo.findPlayer(userId, activeGame.id);
@@ -35,11 +35,16 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
       await this.quizRepo.savePlayer(res.firstPlayer);
       await this.quizRepo.savePlayer(res.secondPlayer);
       await this.quizRepo.saveGame(games);
+      //finish ----
     }
     return new AnswerViewModel(
       result.instanceAnswer.questionId,
       result.instanceAnswer.answerStatus,
       result.instanceAnswer.addedAt.toISOString(),
     );
+  }
+
+  private wait(sec: number) {
+    return new Promise((res) => setTimeout(res, sec * 1000));
   }
 }

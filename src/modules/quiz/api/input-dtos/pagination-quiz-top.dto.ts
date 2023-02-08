@@ -1,10 +1,15 @@
 import { IsNumber, IsOptional } from 'class-validator';
+import { ArrayStrings } from '../../../../helpers/decorator-Array-strings';
 
 export class PaginationQuizTopDto {
   /**
    * SORT    Default value : ?sort=avgScores desc&sort=sumScore desc
-   *
-   *
+   */
+  @ArrayStrings()
+  @IsOptional()
+  sortBy: string[] = ['avgScores desc', 'sumScore desc'];
+
+  /**
    * pageSize is portions size that should be returned
    */
   @IsNumber()

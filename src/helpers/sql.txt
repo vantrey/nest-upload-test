@@ -1,1 +1,15 @@
-SELECT "q"."id", "q"."body" FROM "question" "q" WHERE "q"."published" = true ORDER BY RANDOM () ASC LIMIT 5
+SELECT "p"."userId" AS "id", "p"."login" AS "login",
+SUM("p"."score") AS "sumScore",
+AVG("p"."score") AS "avgScores",
+COUNT(*) AS "gamesCount",
+SUM("p"."winScore") AS "winsCount",
+SUM("p"."lossScore") AS "lossesCount",
+SUM("p"."drawScore") AS "drawsCount"
+FROM "player" "p" GROUP BY "p"."userId", "p"."login"
+ORDER BY avgScores DESC, sumScore ASC
+LIMIT 10
+
+
+SELECT "p"."userId" AS "id", "p"."login" AS "login", SUM("p"."score") AS "sumScore", AVG("p"."score") AS "avgScores", COUNT(*) AS "gamesCount", SUM("p"."winScore") AS "winsCount", SUM("p"."lossScore") AS "lossesCount", SUM("p"."drawScore") AS "drawsCount" FROM "player" "p" GROUP BY "p"."userId", "p"."login"
+
+ORDER BY avgScores DESC, sumScore ASC, winsCount DESC LIMIT 10

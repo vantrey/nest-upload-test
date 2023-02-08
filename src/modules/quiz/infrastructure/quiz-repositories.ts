@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Game, GameStatusesType } from '../../../entities/game.entity';
 import { Player } from '../../../entities/player.entity';
 import { Question } from '../../../entities/question.entity';
@@ -14,15 +14,24 @@ export class QuizRepositories {
     private readonly questionRepo: Repository<Question>,
   ) {}
 
-  async saveGame(createdGame: Game): Promise<Game> {
+  async saveGame(createdGame: Game, manager?: EntityManager): Promise<Game> {
+    if (manager) {
+      return manager.getRepository(Game).save(createdGame);
+    }
     return this.gameRepo.save(createdGame);
   }
 
-  async savePlayer(createdPlayer: Player): Promise<Player> {
+  async savePlayer(createdPlayer: Player, manager?: EntityManager): Promise<Player> {
+    if (manager) {
+      return manager.getRepository(Player).save(createdPlayer);
+    }
     return this.playerRepo.save(createdPlayer);
   }
 
-  async saveAnswer(createdAnswer: Answer): Promise<Answer> {
+  async saveAnswer(createdAnswer: Answer, manager?: EntityManager): Promise<Answer> {
+    if (manager) {
+      return manager.getRepository(Answer).save(createdAnswer);
+    }
     return this.answerRepo.save(createdAnswer);
   }
 
@@ -92,12 +101,29 @@ export class QuizRepositories {
       .select('q.id, q.body')
       .where('q.published = true')
       .orderBy('RANDOM ()')
-      .addOrderBy('q.updatedAt', 'ASC')
       .take(5)
+      .addOrderBy('q.updatedAt', 'ASC')
       .getRawMany();
   }
 
   //answer
+  async findActiveGameByUserIdManager(userId: string, manager?: EntityManager): Promise<Game> {
+    const game = await manager
+      .getRepository(Game)
+      .createQueryBuilder('g')
+      .setLock('pessimistic_write', undefined, ['g'])
+      .innerJoinAndSelect('g.questions', 'q')
+      .innerJoinAndSelect('g.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoinAndSelect('firstPlayerProgress.answers', 'firstAnswers')
+      .innerJoinAndSelect('g.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoinAndSelect('secondPlayerProgress.answers', 'secondAnswers')
+      .where('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
+      .orWhere('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
+      .getOne();
+    if (!game) return null;
+    return game;
+  }
+
   async findActiveGameByUserId(userId: string): Promise<Game> {
     const game = await this.gameRepo.findOne({
       select: [],
@@ -120,11 +146,31 @@ export class QuizRepositories {
     return players[0];
   }
 
+  async findPlayerManager(userId: string, gameId: string, manager?: EntityManager): Promise<Player> {
+    return await manager
+      .getRepository(Player)
+      .createQueryBuilder('p')
+      .setLock('pessimistic_write', undefined, ['p'])
+      .leftJoinAndSelect('p.answers', 'playerAnswers')
+      .where('p.userId = :userId AND p.gameId = :gameId AND p.statusesPlayer = false', { userId: userId, gameId: gameId })
+      .getOne();
+  }
+
   async findPlayerForAddBonusPoint(userId: string, gameId: string): Promise<Player> {
-    return this.playerRepo.findOne({
+    return await this.playerRepo.findOne({
       select: [],
       relations: { answers: true },
       where: { userId: userId, gameId: gameId },
     });
+  }
+
+  async findPlayerForAddBonusPointManager(userId: string, gameId: string, manager?: EntityManager): Promise<Player> {
+    return await manager
+      .getRepository(Player)
+      .createQueryBuilder('p')
+      .setLock('pessimistic_write', undefined, ['p'])
+      .leftJoinAndSelect('p.answers', 'playerAnswers')
+      .where('p.userId = :userId AND p.gameId = :gameId', { userId: userId, gameId: gameId })
+      .getOne();
   }
 }

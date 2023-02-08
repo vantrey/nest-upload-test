@@ -2605,10 +2605,26 @@ window.onload = function() {
           "description": "",
           "parameters": [
             {
+              "name": "sortBy",
+              "required": true,
+              "in": "query",
+              "description": "SORT    Default value : ?sort=avgScores desc&sort=sumScore desc",
+              "schema": {
+                "default": [
+                  "avgScores desc",
+                  "sumScore desc"
+                ],
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            {
               "name": "pageSize",
               "required": true,
               "in": "query",
-              "description": "SORT    Default value : ?sort=avgScores desc&sort=sumScore desc\n\n\npageSize is portions size that should be returned",
+              "description": "pageSize is portions size that should be returned",
               "schema": {
                 "default": 10,
                 "type": "number"
@@ -2941,7 +2957,7 @@ window.onload = function() {
     "info": {
       "title": "Blogger with quiz game",
       "description": "The blogger API description",
-      "version": "h26.blogger",
+      "version": "h27.blogger",
       "contact": {}
     },
     "tags": [],

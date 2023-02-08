@@ -171,6 +171,7 @@ const handlers = [
   UpdateQuestionHandler,
   PublishQuestionHandler,
   ConnectionQuizHandler,
+  // AnswerTransaction,
   AnswerQuizHandler,
 ];
 const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, LikeComment, Question, Answer, Player, Game];

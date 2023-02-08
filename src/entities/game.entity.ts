@@ -33,11 +33,11 @@ export class Game {
   @Column({ type: 'uuid', default: null })
   secondPlayerId: string;
 
-  @OneToOne(() => Player, { eager: true })
+  @OneToOne(() => Player, { eager: true }) // cascade: true,
   @JoinColumn()
   firstPlayerProgress: Player;
 
-  @OneToOne(() => Player, { eager: true })
+  @OneToOne(() => Player, { eager: true }) // cascade: true,
   @JoinColumn()
   secondPlayerProgress: Player;
 
@@ -119,7 +119,7 @@ export class Game {
     if (this.firstPlayerId !== userId && this.secondPlayerId !== userId) return true;
   }
 
-  stageGame(userId: string, answer: string, player: Player) {
+  stageGame(userId: string, answer: string, player?: Player) {
     if (this.isPlayerFinished(userId)) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     if (this.firstPlayerId === userId) {
       let question = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
