@@ -2605,7 +2605,7 @@ window.onload = function() {
           "description": "",
           "parameters": [
             {
-              "name": "sortBy",
+              "name": "sort",
               "required": true,
               "in": "query",
               "description": "SORT    Default value : ?sort=avgScores desc&sort=sumScore desc",

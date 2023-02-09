@@ -31,7 +31,7 @@ export class QuizController {
   @ApiOperation({ summary: 'Get users top' })
   @ApiOkResponsePaginated(TopPlayerViewDto)
   @Get(`users/top`)
-  async getTop(@Query() paginationInputModel: PaginationQuizTopDto) /*: Promise<PaginationViewDto<TopPlayerViewDto>>*/ {
+  async getTop(@Query() paginationInputModel: PaginationQuizTopDto): Promise<PaginationViewDto<TopPlayerViewDto>> {
     return this.quizQueryRepo.getTop(paginationInputModel);
   }
 

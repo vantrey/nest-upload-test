@@ -13,26 +13,29 @@ export class QuizRepositories {
     @InjectRepository(Question)
     private readonly questionRepo: Repository<Question>,
   ) {}
-
+  //save
   async saveGame(createdGame: Game, manager?: EntityManager): Promise<Game> {
-    if (manager) {
-      return manager.getRepository(Game).save(createdGame);
-    }
-    return this.gameRepo.save(createdGame);
+    return manager ? manager.getRepository(Game).save(createdGame) : this.gameRepo.save(createdGame);
+    // if (manager) {
+    //   return manager.getRepository(Game).save(createdGame);
+    // }
+    // return this.gameRepo.save(createdGame);
   }
 
   async savePlayer(createdPlayer: Player, manager?: EntityManager): Promise<Player> {
-    if (manager) {
-      return manager.getRepository(Player).save(createdPlayer);
-    }
-    return this.playerRepo.save(createdPlayer);
+    return manager ? manager.getRepository(Player).save(createdPlayer) : this.playerRepo.save(createdPlayer);
+    // if (manager) {
+    //   return manager.getRepository(Player).save(createdPlayer);
+    // }
+    // return this.playerRepo.save(createdPlayer);
   }
 
   async saveAnswer(createdAnswer: Answer, manager?: EntityManager): Promise<Answer> {
-    if (manager) {
-      return manager.getRepository(Answer).save(createdAnswer);
-    }
-    return this.answerRepo.save(createdAnswer);
+    return manager ? manager.getRepository(Answer).save(createdAnswer) : this.answerRepo.save(createdAnswer);
+    // if (manager) {
+    //   return manager.getRepository(Answer).save(createdAnswer);
+    // }
+    // return this.answerRepo.save(createdAnswer);
   }
 
   //get
@@ -107,21 +110,13 @@ export class QuizRepositories {
   }
 
   //answer
-  async findActiveGameByUserIdManager(userId: string, manager?: EntityManager): Promise<Game> {
-    const game = await manager
-      .getRepository(Game)
-      .createQueryBuilder('g')
-      .setLock('pessimistic_write', undefined, ['g'])
-      .innerJoinAndSelect('g.questions', 'q')
-      .innerJoinAndSelect('g.firstPlayerProgress', 'firstPlayerProgress')
-      .leftJoinAndSelect('firstPlayerProgress.answers', 'firstAnswers')
-      .innerJoinAndSelect('g.secondPlayerProgress', 'secondPlayerProgress')
-      .leftJoinAndSelect('secondPlayerProgress.answers', 'secondAnswers')
-      .where('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
-      .orWhere('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
-      .getOne();
-    if (!game) return null;
-    return game;
+  async findPlayer(userId: string, gameId: string): Promise<Player> {
+    const players = await this.playerRepo.find({
+      relations: { answers: true },
+      where: { userId: userId, gameId: gameId, statusesPlayer: false },
+    });
+    if (players.length === 0) return null;
+    return players[0];
   }
 
   async findActiveGameByUserId(userId: string): Promise<Game> {
@@ -137,15 +132,15 @@ export class QuizRepositories {
     return game;
   }
 
-  async findPlayer(userId: string, gameId: string): Promise<Player> {
-    const players = await this.playerRepo.find({
+  async findPlayerForAddBonusPoint(userId: string, gameId: string): Promise<Player> {
+    return await this.playerRepo.findOne({
+      select: [],
       relations: { answers: true },
-      where: { userId: userId, gameId: gameId, statusesPlayer: false },
+      where: { userId: userId, gameId: gameId },
     });
-    if (players.length === 0) return null;
-    return players[0];
   }
 
+  //alternative -- answer with manager, for concurrent game
   async findPlayerManager(userId: string, gameId: string, manager?: EntityManager): Promise<Player> {
     return await manager
       .getRepository(Player)
@@ -156,12 +151,21 @@ export class QuizRepositories {
       .getOne();
   }
 
-  async findPlayerForAddBonusPoint(userId: string, gameId: string): Promise<Player> {
-    return await this.playerRepo.findOne({
-      select: [],
-      relations: { answers: true },
-      where: { userId: userId, gameId: gameId },
-    });
+  async findActiveGameByUserIdManager(userId: string, manager?: EntityManager): Promise<Game> {
+    const game = await manager
+      .getRepository(Game)
+      .createQueryBuilder('g')
+      .setLock('pessimistic_write', undefined, ['g'])
+      .innerJoinAndSelect('g.questions', 'q')
+      .innerJoinAndSelect('g.firstPlayerProgress', 'firstPlayerProgress')
+      .leftJoinAndSelect('firstPlayerProgress.answers', 'firstAnswers')
+      .innerJoinAndSelect('g.secondPlayerProgress', 'secondPlayerProgress')
+      .leftJoinAndSelect('secondPlayerProgress.answers', 'secondAnswers')
+      .where('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
+      .orWhere('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
+      .getOne();
+    if (!game) return null;
+    return game;
   }
 
   async findPlayerForAddBonusPointManager(userId: string, gameId: string, manager?: EntityManager): Promise<Player> {
