@@ -2610,10 +2610,6 @@ window.onload = function() {
               "in": "query",
               "description": "SORT    Default value : ?sort=avgScores desc&sort=sumScore desc",
               "schema": {
-                "default": [
-                  "avgScores desc",
-                  "sumScore desc"
-                ],
                 "type": "array",
                 "items": {
                   "type": "string"

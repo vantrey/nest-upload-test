@@ -199,7 +199,10 @@ export class QuizQueryRepositories {
 
   async getTop(data: PaginationQuizTopDto): Promise<PaginationViewDto<TopPlayerViewDto>> {
     const { sort, pageNumber, pageSize, skip } = data;
-    console.log('sortBy', sort);
+    let sortBy = sort;
+    if (sort === undefined) {
+      sortBy = ['avgScores desc', 'sumScore desc'];
+    }
     enum columns {
       sumScore = 'SUM(p.score)',
       avgScores = 'AVG(p.score)',
@@ -220,7 +223,7 @@ export class QuizQueryRepositories {
       .addSelect(columns.drawsCount, 'drawsCount')
       .groupBy('p.userId, p.login');
 
-    for (const i of sort) {
+    for (const i of sortBy) {
       const column = i.split(' ')[0];
       const rawDirection = i.split(' ')[1].toUpperCase();
       const direction = rawDirection === 'ASC' ? 'ASC' : 'DESC';
