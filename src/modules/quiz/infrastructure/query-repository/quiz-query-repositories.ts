@@ -201,8 +201,13 @@ export class QuizQueryRepositories {
     const { sort, pageNumber, pageSize, skip } = data;
     let sortBy = sort;
     if (sort === undefined) {
-      sortBy = ['avgScores desc', 'sumScore desc'];
+      sortBy = ['avgScores desc', 'sumScore desc']; //default value
     }
+    if (typeof sort === 'string') {
+      // @ts-ignore
+      sortBy = sort.split(',');
+    }
+    console.log('---sortttt', sortBy);
     enum columns {
       sumScore = 'SUM(p.score)',
       avgScores = 'AVG(p.score)',
@@ -211,6 +216,7 @@ export class QuizQueryRepositories {
       lossesCount = 'SUM(p.lossScore)',
       drawsCount = 'SUM(p.drawScore)',
     }
+    //default query
     const defaultQuery = this.playerRepo
       .createQueryBuilder('p')
       .select(columns.sumScore, 'sumScore')
@@ -222,7 +228,7 @@ export class QuizQueryRepositories {
       .addSelect(columns.lossesCount, 'lossesCount')
       .addSelect(columns.drawsCount, 'drawsCount')
       .groupBy('p.userId, p.login');
-
+    //dynamic sortBy for query
     for (const i of sortBy) {
       const column = i.split(' ')[0];
       const rawDirection = i.split(' ')[1].toUpperCase();
