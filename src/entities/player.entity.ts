@@ -21,7 +21,7 @@ export class Player {
   drawScore: number;
   @Column({ type: 'boolean', default: false })
   statusesPlayer: boolean;
-  @OneToMany(() => Answer, (q) => q.player, { eager: true })
+  @OneToMany(() => Answer, (q) => q.player, { cascade: true, eager: true, onUpdate: 'CASCADE' })
   answers: Answer[];
 
   constructor(login: string, userId: string, gameId: string) {

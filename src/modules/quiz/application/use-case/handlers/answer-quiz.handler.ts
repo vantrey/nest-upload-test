@@ -3,48 +3,50 @@ import { QuizRepositories } from '../../../infrastructure/quiz-repositories';
 import { ForbiddenExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { AnswerViewModel } from '../../../infrastructure/query-repository/game-view.dto';
 import { AnswerQuizCommand } from '../answer-quiz.command';
-import { DataSource } from 'typeorm';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @CommandHandler(AnswerQuizCommand)
 export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
-  constructor(private readonly quizRepo: QuizRepositories, private readonly dataSource: DataSource) {}
+  constructor(private readonly quizRepo: QuizRepositories) {}
 
   async execute(command: AnswerQuizCommand): Promise<AnswerViewModel> {
     const { answer } = command.inputAnswerModel;
     const { userId } = command;
-    //start ----
-    const activeGame = await this.quizRepo.findActiveGameByUserId(userId); //select for update
+    const activeGame = await this.quizRepo.findActiveGameByUserId(userId);
     if (!activeGame) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
-    //find active player
-    const player = await this.quizRepo.findPlayer(userId, activeGame.id);
-    const result = activeGame.stageGame(userId, answer, player);
-    if (result.player && result.instanceAnswer) {
-      await this.quizRepo.savePlayer(result.player);
-      await this.quizRepo.saveAnswer(result.instanceAnswer);
-    } else {
-      await this.quizRepo.saveAnswer(result.instanceAnswer);
-    }
-    //find an active game for correct relations
-    const games = await this.quizRepo.findActiveGameByUserId(userId);
-    if (games.isGameFinished()) {
-      games.finishGame();
-      const firstPlayer = await this.quizRepo.findPlayerForAddBonusPoint(games.firstPlayerId, games.id);
-      const secondPlayer = await this.quizRepo.findPlayerForAddBonusPoint(games.secondPlayerId, games.id);
-      //add bonus point
-      const res = await games.stageSecondGame(firstPlayer, secondPlayer);
-      await this.quizRepo.savePlayer(res.firstPlayer);
-      await this.quizRepo.savePlayer(res.secondPlayer);
-      await this.quizRepo.saveGame(games);
-      //finish ----
-    }
-    return new AnswerViewModel(
-      result.instanceAnswer.questionId,
-      result.instanceAnswer.answerStatus,
-      result.instanceAnswer.addedAt.toISOString(),
-    );
+    activeGame.game(userId, answer);
+    await this.quizRepo.saveGame(activeGame);
+    const result =
+      activeGame.getIdFirstPlayer() === userId ? activeGame.getLastAnswerFirstPlayer() : activeGame.getLastAnswerSecondPlayer();
+    return new AnswerViewModel(result.questionId, result.answerStatus, result.addedAt.toISOString());
   }
 
-  private wait(sec: number) {
-    return new Promise((res) => setTimeout(res, sec * 1000));
+  @Cron(CronExpression.EVERY_SECOND)
+  async forcedFinishGames() {
+    try {
+      const games = await this.quizRepo.forcedFinishGame(); //select for update
+      if (!games) return;
+      // console.log('---time', games);
+      for (let i = 1; i <= games.length; i++) {
+        games[i - 1].forcedFinishGame();
+        await this.quizRepo.saveGame(games[i - 1]);
+      }
+      return;
+    } catch (e) {
+      console.log(e);
+    }
   }
+
+  /*  private async forcedFinishGame(game: Game) {
+    await this.wait(10);
+    const activeGame = await this.quizRepo.findActiveGame(game.id); //select for update
+    if (activeGame.isGameFinished()) return;
+    const answers = activeGame.unAnsweredQuestion();
+    for (let i = 1; i <= answers.length; i++) {
+      await this.quizRepo.saveAnswer(answers[i - 1]);
+    }
+    activeGame.forcedFinishGame();
+    await this.quizRepo.saveGame(activeGame);
+  }
+*/
 }

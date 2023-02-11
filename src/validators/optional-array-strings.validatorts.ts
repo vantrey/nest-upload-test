@@ -6,16 +6,9 @@ import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface 
 @Injectable()
 export class OptionalArrayStringsValidator implements ValidatorConstraintInterface {
   validate(value: any[]) {
-    console.log('value', value);
-    console.log('value---', Array.isArray(value));
-
     try {
       if (value === undefined) return true;
       if (typeof value === 'string') return true;
-      if (!Array.isArray(value)) return false;
-      value.forEach((record) => {
-        if (typeof record.trim() !== 'string') return false;
-      });
       return true;
     } catch (e) {
       return false;
@@ -23,6 +16,6 @@ export class OptionalArrayStringsValidator implements ValidatorConstraintInterfa
   }
 
   defaultMessage(validationArguments?: ValidationArguments): string {
-    return "This array strings can't be empty and type  field should be string";
+    return 'This array strings can be empty and type field should be string';
   }
 }

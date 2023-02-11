@@ -2610,6 +2610,10 @@ window.onload = function() {
               "in": "query",
               "description": "SORT    Default value : ?sort=avgScores desc&sort=sumScore desc",
               "schema": {
+                "default": [
+                  "avgScores desc",
+                  "sumScore desc"
+                ],
                 "type": "array",
                 "items": {
                   "type": "string"
@@ -2618,7 +2622,7 @@ window.onload = function() {
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
@@ -2628,7 +2632,7 @@ window.onload = function() {
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {

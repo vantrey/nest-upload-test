@@ -91,6 +91,8 @@ import { QuizQueryRepositories } from './modules/quiz/infrastructure/query-repos
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz.handler';
+import { TransformStringToArrayStringsPipe } from './helpers/transformStringToArrayStrings.pipe';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const controllers = [
   AuthController,
@@ -175,7 +177,7 @@ const handlers = [
   AnswerQuizHandler,
 ];
 const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, LikeComment, Question, Answer, Player, Game];
-
+const pipe = [TransformStringToArrayStringsPipe];
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -205,11 +207,12 @@ const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, L
       rootPath: join(__dirname, '..', 'swagger-static'),
       serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/api',
     }),
+    ScheduleModule.forRoot(),
     MailModule,
     CqrsModule,
     TestingModule,
   ],
   controllers: [AppController, ...controllers],
-  providers: [...providers, ...guards, ...adapters, ...handlers],
+  providers: [...providers, ...guards, ...adapters, ...handlers, ...pipe],
 })
 export class AppModule {}

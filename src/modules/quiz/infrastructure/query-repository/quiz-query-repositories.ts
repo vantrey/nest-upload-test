@@ -11,6 +11,7 @@ import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz.dto';
 import { StatisticGameView } from './statistic-game-view.dto';
 import { PaginationQuizTopDto } from '../../api/input-dtos/pagination-quiz-top.dto';
 import { TopPlayerViewDto } from './top-player-view.dto';
+import { columns } from '../../api/columns';
 
 export class QuizQueryRepositories {
   constructor(
@@ -200,22 +201,15 @@ export class QuizQueryRepositories {
   async getTop(data: PaginationQuizTopDto): Promise<PaginationViewDto<TopPlayerViewDto>> {
     const { sort, pageNumber, pageSize, skip } = data;
     let sortBy = sort;
-    if (sort === undefined) {
-      sortBy = ['avgScores desc', 'sumScore desc']; //default value
-    }
-    if (typeof sort === 'string') {
-      // @ts-ignore
-      sortBy = sort.split(',');
-    }
-    console.log('---sortttt', sortBy);
-    enum columns {
-      sumScore = 'SUM(p.score)',
-      avgScores = 'AVG(p.score)',
-      gamesCount = 'COUNT(*)',
-      winsCount = 'SUM(p.winScore)',
-      lossesCount = 'SUM(p.lossScore)',
-      drawsCount = 'SUM(p.drawScore)',
-    }
+    // if (sort === undefined) {
+    //   sortBy = ['avgScores desc', 'sumScore desc']; //default value
+    // }
+    // if (typeof sort === 'string') {
+    //   // @ts-ignore
+    //   sortBy = sort.split(',');
+    // }
+    console.log('repo', sortBy);
+
     //default query
     const defaultQuery = this.playerRepo
       .createQueryBuilder('p')

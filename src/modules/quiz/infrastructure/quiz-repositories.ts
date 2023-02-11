@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityManager, Repository } from 'typeorm';
+import { EntityManager, LessThanOrEqual, Repository } from 'typeorm';
 import { Game, GameStatusesType } from '../../../entities/game.entity';
 import { Player } from '../../../entities/player.entity';
 import { Question } from '../../../entities/question.entity';
@@ -28,14 +28,6 @@ export class QuizRepositories {
     //   return manager.getRepository(Player).save(createdPlayer);
     // }
     // return this.playerRepo.save(createdPlayer);
-  }
-
-  async saveAnswer(createdAnswer: Answer, manager?: EntityManager): Promise<Answer> {
-    return manager ? manager.getRepository(Answer).save(createdAnswer) : this.answerRepo.save(createdAnswer);
-    // if (manager) {
-    //   return manager.getRepository(Answer).save(createdAnswer);
-    // }
-    // return this.answerRepo.save(createdAnswer);
   }
 
   //get
@@ -110,15 +102,6 @@ export class QuizRepositories {
   }
 
   //answer
-  async findPlayer(userId: string, gameId: string): Promise<Player> {
-    const players = await this.playerRepo.find({
-      relations: { answers: true },
-      where: { userId: userId, gameId: gameId, statusesPlayer: false },
-    });
-    if (players.length === 0) return null;
-    return players[0];
-  }
-
   async findActiveGameByUserId(userId: string): Promise<Game> {
     const game = await this.gameRepo.findOne({
       select: [],
@@ -130,14 +113,6 @@ export class QuizRepositories {
     });
     if (!game) return null;
     return game;
-  }
-
-  async findPlayerForAddBonusPoint(userId: string, gameId: string): Promise<Player> {
-    return await this.playerRepo.findOne({
-      select: [],
-      relations: { answers: true },
-      where: { userId: userId, gameId: gameId },
-    });
   }
 
   //alternative -- answer with manager, for concurrent game
@@ -176,5 +151,16 @@ export class QuizRepositories {
       .leftJoinAndSelect('p.answers', 'playerAnswers')
       .where('p.userId = :userId AND p.gameId = :gameId', { userId: userId, gameId: gameId })
       .getOne();
+  }
+
+  async forcedFinishGame(): Promise<Game[]> {
+    const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
+    const games = await this.gameRepo.find({
+      select: [],
+      relations: { firstPlayerProgress: true, secondPlayerProgress: true, questions: true },
+      where: [{ status: GameStatusesType.Active, finishedOnePlayer: LessThanOrEqual(tenSecondsAgo) }],
+    });
+    if (games.length === 0) return null;
+    return games;
   }
 }

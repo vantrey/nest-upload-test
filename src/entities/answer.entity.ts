@@ -47,6 +47,11 @@ export class Answer {
     this.addedAt = new Date();
   }
 
+  inCorrectAnswer() {
+    this.answerStatus = AnswerStatusesType.Incorrect;
+    this.addedAt = new Date();
+  }
+
   incorrectAnswer() {
     this.addedAt = new Date();
   }

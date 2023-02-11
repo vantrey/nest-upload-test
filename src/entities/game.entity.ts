@@ -28,16 +28,19 @@ export class Game {
   @Column({ type: 'timestamptz', default: null })
   finishGameDate: Date; //Game finishes immediately after both players have answered all the questions
 
+  @Column({ type: 'timestamptz', default: null })
+  finishedOnePlayer: Date; //Finished one player, for 10s
+
   @Column({ type: 'uuid' })
   firstPlayerId: string;
   @Column({ type: 'uuid', default: null })
   secondPlayerId: string;
 
-  @OneToOne(() => Player, { eager: true }) // cascade: true,
+  @OneToOne(() => Player, { cascade: true, eager: true, onUpdate: 'CASCADE' }) // cascade: true,
   @JoinColumn()
   firstPlayerProgress: Player;
 
-  @OneToOne(() => Player, { eager: true }) // cascade: true,
+  @OneToOne(() => Player, { cascade: true, eager: true, onUpdate: 'CASCADE' }) // cascade: true,
   @JoinColumn()
   secondPlayerProgress: Player;
 
@@ -49,10 +52,29 @@ export class Game {
     this.firstPlayerId = userId;
   }
 
-  static createGame(questions: Question[], userId: string) {
+  static createGame(questions: Question[], userId: string): Game {
     return new Game(questions, userId);
   }
 
+  //getter
+  getIdFirstPlayer() {
+    return this.firstPlayerId;
+  }
+
+  getLastAnswerFirstPlayer() {
+    return this.firstPlayerProgress.answers.reverse()[0];
+  }
+
+  getLastAnswerSecondPlayer() {
+    return this.secondPlayerProgress.answers.reverse()[0];
+  }
+
+  //check
+  isPlayerParticipate(userId: string) {
+    if (this.firstPlayerId !== userId && this.secondPlayerId !== userId) return true;
+  }
+
+  //connection
   addFirstPlayer(player: Player) {
     this.firstPlayerProgress = player;
     this.pairCreatedDate = new Date();
@@ -66,26 +88,61 @@ export class Game {
     this.secondPlayerId = userId;
   }
 
-  finishGame() {
-    this.status = GameStatusesType.Finished;
-    this.finishGameDate = new Date();
-  }
-
-  isPlayerFinished(userId: string) {
-    //---player.answers.length === activeGame.questions.length
+  //game
+  game(userId: string, answer: string) {
+    if (this.isPlayerFinished(userId)) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     if (this.firstPlayerId === userId) {
-      if (this.questions.length === this.firstPlayerProgress.answers.length) return true;
+      this.firstStageGame(this.firstPlayerProgress, answer);
+      if (this.firstPlayerProgress.answers.length === this.questions.length) {
+        this.finishedPlayer();
+      }
+      return;
     }
     if (this.secondPlayerId === userId) {
-      if (this.questions.length === this.secondPlayerProgress.answers.length) return true;
+      this.firstStageGame(this.secondPlayerProgress, answer);
+      if (this.secondPlayerProgress.answers.length === this.questions.length) {
+        this.finishedPlayer();
+      }
+      return;
     }
   }
 
-  isAnswerCorrect(answer: string, question: Question) {
+  private isPlayerFinished(userId: string) {
+    if (this.firstPlayerId === userId) {
+      return this.questions.length === this.firstPlayerProgress.answers.length;
+    }
+    if (this.secondPlayerId === userId) {
+      return this.questions.length === this.secondPlayerProgress.answers.length;
+    }
+  }
+
+  private firstStageGame(player: Player, answer: string) {
+    let question = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
+    const numberQuestionFirstPlayer = question[player.answers.length];
+    if (!this.isAnswerCorrect(answer, numberQuestionFirstPlayer)) {
+      const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
+      instanceAnswer.inCorrectAnswer();
+      player.answers.push(instanceAnswer);
+      if (this.isGameFinished()) {
+        this.secondStageGame();
+      }
+      return;
+    }
+    player.score += 1;
+    const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
+    instanceAnswer.correctAnswer();
+    player.answers.push(instanceAnswer);
+    if (this.isGameFinished()) {
+      this.secondStageGame();
+    }
+    return;
+  }
+
+  private isAnswerCorrect(answer: string, question: Question) {
     if (question.correctAnswers.find((e) => e === answer)) return true;
   }
 
-  isGameFinished() {
+  private isGameFinished() {
     if (
       this.questions.length === this.firstPlayerProgress.answers.length &&
       this.questions.length === this.secondPlayerProgress.answers.length
@@ -93,7 +150,46 @@ export class Game {
       return true;
   }
 
-  addBonusPoint(firstPlayer: Player, secondPlayer: Player): Player {
+  private secondStageGame() {
+    if (this.isGameFinished()) {
+      this.addBonusPointPlayer();
+      this.thirdStageGame();
+      this.finishGame();
+      return;
+    }
+    return;
+  }
+
+  private thirdStageGame() {
+    if (this.firstPlayerProgress.score > this.secondPlayerProgress.score) {
+      this.firstPlayerProgress.winScore += 1;
+      this.firstPlayerProgress.statusesPlayer = true;
+      this.secondPlayerProgress.lossScore += 1;
+      this.secondPlayerProgress.statusesPlayer = true;
+      return;
+    }
+    if (this.firstPlayerProgress.score < this.secondPlayerProgress.score) {
+      this.firstPlayerProgress.lossScore += 1;
+      this.firstPlayerProgress.statusesPlayer = true;
+      this.secondPlayerProgress.winScore += 1;
+      this.secondPlayerProgress.statusesPlayer = true;
+      return;
+    }
+    if (this.firstPlayerProgress.score === this.secondPlayerProgress.score) {
+      this.firstPlayerProgress.drawScore += 1;
+      this.firstPlayerProgress.statusesPlayer = true;
+      this.secondPlayerProgress.drawScore += 1;
+      this.secondPlayerProgress.statusesPlayer = true;
+      return;
+    }
+  }
+
+  private finishGame() {
+    this.status = GameStatusesType.Finished;
+    this.finishGameDate = new Date();
+  }
+
+  private addBonusPointPlayer() {
     const successAnswersFirstPlayer = this.firstPlayerProgress.answers.filter(
       (e) => e.answerStatus === AnswerStatusesType.Correct,
     );
@@ -103,66 +199,100 @@ export class Game {
     const answersFirstPlayer = this.firstPlayerProgress.answers.sort((a, b) => Number(a.addedAt) - Number(b.addedAt));
     const answersSecondPlayer = this.secondPlayerProgress.answers.sort((a, b) => Number(a.addedAt) - Number(b.addedAt));
     if (successAnswersFirstPlayer.length >= 1 && answersFirstPlayer[4].addedAt < answersSecondPlayer[4].addedAt) {
-      // this.firstPlayerProgress.score += 1;
-      firstPlayer.addPoint();
-      return firstPlayer;
+      this.firstPlayerProgress.score += 1;
+      return;
     }
     if (successAnswersSecondPlayer.length >= 1 && answersFirstPlayer[4].addedAt > answersSecondPlayer[4].addedAt) {
-      // this.secondPlayerProgress.score += 1;
-      secondPlayer.addPoint();
-      return secondPlayer;
+      this.secondPlayerProgress.score += 1;
+      return;
     }
     return;
   }
 
-  isPlayerParticipate(userId: string) {
-    if (this.firstPlayerId !== userId && this.secondPlayerId !== userId) return true;
+  private finishedPlayer() {
+    this.finishedOnePlayer = new Date();
   }
 
-  stageGame(userId: string, answer: string, player?: Player) {
-    if (this.isPlayerFinished(userId)) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
-    if (this.firstPlayerId === userId) {
-      let question = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
-      const numberQuestionFirstPlayer = question[this.firstPlayerProgress.answers.length];
-      if (!this.isAnswerCorrect(answer, numberQuestionFirstPlayer)) {
-        const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
-        return { instanceAnswer, player };
-      }
-      player.addPoint();
-      const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
-      instanceAnswer.correctAnswer();
-      return { instanceAnswer, player };
-    }
-    if (this.secondPlayerId === userId) {
-      let question = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
-      const numberQuestionSecondPlayer = question[this.secondPlayerProgress.answers.length];
-      if (!this.isAnswerCorrect(answer, numberQuestionSecondPlayer)) {
-        const instanceAnswer = Player.createAnswer(answer, numberQuestionSecondPlayer.id, player);
-        return { instanceAnswer, player };
-      }
-      player.addPoint();
-      const instanceAnswer = Player.createAnswer(answer, numberQuestionSecondPlayer.id, player);
-      instanceAnswer.correctAnswer();
-      return { instanceAnswer, player };
-    }
+  //forced game
+  forcedFinishGame() {
+    this.thirdStageGame();
+    this.addBonusPointPlayerForForcedWithZeroAnswers();
   }
 
-  async stageSecondGame(firstPlayer: Player, secondPlayer: Player) {
-    this.addBonusPoint(firstPlayer, secondPlayer);
-    if (firstPlayer.score > secondPlayer.score) {
-      firstPlayer.addWinPoint();
-      secondPlayer.addLossPoint();
-      return { firstPlayer, secondPlayer };
+  private addBonusPointPlayerForForcedWithZeroAnswers() {
+    if (this.firstPlayerProgress.answers.length === 0 || this.secondPlayerProgress.answers.length === 0) {
+      if (this.firstPlayerProgress.answers.length === this.questions.length) {
+        // console.log('-f--with zero');
+        this.firstPlayerProgress.score += 1;
+        this.finishGame();
+        return;
+      }
+      if (this.secondPlayerProgress.answers.length === this.questions.length) {
+        // console.log('-s--with zero');
+        this.secondPlayerProgress.score += 1;
+        this.finishGame();
+        return;
+      }
     }
-    if (firstPlayer.score < secondPlayer.score) {
-      firstPlayer.addLossPoint();
-      secondPlayer.addWinPoint();
-      return { firstPlayer, secondPlayer };
+    this.addBonusPointPlayerForForced();
+  }
+
+  private addBonusPointPlayerForForced() {
+    const successAnswersFirstPlayer = this.firstPlayerProgress.answers.filter(
+      (e) => e.answerStatus === AnswerStatusesType.Correct,
+    );
+    const successAnswersSecondPlayer = this.secondPlayerProgress.answers.filter(
+      (e) => e.answerStatus === AnswerStatusesType.Correct,
+    );
+    if (this.firstPlayerProgress.answers.length === this.questions.length && successAnswersFirstPlayer.length >= 1) {
+      // console.log('-f--add point');
+      this.firstPlayerProgress.score += 1;
+      this.finishGame();
+      return;
     }
-    if (firstPlayer.score === secondPlayer.score) {
-      firstPlayer.addDrawPoint();
-      secondPlayer.addDrawPoint();
-      return { firstPlayer, secondPlayer };
+    if (this.secondPlayerProgress.answers.length === this.questions.length && successAnswersSecondPlayer.length >= 1) {
+      // console.log('-s--with zero');
+      this.secondPlayerProgress.score += 1;
+      this.finishGame();
+      return;
+    }
+    // console.log('---less finish');
+    this.finishGame();
+    return;
+  }
+
+  //helps
+  unAnsweredQuestion() {
+    if (this.firstPlayerProgress.answers.length === this.questions.length) {
+      const answers = this.secondPlayerProgress.answers;
+      const question = this.questions;
+      const unAnsweredQuestions = question.filter((item1) => {
+        return !answers.find((item2) => item2.questionId === item1.id);
+      });
+      const count = unAnsweredQuestions.length;
+      let instanceUnAnswers = [];
+      for (let i = 1; i <= count; i++) {
+        const numberQuestionSecondPlayer = unAnsweredQuestions[i - 1];
+        const instanceAnswer = Player.createAnswer('finishedGame', numberQuestionSecondPlayer.id, this.secondPlayerProgress);
+        instanceUnAnswers.push(instanceAnswer);
+      }
+      return instanceUnAnswers;
+    }
+    //for second player
+    if (this.secondPlayerProgress.answers.length === this.questions.length) {
+      const answers = this.firstPlayerProgress.answers;
+      const question = this.questions;
+      const unAnsweredQuestions = question.filter((item1) => {
+        return !answers.find((item2) => item2.questionId === item1.id);
+      });
+      const count = unAnsweredQuestions.length;
+      let instanceUnAnswers = [];
+      for (let i = 1; i <= count; i++) {
+        const numberQuestionSecondPlayer = unAnsweredQuestions[i - 1];
+        const instanceAnswer = Player.createAnswer('finishedGame', numberQuestionSecondPlayer.id, this.firstPlayerProgress);
+        instanceUnAnswers.push(instanceAnswer);
+      }
+      return instanceUnAnswers;
     }
   }
 }

@@ -1,5 +1,4 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
-import { ArrayStringsValidatorService } from '../validators/array-strings-validator.service';
 import { OptionalArrayStringsValidator } from '../validators/optional-array-strings.validatorts';
 
 export function OptionalArrayStrings(validationOptions?: ValidationOptions) {
