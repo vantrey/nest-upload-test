@@ -22,6 +22,11 @@ export const getConfiguration = () => ({
     MAIL_PASSWORD: process.env.MAIL_PASSWORD,
     MAIL_FROM: process.env.MAIL_FROM,
   },
+  aws: {
+    SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
+    ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
+    BUCKET: process.env.BUCKET,
+  },
 });
 
 export type ConfigType = ReturnType<typeof getConfiguration>;

@@ -68,7 +68,12 @@ export class BlogsController {
   @UseInterceptors(FileInterceptor('photo'))
   async createPhoto(@UploadedFile() photoFile: Express.Multer.File) {
     const userId = randomUUID({});
-    console.log(photoFile.buffer);
+    console.log(photoFile);
+    //added instrument for validate!!!!
+    // "width": 0,
+    // "height": 0,
+    //  "fileSize": 0
+    //
     // const pathDir = path.join('-------photos', 'wallpaper-blog', '3');
     // await ensureDirSync(pathDir);
     // await saveFileAsync(pathDir, photoFile.originalname, photoFile.buffer);

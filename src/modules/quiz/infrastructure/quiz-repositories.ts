@@ -161,7 +161,7 @@ export class QuizRepositories {
     const games = await this.gameRepo.find({
       select: [],
       relations: { firstPlayerProgress: true, secondPlayerProgress: true, questions: true },
-      where: [{ status: GameStatusesType.Active, lastAnswerAnyPlayer: LessThanOrEqual(tenSecondsAgo) }],
+      where: [{ status: GameStatusesType.Active, finishedOnePlayer: LessThanOrEqual(tenSecondsAgo) }],
     });
     if (games.length === 0) return null;
     return games;

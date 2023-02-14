@@ -14,6 +14,9 @@ export class UploadImageBlogHandler implements ICommandHandler<UploadImageBlogCo
     if (!blog) throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
     if (!blog.checkOwner(userId)) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     // await this.bloggersService.filesStorage(command);
+    //imageId , URL
+    //saved blog
+    //
     return '';
   }
 }

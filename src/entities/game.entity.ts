@@ -28,12 +28,12 @@ export class Game {
   @Column({ type: 'timestamptz', default: null })
   finishGameDate: Date; //Game finishes immediately after both players have answered all the questions
 
-  //helpers
-  // @Column({ type: 'timestamptz', default: null })
-  // finishedOnePlayer: Date; //Finished one player, for 10s
-
+  helpers;
   @Column({ type: 'timestamptz', default: null })
-  lastAnswerAnyPlayer: Date; //Finished one player, for 10s
+  finishedOnePlayer: Date; //Finished one player, for 10s
+
+  // @Column({ type: 'timestamptz', default: null })
+  // lastAnswerAnyPlayer: Date; //Finished one player, for 10s
 
   @Column({ type: 'uuid' })
   firstPlayerId: string;
@@ -97,16 +97,16 @@ export class Game {
     if (this.isPlayerFinished(userId)) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     if (this.firstPlayerId === userId) {
       this.firstStageGame(this.firstPlayerProgress, answer);
-      // if (this.firstPlayerProgress.answers.length === this.questions.length) {
-      //   this.finishedPlayer();
-      // }
+      if (this.firstPlayerProgress.answers.length === this.questions.length) {
+        this.finishedPlayer();
+      }
       return;
     }
     if (this.secondPlayerId === userId) {
       this.firstStageGame(this.secondPlayerProgress, answer);
-      // if (this.secondPlayerProgress.answers.length === this.questions.length) {
-      //   this.finishedPlayer();
-      // }
+      if (this.secondPlayerProgress.answers.length === this.questions.length) {
+        this.finishedPlayer();
+      }
       return;
     }
   }
@@ -136,7 +136,7 @@ export class Game {
     const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
     instanceAnswer.correctAnswer();
     player.answers.push(instanceAnswer);
-    this.lastAnswerAnyPlayer = new Date();
+    // this.lastAnswerAnyPlayer = new Date();
     if (this.isGameFinished()) {
       this.secondStageGame();
     }
@@ -214,9 +214,9 @@ export class Game {
     return;
   }
 
-  // private finishedPlayer() {
-  //   this.finishedOnePlayer = new Date();
-  // }
+  private finishedPlayer() {
+    this.finishedOnePlayer = new Date();
+  }
 
   //forced game
   forcedFinishGame() {
@@ -261,7 +261,7 @@ export class Game {
       this.finishGame();
       return;
     }
-    console.log('---less finish');
+    // console.log('---less finish');
     this.finishGame();
     return;
   }
