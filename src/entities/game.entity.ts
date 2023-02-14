@@ -29,8 +29,8 @@ export class Game {
   finishGameDate: Date; //Game finishes immediately after both players have answered all the questions
 
   //helpers
-  @Column({ type: 'timestamptz', default: null })
-  finishedOnePlayer: Date; //Finished one player, for 10s
+  // @Column({ type: 'timestamptz', default: null })
+  // finishedOnePlayer: Date; //Finished one player, for 10s
 
   @Column({ type: 'timestamptz', default: null })
   lastAnswerAnyPlayer: Date; //Finished one player, for 10s
@@ -214,9 +214,9 @@ export class Game {
     return;
   }
 
-  private finishedPlayer() {
-    this.finishedOnePlayer = new Date();
-  }
+  // private finishedPlayer() {
+  //   this.finishedOnePlayer = new Date();
+  // }
 
   //forced game
   forcedFinishGame() {

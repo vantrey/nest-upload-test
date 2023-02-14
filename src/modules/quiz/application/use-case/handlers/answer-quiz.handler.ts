@@ -13,10 +13,10 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
   async execute(command: AnswerQuizCommand): Promise<AnswerViewModel> {
     const { answer } = command.inputAnswerModel;
     const { userId } = command;
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    const manager = queryRunner.manager;
-    await queryRunner.startTransaction();
+    // const queryRunner = this.dataSource.createQueryRunner();
+    // await queryRunner.connect();
+    // const manager = queryRunner.manager;
+    // await queryRunner.startTransaction();
     try {
       // const activeGame = await this.quizRepo.findActiveGameByUserIdManager(userId, manager);
       const activeGame = await this.quizRepo.findActiveGameByUserId(userId);
@@ -27,13 +27,13 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
 
       const result =
         activeGame.getIdFirstPlayer() === userId ? activeGame.getLastAnswerFirstPlayer() : activeGame.getLastAnswerSecondPlayer();
-      await queryRunner.commitTransaction();
+      // await queryRunner.commitTransaction();
       return new AnswerViewModel(result.questionId, result.answerStatus, result.addedAt.toISOString());
     } catch (e) {
       console.log('--------+__+_+', e);
-      await queryRunner.rollbackTransaction();
+      // await queryRunner.rollbackTransaction();
     } finally {
-      await queryRunner.release();
+      // await queryRunner.release();
     }
   }
 

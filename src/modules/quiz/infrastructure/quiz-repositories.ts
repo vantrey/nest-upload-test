@@ -157,7 +157,7 @@ export class QuizRepositories {
   }
 
   async forcedFinishGame(): Promise<Game[]> {
-    const tenSecondsAgo = new Date(Date.now() - 9 * 1000);
+    const tenSecondsAgo = new Date(Date.now() - 9.5 * 1000);
     const games = await this.gameRepo.find({
       select: [],
       relations: { firstPlayerProgress: true, secondPlayerProgress: true, questions: true },
