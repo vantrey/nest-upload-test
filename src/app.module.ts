@@ -93,6 +93,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz.handler';
 import { TransformStringToArrayStringsPipe } from './helpers/transformStringToArrayStrings.pipe';
 import { ScheduleModule } from '@nestjs/schedule';
+import { UploadImageBlogHandler } from './modules/blogger/application/use-cases/handlers/upload-image-blog.handler';
+import { S3StorageAdapter } from './modules/blogger/domain/s3-storage-adapter.service';
 
 const controllers = [
   AuthController,
@@ -116,6 +118,7 @@ const providers = [
   BlogUuidIdValidator,
   BasicStrategy,
   ThrottlerGuard,
+  S3StorageAdapter,
   // {
   //   provide: APP_GUARD,
   //   useClass: ThrottlerGuard,
@@ -175,6 +178,7 @@ const handlers = [
   ConnectionQuizHandler,
   // AnswerTransaction,
   AnswerQuizHandler,
+  UploadImageBlogHandler,
 ];
 const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, LikeComment, Question, Answer, Player, Game];
 const pipe = [TransformStringToArrayStringsPipe];

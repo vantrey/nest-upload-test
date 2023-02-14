@@ -1,6 +1,19 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+  Query,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CreatePostDto } from '../../posts/api/input-Dtos/create-post.dto';
-import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
+import { ValidateUuidPipe, ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
 import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-view.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../application/use-cases/create-blog.command';
@@ -29,6 +42,9 @@ import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 import { BloggerCommentsViewModel } from '../../comments/infrastructure/query-repository/comments-view.dto';
 import { UsersForBanBlogView } from '../../sa-users/infrastructure/query-reposirory/user-ban-for-blog-view.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { UploadImageBlogCommand } from '../application/use-cases/upload-image-blog.command';
+import { BlogImagesViewModel } from '../infrastructure/blog-images-view.dto';
 
 @ApiBearerAuth()
 @SkipThrottle()
@@ -40,6 +56,26 @@ export class BloggersController {
     private readonly postsQueryRepo: PostsQueryRepositories,
     private commandBus: CommandBus,
   ) {}
+
+  @ApiTags('images')
+  @ApiOperation({
+    summary:
+      'Upload main square image for Blog (.png or jpg (jpeg) file (max size is 100KB, width must be 156, height must be 156))',
+  })
+  @ApiResponse({ status: 200, description: 'Uploaded image information object', type: BlogImagesViewModel })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
+  @Post('blogs/:blogId/images/wallpaper')
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor('wallpaper-blog'))
+  async createPhoto(
+    @CurrentUserIdBlogger() userId: string,
+    @Param(`blogId`, ValidateUuidPipeFor404Error) blogId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return await this.commandBus.execute(new UploadImageBlogCommand(userId, blogId, file.originalname, file.buffer));
+  }
 
   @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Returns all comments for all posts inside ll current user blogs' })

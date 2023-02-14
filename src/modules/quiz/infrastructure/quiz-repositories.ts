@@ -130,6 +130,7 @@ export class QuizRepositories {
     const game = await manager
       .getRepository(Game)
       .createQueryBuilder('g')
+      // .setLock('pessimistic_write')
       .setLock('pessimistic_write', undefined, ['g'])
       .innerJoinAndSelect('g.questions', 'q')
       .innerJoinAndSelect('g.firstPlayerProgress', 'firstPlayerProgress')
@@ -139,6 +140,8 @@ export class QuizRepositories {
       .where('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
       .orWhere('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
       .getOne();
+
+    console.log('--------------------------------------', game);
     if (!game) return null;
     return game;
   }
@@ -154,11 +157,11 @@ export class QuizRepositories {
   }
 
   async forcedFinishGame(): Promise<Game[]> {
-    const tenSecondsAgo = new Date(Date.now() - 10 * 1000);
+    const tenSecondsAgo = new Date(Date.now() - 9 * 1000);
     const games = await this.gameRepo.find({
       select: [],
       relations: { firstPlayerProgress: true, secondPlayerProgress: true, questions: true },
-      where: [{ status: GameStatusesType.Active, finishedOnePlayer: LessThanOrEqual(tenSecondsAgo) }],
+      where: [{ status: GameStatusesType.Active, lastAnswerAnyPlayer: LessThanOrEqual(tenSecondsAgo) }],
     });
     if (games.length === 0) return null;
     return games;

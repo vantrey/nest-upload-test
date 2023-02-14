@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BanInfoForBlogType, BlogOwnerInfoType, BlogViewForSaModel } from './blog-View-Model';
+import { BanInfoForBlogType, BlogOwnerInfoType, BlogViewForSaModel } from './blog-view-for-sa.dto';
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { PaginationBlogDto } from '../../api/input-Dtos/pagination-blog.dto';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
@@ -68,7 +68,7 @@ export class BlogsQueryRepositories {
     return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, blogs);
   }
 
-  async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel>> {
+  async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewForSaModel>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {

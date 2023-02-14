@@ -768,7 +768,7 @@ window.onload = function() {
                           "items": {
                             "type": "array",
                             "items": {
-                              "$ref": "#/components/schemas/BlogViewModel"
+                              "$ref": "#/components/schemas/BlogViewForSaModel"
                             }
                           }
                         }
@@ -1408,6 +1408,98 @@ window.onload = function() {
           },
           "tags": [
             "Blogs"
+          ]
+        }
+      },
+      "/blogs/photo/ph": {
+        "get": {
+          "operationId": "BlogsController_getPhoto",
+          "summary": "",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "Blogs"
+          ]
+        }
+      },
+      "/blogs/photo/save": {
+        "post": {
+          "operationId": "BlogsController_createPhoto",
+          "summary": "",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "201": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "Blogs"
+          ]
+        }
+      },
+      "/blogger/blogs/{blogId}/images/wallpaper": {
+        "post": {
+          "operationId": "BloggersController_createPhoto",
+          "summary": "Upload main square image for Blog (.png or jpg (jpeg) file (max size is 100KB, width must be 156, height must be 156))",
+          "description": "",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Uploaded image information object",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BlogImagesViewModel"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the blog"
+            }
+          },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
+          "tags": [
+            "images"
           ]
         }
       },
@@ -3232,7 +3324,37 @@ window.onload = function() {
             "isBanned"
           ]
         },
-        "BlogViewModel": {
+        "BlogOwnerInfoType": {
+          "type": "object",
+          "properties": {
+            "userId": {
+              "type": "string"
+            },
+            "userLogin": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "userId",
+            "userLogin"
+          ]
+        },
+        "BanInfoForBlogType": {
+          "type": "object",
+          "properties": {
+            "isBanned": {
+              "type": "boolean"
+            },
+            "banDate": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "isBanned",
+            "banDate"
+          ]
+        },
+        "BlogViewForSaModel": {
           "type": "object",
           "properties": {
             "id": {
@@ -3249,6 +3371,12 @@ window.onload = function() {
             },
             "createdAt": {
               "type": "string"
+            },
+            "blogOwnerInfo": {
+              "$ref": "#/components/schemas/BlogOwnerInfoType"
+            },
+            "banInfo": {
+              "$ref": "#/components/schemas/BanInfoForBlogType"
             }
           },
           "required": [
@@ -3256,7 +3384,9 @@ window.onload = function() {
             "name",
             "description",
             "websiteUrl",
-            "createdAt"
+            "createdAt",
+            "blogOwnerInfo",
+            "banInfo"
           ]
         },
         "QuestionForSaViewModel": {
@@ -3351,6 +3481,33 @@ window.onload = function() {
             "deviceId"
           ]
         },
+        "BlogViewModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "websiteUrl": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "description",
+            "websiteUrl",
+            "createdAt"
+          ]
+        },
         "LikeDetailsViewModel": {
           "type": "object",
           "properties": {
@@ -3433,6 +3590,50 @@ window.onload = function() {
             "blogName",
             "createdAt",
             "extendedLikesInfo"
+          ]
+        },
+        "PhotoSizeModel": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "width": {
+              "type": "number",
+              "description": "In pixels"
+            },
+            "height": {
+              "type": "number",
+              "description": "In pixels"
+            },
+            "fileSize": {
+              "type": "number",
+              "description": "In bytes"
+            }
+          },
+          "required": [
+            "url",
+            "width",
+            "height",
+            "fileSize"
+          ]
+        },
+        "BlogImagesViewModel": {
+          "type": "object",
+          "properties": {
+            "wallpaper": {
+              "$ref": "#/components/schemas/PhotoSizeModel"
+            },
+            "main": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PhotoSizeModel"
+              }
+            }
+          },
+          "required": [
+            "wallpaper",
+            "main"
           ]
         },
         "LikeInfoViewModel": {

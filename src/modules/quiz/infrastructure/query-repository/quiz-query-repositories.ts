@@ -201,15 +201,6 @@ export class QuizQueryRepositories {
   async getTop(data: PaginationQuizTopDto): Promise<PaginationViewDto<TopPlayerViewDto>> {
     const { sort, pageNumber, pageSize, skip } = data;
     let sortBy = sort;
-    // if (sort === undefined) {
-    //   sortBy = ['avgScores desc', 'sumScore desc']; //default value
-    // }
-    // if (typeof sort === 'string') {
-    //   // @ts-ignore
-    //   sortBy = sort.split(',');
-    // }
-    console.log('repo', sortBy);
-
     //default query
     const defaultQuery = this.playerRepo
       .createQueryBuilder('p')

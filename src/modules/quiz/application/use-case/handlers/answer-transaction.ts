@@ -32,7 +32,7 @@ export class AnswerTransaction
     console.log('--__________________________________-');
     console.log('--------', activeGame);
     if (!activeGame) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
-    activeGame.game(userId, answer);
+    activeGame.startGame(userId, answer);
     // console.log('--__________________________________-');
     await this.quizRepo.saveGame(activeGame, manager);
     // console.log('-------1', res.firstPlayerProgress.answers);

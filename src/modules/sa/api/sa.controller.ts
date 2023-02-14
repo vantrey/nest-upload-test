@@ -19,9 +19,9 @@ import { PublishQuestionCommand } from '../application/use-cases/publish-questio
 import { PaginationQuestionDto } from './input-dtos/pagination-Question.dto';
 import { QuestionQueryRepository } from '../infrastructure/query-reposirory/question-query.reposit';
 import { ApiBasicAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-view.dto';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
+import { BlogViewForSaModel } from '../../blogs/infrastructure/query-repository/blog-view-for-sa.dto';
 
 @ApiBasicAuth()
 @SkipThrottle()
@@ -64,11 +64,11 @@ export class SaController {
 
   @ApiTags('Sa-Blogs')
   @ApiOperation({ summary: 'Returns all blogs with pagination' })
-  @ApiOkResponsePaginated(BlogViewModel)
-  @ApiResponse({ status: 200, description: 'The found record', type: BlogViewModel })
+  @ApiOkResponsePaginated(BlogViewForSaModel)
+  @ApiResponse({ status: 200, description: 'The found record', type: BlogViewForSaModel })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @Get(`blogs`)
-  async findBlogsForSa(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel>> {
+  async findBlogsForSa(@Query() paginationInputModel: PaginationBlogDto): Promise<PaginationViewDto<BlogViewForSaModel>> {
     return await this.blogsQueryRepo.findBlogsForSa(paginationInputModel);
   }
 

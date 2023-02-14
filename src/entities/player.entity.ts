@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Answer } from './answer.entity';
 
 @Entity()
+// @Check('"score" > 0')
 export class Player {
   @PrimaryGeneratedColumn('uuid')
   id: string;
