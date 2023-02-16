@@ -18,6 +18,9 @@ import { LikeComment } from '../../../../entities/like-comment.entity';
 import { PaginationDto } from '../../../../common/pagination.dto';
 import { CommentViewModel } from '../../../comments/infrastructure/query-repository/comment-view.dto';
 import { LikeInfoViewModel } from '../../../comments/infrastructure/query-repository/like-info-view.dto';
+import { PhotoSizeModel } from '../../../blogger/infrastructure/blog-images-view.dto';
+import { ImagePost } from '../../../../entities/imagePost.entity';
+import { PostImagesViewModel } from '../../../blogger/infrastructure/post-images-view.dto';
 
 @Injectable()
 export class PostsQueryRepositories {
@@ -27,6 +30,7 @@ export class PostsQueryRepositories {
     @InjectRepository(LikeComment) private readonly likeCommentRepo: Repository<LikeComment>,
     @InjectRepository(LikePost) private readonly likePostRepo: Repository<LikePost>,
     @InjectRepository(BannedBlogUser) private readonly bannedBlogUserRepo: Repository<BannedBlogUser>,
+    @InjectRepository(ImagePost) private readonly imagePostRepo: Repository<ImagePost>,
   ) {}
 
   private async postForView(post: Post, userId: string | null): Promise<PostViewModel> {
@@ -59,6 +63,24 @@ export class PostsQueryRepositories {
       return { addedAt: e.addedAt, userId: e.userId, login: e.user.login };
     });
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(countLike, countDislike, myStatus, newestLikes);
+    if (post.image === null) {
+      const images = new PostImagesViewModel(null);
+      return new PostViewModel(
+        post.id,
+        post.title,
+        post.shortDescription,
+        post.content,
+        post.blogId,
+        post.blogName,
+        post.createdAt,
+        extendedLikesInfo,
+        images,
+      );
+    }
+    const imageMain = new PhotoSizeModel(post.image.keyImageMain, 940, 423, post.image.sizeMainImage);
+    const imageMiddle = new PhotoSizeModel(post.image.keyMiddleImageMain, 300, 180, post.image.sizeMiddleImageMain);
+    const imageSmall = new PhotoSizeModel(post.image.keySmallImageMain, 149, 96, post.image.sizeSmallImageMain);
+    const images = new PostImagesViewModel([imageMain, imageMiddle, imageSmall]);
     return new PostViewModel(
       post.id,
       post.title,
@@ -68,6 +90,7 @@ export class PostsQueryRepositories {
       post.blogName,
       post.createdAt,
       extendedLikesInfo,
+      images,
     );
   }
 
@@ -87,7 +110,8 @@ export class PostsQueryRepositories {
     }
     const [posts, count] = await Promise.all([
       this.postRepo.find({
-        select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt'],
+        select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt', 'image'],
+        relations: { image: true },
         where: filter,
         order: { [sortBy]: order },
         skip: data.skip,
@@ -95,6 +119,7 @@ export class PostsQueryRepositories {
       }),
       this.postRepo.count({ where: filter }),
     ]);
+
     //mapped posts for view
     const mappedPosts = posts.map((post) => this.postForView(post, userId));
     const itemsPosts = await Promise.all(mappedPosts);
@@ -107,8 +132,8 @@ export class PostsQueryRepositories {
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
     //find post by id from uri params
     const post = await this.postRepo.findOne({
-      select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt'],
-      // relations: { blog: true },
+      select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt', 'image'],
+      relations: { image: true },
       where: { id: id, isBanned: false },
     });
     // const post = await this.postRepo.findOneBy({ postId: id, isBanned: false });
@@ -193,6 +218,7 @@ export class PostsQueryRepositories {
       post.blog.name,
       post.createdAt,
       extendedLikesInfo,
+      null,
     );
   }
 
@@ -257,5 +283,15 @@ export class PostsQueryRepositories {
     const commentatorInfo = new CommentatorInfoModel(object.userId, object.user.login);
     const postInfo = new PostInfoModel(object.post.id, object.post.title, object.post.blogId, object.post.blogName);
     return new BloggerCommentsViewModel(object.id, object.content, object.createdAt, likesInfo, commentatorInfo, postInfo);
+  }
+
+  async getImageMain(id: string): Promise<PostImagesViewModel> {
+    const imagePostInfo = await this.imagePostRepo.findOne({
+      where: { postId: id },
+    });
+    const photoMain = new PhotoSizeModel(imagePostInfo.keyImageMain, 940, 432, imagePostInfo.sizeMainImage);
+    const photoMeddle = new PhotoSizeModel(imagePostInfo.keyMiddleImageMain, 300, 180, imagePostInfo.sizeMiddleImageMain);
+    const photoSmall = new PhotoSizeModel(imagePostInfo.keySmallImageMain, 149, 96, imagePostInfo.sizeSmallImageMain);
+    return new PostImagesViewModel([photoMain, photoMeddle, photoSmall]);
   }
 }

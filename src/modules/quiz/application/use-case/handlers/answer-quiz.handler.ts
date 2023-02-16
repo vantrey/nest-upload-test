@@ -42,7 +42,6 @@ export class AnswerQuizHandler implements ICommandHandler<AnswerQuizCommand> {
     try {
       const games = await this.quizRepo.forcedFinishGame(); //select for update
       if (!games) return;
-      console.log('---time', games);
       for (let i = 1; i <= games.length; i++) {
         games[i - 1].forcedFinishGame();
         await this.quizRepo.saveGame(games[i - 1]);

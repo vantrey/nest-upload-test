@@ -13,6 +13,8 @@ import { Question } from '../../entities/question.entity';
 import { Answer } from '../../entities/answer.entity';
 import { Player } from '../../entities/player.entity';
 import { Game } from '../../entities/game.entity';
+import { ImageBlog } from '../../entities/imageBlog.entity';
+import { ImagePost } from '../../entities/imagePost.entity';
 
 @Injectable()
 export class TestingService {
@@ -33,8 +35,10 @@ export class TestingService {
         await manager.delete(LikePost, {});
         await manager.delete(Comment, {});
         await manager.delete(Post, {});
+        await manager.delete(ImagePost, {});
         await manager.delete(BannedBlogUser, {});
         await manager.delete(Blog, {});
+        await manager.delete(ImageBlog, {});
         await manager.delete(Device, {});
         await manager.delete(User, {});
       })

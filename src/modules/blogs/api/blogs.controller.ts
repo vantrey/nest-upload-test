@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, UseGuards, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Query, Param, UseGuards, Post, UseInterceptors, UploadedFile, Body } from '@nestjs/common';
 import { BlogsQueryRepositories } from '../infrastructure/query-repository/blogs-query.repositories';
 import { PaginationBlogDto } from './input-Dtos/pagination-blog.dto';
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
@@ -8,15 +8,16 @@ import { PostViewModel } from '../../posts/infrastructure/query-repositories/pos
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
 import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
 import { SkipThrottle } from '@nestjs/throttler';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BlogViewModel } from '../infrastructure/query-repository/blog-view.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 import path from 'node:path';
-import { ensureDirSync, readTextFileAsync, saveFileAsync } from '../../../utils/fs-utils';
+import { readTextFileAsync } from '../../../utils/fs-utils';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { BloggersService } from '../../blogger/domain/bloggers.service';
-import { randomUUID } from 'crypto';
 import { S3StorageAdapter } from '../../blogger/domain/s3-storage-adapter.service';
+import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
+import { FileSizeValidationImageMainPipe } from '../../../validators/file-size-validation-image-main.pipe';
 
 @ApiTags('Blogs')
 @SkipThrottle()
@@ -64,21 +65,33 @@ export class BlogsController {
     return await readTextFileAsync(path.join('views', 'photo.html'));
   }
 
+  //test points ---------------------------------------------
+  @Get('/photo/delete')
+  async deletePhoto() {
+    const userId = '77777';
+    const key = `main/${userId}.png`;
+    return await this.s3.delete(userId, key);
+  }
+
   @Post('photo/save')
   @UseInterceptors(FileInterceptor('photo'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        photo: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
   async createPhoto(@UploadedFile() photoFile: Express.Multer.File) {
-    const userId = randomUUID({});
-    console.log(photoFile);
-    //added instrument for validate!!!!
-    // "width": 0,
-    // "height": 0,
-    //  "fileSize": 0
-    //
-    // const pathDir = path.join('-------photos', 'wallpaper-blog', '3');
-    // await ensureDirSync(pathDir);
-    // await saveFileAsync(pathDir, photoFile.originalname, photoFile.buffer);
-    // const res = await this.bloggersService.execute(userId, photoFile.originalname, photoFile.buffer);
-    const res = await this.s3.saveFile(userId, photoFile.buffer);
-    return res;
+    const userId = '77777';
+    const key = `main/${userId}.png`;
+    console.log('photoFile', photoFile);
+    return await this.s3.saveFile(userId, photoFile.buffer, key);
   }
 }

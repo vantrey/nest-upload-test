@@ -4,6 +4,7 @@ export class BlogViewForSaModel {
   public description: string;
   public websiteUrl: string;
   public createdAt: string;
+  public isMembership: boolean;
   public blogOwnerInfo: BlogOwnerInfoType;
   public banInfo: BanInfoForBlogType;
   constructor(
@@ -12,6 +13,7 @@ export class BlogViewForSaModel {
     description: string,
     websiteUrl: string,
     createdAt: string,
+    isMembership: boolean,
     blogOwnerInfo: BlogOwnerInfoType,
     banInfo: BanInfoForBlogType,
   ) {
@@ -20,6 +22,7 @@ export class BlogViewForSaModel {
     this.description = description;
     this.websiteUrl = websiteUrl;
     this.createdAt = createdAt;
+    this.isMembership = isMembership;
     this.blogOwnerInfo = blogOwnerInfo;
     this.banInfo = banInfo;
   }

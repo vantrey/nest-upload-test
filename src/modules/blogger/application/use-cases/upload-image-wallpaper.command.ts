@@ -1,4 +1,4 @@
-export class UploadImageBlogCommand {
+export class UploadImageWallpaperCommand {
   constructor(
     public readonly userId: string,
     public readonly blogId: string,

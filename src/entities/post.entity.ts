@@ -1,8 +1,9 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Blog } from './blog.entity';
 import { LikePost } from './like-post.entity';
 import { Comment } from './comment.entity';
+import { ImagePost } from './imagePost.entity';
 
 @Entity()
 export class Post {
@@ -33,7 +34,19 @@ export class Post {
   @OneToMany(() => LikePost, (u) => u.post)
   likePost: LikePost[];
 
-  constructor(userId: string, title: string, shortDescription: string, content: string, blogId: string, blogName: string, blog: Blog) {
+  @OneToOne(() => ImagePost, (i) => i.post, { cascade: true, onUpdate: 'CASCADE' })
+  @JoinColumn()
+  image: ImagePost;
+
+  constructor(
+    userId: string,
+    title: string,
+    shortDescription: string,
+    content: string,
+    blogId: string,
+    blogName: string,
+    blog: Blog,
+  ) {
     this.userId = userId;
     this.title = title;
     this.shortDescription = shortDescription;
@@ -72,5 +85,30 @@ export class Post {
 
   getOwnerPost() {
     return this.userId;
+  }
+
+  async setImageMain(
+    urlImageMain: { key: string; fieldId: string },
+    urlMiddleImageMain: { key: string; fieldId: string },
+    urlSmallImageMain: { key: string; fieldId: string },
+    photo: Buffer,
+    middlePhoto: Buffer,
+    smallPhoto: Buffer,
+  ) {
+    if (this.image === null) {
+      const instanceImage = ImagePost.createImagePost(this.userId, this.id);
+
+      this.image = await instanceImage.setImageMain(
+        urlImageMain,
+        urlMiddleImageMain,
+        urlSmallImageMain,
+        photo,
+        middlePhoto,
+        smallPhoto,
+      );
+      return;
+    }
+    await this.image.setImageMain(urlImageMain, urlMiddleImageMain, urlSmallImageMain, photo, middlePhoto, smallPhoto);
+    return;
   }
 }

@@ -1,9 +1,4 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Response } from 'express';
 
 //filter for dev
@@ -13,9 +8,7 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     if (process.env.envoirment !== `production`) {
-      response
-        .status(500)
-        .send({ error: exception.toString(), stack: exception.stack });
+      response.status(500).send({ error: exception.toString(), stack: exception.stack });
     } else {
       response.status(500).send(`some error occurred`);
     }

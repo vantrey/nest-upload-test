@@ -29,6 +29,16 @@ export class PostsRepositories {
     return post;
   }
 
+  async getPostWithRelations(id: string, userId: string): Promise<Post> {
+    const post = await this.postRepo.findOne({
+      select: [],
+      relations: { image: true },
+      where: { id: id, userId: userId },
+    });
+    if (!post) return null;
+    return post;
+  }
+
   async deletePost(id: string, userId: string): Promise<boolean> {
     const post = await this.postRepo.findOneBy({ id: id, userId: userId });
     if (!post) return null;

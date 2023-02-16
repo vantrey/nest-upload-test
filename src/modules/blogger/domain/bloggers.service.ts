@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UploadImageBlogCommand } from '../application/use-cases/upload-image-blog.command';
+import { UploadImageWallpaperCommand } from '../application/use-cases/upload-image-wallpaper.command';
 import path from 'node:path';
 import fs from 'node:fs';
 import { ensureDirSync, saveFileAsync } from '../../../utils/fs-utils';

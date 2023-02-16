@@ -1,8 +1,9 @@
 import { UpdateBlogDto } from '../modules/blogger/api/input-dtos/update-blog.dto';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { User } from './user.entity';
 import { BannedBlogUser } from './banned-blog-user.entity';
 import { Post } from './post.entity';
+import { ImageBlog } from './imageBlog.entity';
 
 @Entity()
 export class Blog {
@@ -20,15 +21,20 @@ export class Blog {
   createdAt: string;
   @Column('boolean', { default: false })
   isBanned: boolean;
+  @Column('boolean', { default: false })
+  isMembership: boolean;
   @Column({ type: 'character varying', default: null })
   banDate: string;
-  //-----
+
   @ManyToOne(() => User, (u) => u.blogs)
   user: User;
   @OneToMany(() => BannedBlogUser, (u) => u.blog)
   bannedUsers: BannedBlogUser[];
   @OneToMany(() => Post, (u) => u.blog)
   posts: Relation<Post[]>;
+  @OneToOne(() => ImageBlog, (i) => i.blog, { cascade: true, onUpdate: 'CASCADE' })
+  @JoinColumn()
+  image: ImageBlog;
 
   constructor(userId: string, name: string, description: string, websiteUrl: string, user: User) {
     this.userId = userId;
@@ -81,5 +87,30 @@ export class Blog {
   updateBanStatus(isBanned: boolean) {
     this.isBanned = isBanned;
     this.banDate = new Date().toISOString();
+  }
+
+  async setImageMain(
+    urlSmallImageMain: { key: string; fieldId: string },
+    urlImageMain: { key: string; fieldId: string },
+    photo: Buffer,
+    changedBuffer: Buffer,
+  ) {
+    if (this.image === null) {
+      const instanceImage = ImageBlog.createImageBlog(this.userId, this.id);
+      this.image = await instanceImage.setImageMain(urlSmallImageMain, urlImageMain, photo, changedBuffer);
+      return;
+    }
+    await this.image.setImageMain(urlSmallImageMain, urlImageMain, photo, changedBuffer);
+    return;
+  }
+
+  async setImageWallpaper(urlImageWallpaper: { key: string; fieldId: string }, photo: Buffer) {
+    if (this.image === null) {
+      const instanceImage = ImageBlog.createImageBlog(this.userId, this.id);
+      this.image = await instanceImage.setImageWallpaper(urlImageWallpaper, photo);
+      return;
+    }
+    await this.image.setImageWallpaper(urlImageWallpaper, photo);
+    return;
   }
 }

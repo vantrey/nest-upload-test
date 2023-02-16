@@ -18,7 +18,6 @@ import { AnswerQuizCommand } from '../application/use-case/answer-quiz.command';
 import { StatisticGameView } from '../infrastructure/query-repository/statistic-game-view.dto';
 import { PaginationQuizTopDto } from './input-dtos/pagination-quiz-top.dto';
 import { TopPlayerViewDto } from '../infrastructure/query-repository/top-player-view.dto';
-import { TransformStringToArrayStringsPipe } from '../../../helpers/transformStringToArrayStrings.pipe';
 
 @ApiTags('PairQuizGame')
 @Controller(`pair-game-quiz`)

@@ -1,4 +1,5 @@
 import { ExtendedLikesInfoViewModel } from './likes-Info-view.dto';
+import { PostImagesViewModel } from '../../../blogger/infrastructure/post-images-view.dto';
 
 export class PostViewModel {
   public id: string;
@@ -9,6 +10,7 @@ export class PostViewModel {
   public blogName: string;
   public createdAt: string;
   public extendedLikesInfo: ExtendedLikesInfoViewModel;
+  public images: PostImagesViewModel;
   constructor(
     id: string,
     title: string,
@@ -18,6 +20,7 @@ export class PostViewModel {
     blogName: string,
     createdAt: string,
     extendedLikesInfo: ExtendedLikesInfoViewModel,
+    images: PostImagesViewModel,
   ) {
     this.id = id;
     this.title = title;
@@ -27,5 +30,6 @@ export class PostViewModel {
     this.blogName = blogId;
     this.createdAt = createdAt;
     this.extendedLikesInfo = extendedLikesInfo;
+    this.images = images;
   }
 }

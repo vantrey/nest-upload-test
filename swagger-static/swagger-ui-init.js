@@ -1434,15 +1434,64 @@ window.onload = function() {
           ]
         }
       },
+      "/blogs/photo/delete": {
+        "get": {
+          "operationId": "BlogsController_deletePhoto",
+          "summary": "",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": "",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          },
+          "tags": [
+            "Blogs"
+          ]
+        }
+      },
       "/blogs/photo/save": {
         "post": {
           "operationId": "BlogsController_createPhoto",
           "summary": "",
           "description": "",
           "parameters": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "photo": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "responses": {
             "201": {
               "description": ""
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
             }
           },
           "tags": [
@@ -1452,7 +1501,76 @@ window.onload = function() {
       },
       "/blogger/blogs/{blogId}/images/wallpaper": {
         "post": {
-          "operationId": "BloggersController_createPhoto",
+          "operationId": "BloggersController_uploadPhotoWallpaper",
+          "summary": "Upload background wallpaper for Blog (.png or jpg (.ipeg) file (max size is 100KB, width must be 1028, height must be\n312px))",
+          "description": "",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "wallpaper": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Uploaded image information object",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/BlogImagesViewModel"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the blog"
+            }
+          },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
+          "tags": [
+            "images"
+          ]
+        }
+      },
+      "/blogger/blogs/{blogId}/images/main": {
+        "post": {
+          "operationId": "BloggersController_uploadPhotoMain",
           "summary": "Upload main square image for Blog (.png or jpg (jpeg) file (max size is 100KB, width must be 156, height must be 156))",
           "description": "",
           "parameters": [
@@ -1465,6 +1583,22 @@ window.onload = function() {
               }
             }
           ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "main": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "responses": {
             "200": {
               "description": "Uploaded image information object",
@@ -1472,6 +1606,83 @@ window.onload = function() {
                 "application/json": {
                   "schema": {
                     "$ref": "#/components/schemas/BlogImagesViewModel"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "The inputModel has incorrect values",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/ApiErrorResultDto"
+                  }
+                }
+              }
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "403": {
+              "description": "You are not the owner of the blog"
+            }
+          },
+          "security": [
+            {
+              "bearer": []
+            }
+          ],
+          "tags": [
+            "images"
+          ]
+        }
+      },
+      "/blogger/blogs/{blogId}/posts/{postId}/images/main": {
+        "post": {
+          "operationId": "BloggersController_uploadPhotoMainPost",
+          "summary": "Upload main image for Post (.png or jpg (.jpeg) file (max size is\n100KB, width must be 940, height must be 432))",
+          "description": "",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "postId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "main": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Uploaded image information object",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/PostImagesViewModel"
                   }
                 }
               }
@@ -3049,7 +3260,7 @@ window.onload = function() {
     "info": {
       "title": "Blogger with quiz game",
       "description": "The blogger API description",
-      "version": "h27.blogger",
+      "version": "h29_blogger",
       "contact": {}
     },
     "tags": [],
@@ -3372,6 +3583,9 @@ window.onload = function() {
             "createdAt": {
               "type": "string"
             },
+            "isMembership": {
+              "type": "boolean"
+            },
             "blogOwnerInfo": {
               "$ref": "#/components/schemas/BlogOwnerInfoType"
             },
@@ -3385,6 +3599,7 @@ window.onload = function() {
             "description",
             "websiteUrl",
             "createdAt",
+            "isMembership",
             "blogOwnerInfo",
             "banInfo"
           ]
@@ -3481,6 +3696,50 @@ window.onload = function() {
             "deviceId"
           ]
         },
+        "PhotoSizeModel": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string"
+            },
+            "width": {
+              "type": "number",
+              "description": "In pixels"
+            },
+            "height": {
+              "type": "number",
+              "description": "In pixels"
+            },
+            "fileSize": {
+              "type": "number",
+              "description": "In bytes"
+            }
+          },
+          "required": [
+            "url",
+            "width",
+            "height",
+            "fileSize"
+          ]
+        },
+        "BlogImagesViewModel": {
+          "type": "object",
+          "properties": {
+            "wallpaper": {
+              "$ref": "#/components/schemas/PhotoSizeModel"
+            },
+            "main": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PhotoSizeModel"
+              }
+            }
+          },
+          "required": [
+            "wallpaper",
+            "main"
+          ]
+        },
         "BlogViewModel": {
           "type": "object",
           "properties": {
@@ -3498,6 +3757,12 @@ window.onload = function() {
             },
             "createdAt": {
               "type": "string"
+            },
+            "isMembership": {
+              "type": "boolean"
+            },
+            "images": {
+              "$ref": "#/components/schemas/BlogImagesViewModel"
             }
           },
           "required": [
@@ -3505,7 +3770,9 @@ window.onload = function() {
             "name",
             "description",
             "websiteUrl",
-            "createdAt"
+            "createdAt",
+            "isMembership",
+            "images"
           ]
         },
         "LikeDetailsViewModel": {
@@ -3553,6 +3820,20 @@ window.onload = function() {
             "newestLikes"
           ]
         },
+        "PostImagesViewModel": {
+          "type": "object",
+          "properties": {
+            "main": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PhotoSizeModel"
+              }
+            }
+          },
+          "required": [
+            "main"
+          ]
+        },
         "PostViewModel": {
           "type": "object",
           "properties": {
@@ -3579,6 +3860,9 @@ window.onload = function() {
             },
             "extendedLikesInfo": {
               "$ref": "#/components/schemas/ExtendedLikesInfoViewModel"
+            },
+            "images": {
+              "$ref": "#/components/schemas/PostImagesViewModel"
             }
           },
           "required": [
@@ -3589,51 +3873,8 @@ window.onload = function() {
             "blogId",
             "blogName",
             "createdAt",
-            "extendedLikesInfo"
-          ]
-        },
-        "PhotoSizeModel": {
-          "type": "object",
-          "properties": {
-            "url": {
-              "type": "string"
-            },
-            "width": {
-              "type": "number",
-              "description": "In pixels"
-            },
-            "height": {
-              "type": "number",
-              "description": "In pixels"
-            },
-            "fileSize": {
-              "type": "number",
-              "description": "In bytes"
-            }
-          },
-          "required": [
-            "url",
-            "width",
-            "height",
-            "fileSize"
-          ]
-        },
-        "BlogImagesViewModel": {
-          "type": "object",
-          "properties": {
-            "wallpaper": {
-              "$ref": "#/components/schemas/PhotoSizeModel"
-            },
-            "main": {
-              "type": "array",
-              "items": {
-                "$ref": "#/components/schemas/PhotoSizeModel"
-              }
-            }
-          },
-          "required": [
-            "wallpaper",
-            "main"
+            "extendedLikesInfo",
+            "images"
           ]
         },
         "LikeInfoViewModel": {

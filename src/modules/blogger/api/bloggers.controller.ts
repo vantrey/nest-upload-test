@@ -36,15 +36,21 @@ import { ForbiddenExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { SkipThrottle } from '@nestjs/throttler';
 import { PaginationUsersByLoginDto } from '../../blogs/api/input-Dtos/pagination-users-by-login.dto';
 import { PaginationDto } from '../../../common/pagination.dto';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-view.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 import { BloggerCommentsViewModel } from '../../comments/infrastructure/query-repository/comments-view.dto';
 import { UsersForBanBlogView } from '../../sa-users/infrastructure/query-reposirory/user-ban-for-blog-view.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadImageBlogCommand } from '../application/use-cases/upload-image-blog.command';
+import { UploadImageWallpaperCommand } from '../application/use-cases/upload-image-wallpaper.command';
 import { BlogImagesViewModel } from '../infrastructure/blog-images-view.dto';
+import { UploadImageMainCommand } from '../application/use-cases/upload-image-main.command';
+import { FileSizeValidationImageMainPipe } from '../../../validators/file-size-validation-image-main.pipe';
+import { FileSizeValidationImageWallpaperPipe } from '../../../validators/file-size-validation-image-wallpaper.pipe';
+import { UploadImageMainPostCommand } from '../application/use-cases/upload-image-main-post.command';
+import { FileSizeValidationImageMainPostPipe } from '../../../validators/file-size-validation-image-main-post.pipe';
+import { PostImagesViewModel } from '../infrastructure/post-images-view.dto';
 
 @ApiBearerAuth()
 @SkipThrottle()
@@ -60,7 +66,8 @@ export class BloggersController {
   @ApiTags('images')
   @ApiOperation({
     summary:
-      'Upload main square image for Blog (.png or jpg (jpeg) file (max size is 100KB, width must be 156, height must be 156))',
+      'Upload background wallpaper for Blog (.png or jpg (.ipeg) file (max size is 100KB, width must be 1028, height must be\n' +
+      '312px))',
   })
   @ApiResponse({ status: 200, description: 'Uploaded image information object', type: BlogImagesViewModel })
   @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
@@ -68,13 +75,93 @@ export class BloggersController {
   @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
   @Post('blogs/:blogId/images/wallpaper')
   @HttpCode(200)
-  @UseInterceptors(FileInterceptor('wallpaper-blog'))
-  async createPhoto(
+  @UseInterceptors(FileInterceptor('wallpaper'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        wallpaper: {
+          // 👈 this property
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadPhotoWallpaper(
     @CurrentUserIdBlogger() userId: string,
     @Param(`blogId`, ValidateUuidPipeFor404Error) blogId: string,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(FileSizeValidationImageWallpaperPipe) file: Express.Multer.File,
   ) {
-    return await this.commandBus.execute(new UploadImageBlogCommand(userId, blogId, file.originalname, file.buffer));
+    return await this.commandBus.execute(new UploadImageWallpaperCommand(userId, blogId, file.originalname, file.buffer));
+  }
+
+  @ApiTags('images')
+  @ApiOperation({
+    summary:
+      'Upload main square image for Blog (.png or jpg (jpeg) file (max size is 100KB, width must be 156, height must be 156))',
+  })
+  @ApiResponse({ status: 200, description: 'Uploaded image information object', type: BlogImagesViewModel })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
+  @Post('blogs/:blogId/images/main')
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor('main'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        main: {
+          // 👈 this property
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadPhotoMain(
+    @CurrentUserIdBlogger() userId: string,
+    @Param(`blogId`, ValidateUuidPipeFor404Error) blogId: string,
+    @UploadedFile(FileSizeValidationImageMainPipe) file: Express.Multer.File,
+  ) {
+    return await this.commandBus.execute(new UploadImageMainCommand(userId, blogId, file.originalname, file.buffer));
+  }
+
+  @ApiTags('images')
+  @ApiOperation({
+    summary:
+      'Upload main image for Post (.png or jpg (.jpeg) file (max size is\n' + '100KB, width must be 940, height must be 432))',
+  })
+  @ApiResponse({ status: 200, description: 'Uploaded image information object', type: PostImagesViewModel })
+  @ApiResponse({ status: 400, description: 'The inputModel has incorrect values', type: ApiErrorResultDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
+  @Post('blogs/:blogId/posts/:postId/images/main')
+  @HttpCode(200)
+  @UseInterceptors(FileInterceptor('main'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        main: {
+          // 👈 this property
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  async uploadPhotoMainPost(
+    @CurrentUserIdBlogger() userId: string,
+    @Param(`blogId`, ValidateUuidPipeFor404Error) blogId: string,
+    @Param(`postId`, ValidateUuidPipeFor404Error) postId: string,
+    @UploadedFile(FileSizeValidationImageMainPostPipe) file: Express.Multer.File,
+  ): Promise<PostImagesViewModel> {
+    return await this.commandBus.execute(new UploadImageMainPostCommand(userId, blogId, postId, file.originalname, file.buffer));
   }
 
   @ApiTags('Blogger-Blogs')

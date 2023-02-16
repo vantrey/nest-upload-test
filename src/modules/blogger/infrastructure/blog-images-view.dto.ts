@@ -1,9 +1,9 @@
 export class BlogImagesViewModel {
-  public wallpaper: PhotoSizeModel;
+  wallpaper: PhotoSizeModel;
   /**
    * @param main -> Must contain original photo size (156x156) and small photo size (48x48)
    */
-  public main: PhotoSizeModel[];
+  main: PhotoSizeModel[];
 
   constructor(wallpaper: PhotoSizeModel, main: PhotoSizeModel[]) {
     this.wallpaper = wallpaper;

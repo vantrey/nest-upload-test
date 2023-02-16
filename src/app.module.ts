@@ -91,10 +91,13 @@ import { QuizQueryRepositories } from './modules/quiz/infrastructure/query-repos
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { AnswerQuizHandler } from './modules/quiz/application/use-case/handlers/answer-quiz.handler';
-import { TransformStringToArrayStringsPipe } from './helpers/transformStringToArrayStrings.pipe';
 import { ScheduleModule } from '@nestjs/schedule';
-import { UploadImageBlogHandler } from './modules/blogger/application/use-cases/handlers/upload-image-blog.handler';
+import { UploadImageWallpaperHandler } from './modules/blogger/application/use-cases/handlers/upload-image-wallpaper.handler';
 import { S3StorageAdapter } from './modules/blogger/domain/s3-storage-adapter.service';
+import { UploadImageMainHandler } from './modules/blogger/application/use-cases/handlers/upload-image-main.handler';
+import { ImageBlog } from './entities/imageBlog.entity';
+import { UploadImageMainPostHandler } from './modules/blogger/application/use-cases/handlers/upload-image-main-post.handler';
+import { ImagePost } from './entities/imagePost.entity';
 
 const controllers = [
   AuthController,
@@ -178,10 +181,26 @@ const handlers = [
   ConnectionQuizHandler,
   // AnswerTransaction,
   AnswerQuizHandler,
-  UploadImageBlogHandler,
+  UploadImageWallpaperHandler,
+  UploadImageMainHandler,
+  UploadImageMainPostHandler,
 ];
-const entities = [User, Device, Blog, BannedBlogUser, Post, Comment, LikePost, LikeComment, Question, Answer, Player, Game];
-const pipe = [TransformStringToArrayStringsPipe];
+const entities = [
+  User,
+  Device,
+  Blog,
+  BannedBlogUser,
+  Post,
+  Comment,
+  LikePost,
+  LikeComment,
+  Question,
+  Answer,
+  Player,
+  Game,
+  ImageBlog,
+  ImagePost,
+];
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -217,6 +236,6 @@ const pipe = [TransformStringToArrayStringsPipe];
     TestingModule,
   ],
   controllers: [AppController, ...controllers],
-  providers: [...providers, ...guards, ...adapters, ...handlers, ...pipe],
+  providers: [...providers, ...guards, ...adapters, ...handlers],
 })
 export class AppModule {}

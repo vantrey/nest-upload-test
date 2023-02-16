@@ -24,8 +24,11 @@ export const getConfiguration = () => ({
   },
   aws: {
     SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
+    SECRET_ACCESS_KEY2: process.env.SECRET_ACCESS_KEY2,
     ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
+    ACCESS_KEY_ID2: process.env.ACCESS_KEY_ID2,
     BUCKET: process.env.BUCKET,
+    ENDPOINT: process.env.ENDPOINT,
   },
 });
 
