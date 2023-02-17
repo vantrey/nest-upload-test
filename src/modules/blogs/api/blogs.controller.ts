@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Param, UseGuards, Post, UseInterceptors, UploadedFile, Body } from '@nestjs/common';
+import { Controller, Get, Query, Param, UseGuards } from '@nestjs/common';
 import { BlogsQueryRepositories } from '../infrastructure/query-repository/blogs-query.repositories';
 import { PaginationBlogDto } from './input-Dtos/pagination-blog.dto';
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
@@ -8,27 +8,17 @@ import { PostViewModel } from '../../posts/infrastructure/query-repositories/pos
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
 import { JwtForGetGuard } from '../../../guards/jwt-auth-bearer-for-get.guard';
 import { SkipThrottle } from '@nestjs/throttler';
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BlogViewModel } from '../infrastructure/query-repository/blog-view.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
 import path from 'node:path';
 import { readTextFileAsync } from '../../../utils/fs-utils';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { BloggersService } from '../../blogger/domain/bloggers.service';
-import { S3StorageAdapter } from '../../blogger/domain/s3-storage-adapter.service';
-import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
-import { FileSizeValidationImageMainPipe } from '../../../validators/file-size-validation-image-main.pipe';
 
 @ApiTags('Blogs')
 @SkipThrottle()
 @Controller(`blogs`)
 export class BlogsController {
-  constructor(
-    private readonly blogsQueryRepo: BlogsQueryRepositories,
-    private readonly postsQueryRepo: PostsQueryRepositories,
-    private readonly bloggersService: BloggersService,
-    private readonly s3: S3StorageAdapter,
-  ) {}
+  constructor(private readonly blogsQueryRepo: BlogsQueryRepositories, private readonly postsQueryRepo: PostsQueryRepositories) {}
 
   @ApiOperation({ summary: 'Returns blogs with pagination' })
   @ApiOkResponsePaginated(BlogViewModel)
@@ -65,7 +55,7 @@ export class BlogsController {
     return await readTextFileAsync(path.join('views', 'photo.html'));
   }
 
-  //test points ---------------------------------------------
+  /* //test points ---------------------------------------------
   @Get('/photo/delete')
   async deletePhoto() {
     const userId = '77777';
@@ -93,5 +83,5 @@ export class BlogsController {
     const key = `main/${userId}.png`;
     console.log('photoFile', photoFile);
     return await this.s3.saveFile(userId, photoFile.buffer, key);
-  }
+  }*/
 }
