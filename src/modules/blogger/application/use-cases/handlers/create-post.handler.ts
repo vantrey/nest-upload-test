@@ -6,6 +6,7 @@ import { PostsQueryRepositories } from '../../../../posts/infrastructure/query-r
 import { ForbiddenExceptionMY, NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
 import { Post } from '../../../../../entities/post.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
@@ -13,6 +14,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     private readonly blogsRepo: BlogsRepositories,
     private readonly postsRepo: PostsRepositories,
     private readonly postsQueryRepo: PostsQueryRepositories,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async execute(command: CreatePostCommand): Promise<PostViewModel> {
@@ -27,6 +29,11 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     //save instance
     const createdPost = await this.postsRepo.savePost(newPost);
     //mapped for view
+    await this.eventEmitter.emitAsync('createdNewPost', blogId);
     return await this.postsQueryRepo.mappedPostForView(createdPost);
   }
+
+  //Event
+  //users subscription.blogId === blogId
+  //notifications USERs to bot Telegram
 }

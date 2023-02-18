@@ -18,12 +18,7 @@ export class UsersRepositories {
   async deleteUser(id: string): Promise<boolean> {
     await this.userRepo.manager.connection
       .transaction(async (manager) => {
-        await manager
-          .createQueryBuilder()
-          .delete()
-          .from('user')
-          .where('id = :id', { id })
-          .execute();
+        await manager.createQueryBuilder().delete().from('user').where('id = :id', { id }).execute();
         // await manager.createQueryBuilder()
         //   .delete()
         //   .from("email_confirmation")
@@ -55,6 +50,15 @@ export class UsersRepositories {
 
   async findUserByIdWithMapped(userId: string): Promise<User> {
     const user = await this.userRepo.findOneBy({ id: userId });
+    if (!user) return null;
+    return user;
+  }
+
+  async findUserById(userId: string): Promise<User> {
+    const user = await this.userRepo.findOne({
+      relations: { subscriptions: true },
+      where: { id: userId },
+    });
     if (!user) return null;
     return user;
   }

@@ -26,6 +26,9 @@ export class Blog {
   @Column({ type: 'character varying', default: null })
   banDate: string;
 
+  @Column({ type: 'int', default: 0 })
+  subscribersCount: number;
+
   @ManyToOne(() => User, (u) => u.blogs)
   user: User;
   @OneToMany(() => BannedBlogUser, (u) => u.blog)
@@ -112,5 +115,13 @@ export class Blog {
     }
     await this.image.setImageWallpaper(urlImageWallpaper, photo);
     return;
+  }
+
+  addSubscription() {
+    this.subscribersCount += 1;
+  }
+
+  unSubscribe() {
+    this.subscribersCount -= 1;
   }
 }

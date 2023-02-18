@@ -1,14 +1,14 @@
 import { UsersRepositories } from '../../../infrastructure/users-repositories';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UpdateBanInfoCommand } from '../update-ban-info.command';
+import { BanUserSaCommand } from '../ban-user-sa.command';
 import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { PostsRepositories } from '../../../../posts/infrastructure/posts-repositories';
 
-@CommandHandler(UpdateBanInfoCommand)
-export class UpdateBanInfoHandler implements ICommandHandler<UpdateBanInfoCommand> {
+@CommandHandler(BanUserSaCommand)
+export class BanUserSaHandler implements ICommandHandler<BanUserSaCommand> {
   constructor(private readonly usersRepo: UsersRepositories, private readonly postsRepo: PostsRepositories) {}
 
-  async execute(command: UpdateBanInfoCommand): Promise<boolean> {
+  async execute(command: BanUserSaCommand): Promise<boolean> {
     const { userId } = command;
     const { isBanned, banReason } = command.updateBanInfoModel;
     const user = await this.usersRepo.findUserByIdWithMapped(userId);

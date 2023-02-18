@@ -37,13 +37,15 @@ export class UpdateBanUserForCurrentBlogHandler implements ICommandHandler<Updat
       }
       return true;
     }
-    if (isBanned === false) {
-      foundBanStatus.unlockBanStatus();
-      await this.blogsRepo.saveBanStatus(foundBanStatus);
-    } else {
-      foundBanStatus.banBanStatus(banReason);
-      await this.blogsRepo.saveBanStatus(foundBanStatus);
-    }
+    isBanned ? foundBanStatus.banBanStatus(banReason) : foundBanStatus.unlockBanStatus();
+    await this.blogsRepo.saveBanStatus(foundBanStatus);
+    // if (isBanned === false) {
+    //   foundBanStatus.unlockBanStatus();
+    //   await this.blogsRepo.saveBanStatus(foundBanStatus);
+    // } else {
+    //   foundBanStatus.banBanStatus(banReason);
+    //   await this.blogsRepo.saveBanStatus(foundBanStatus);
+    // }
     return true;
   }
 }

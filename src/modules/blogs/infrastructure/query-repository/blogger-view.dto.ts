@@ -1,8 +1,6 @@
 import { BlogImagesViewModel } from '../../../blogger/infrastructure/blog-images-view.dto';
-import { SubscriptionStatuses } from '../../../../entities/subscription.entity';
 
-//SubscriptionStatuses
-export class BlogViewModel {
+export class BloggerViewModel {
   public id: string;
   public name: string;
   public description: string;
@@ -10,7 +8,6 @@ export class BlogViewModel {
   public createdAt: string;
   public isMembership: boolean;
   public images: BlogImagesViewModel;
-  public currentUserSubscriptionStatus: SubscriptionStatuses;
   public subscribersCount: number;
   constructor(
     id: string,
@@ -20,7 +17,6 @@ export class BlogViewModel {
     createdAt: string,
     isMembership: boolean,
     images: BlogImagesViewModel,
-    currentUserSubscriptionStatus: SubscriptionStatuses,
     subscribersCount: number,
   ) {
     this.id = id;
@@ -30,7 +26,6 @@ export class BlogViewModel {
     this.createdAt = createdAt;
     this.isMembership = isMembership;
     this.images = images;
-    this.currentUserSubscriptionStatus = currentUserSubscriptionStatus;
     this.subscribersCount = subscribersCount;
   }
 }

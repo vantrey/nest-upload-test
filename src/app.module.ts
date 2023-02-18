@@ -7,10 +7,10 @@ import { TestingModule } from './modules/testing/testing.module';
 import { ConfigType, getConfiguration } from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersController } from './modules/sa-users/api/users.controller';
-import { CreateUserHandler } from './modules/sa-users/application/use-cases/handlers/create-user.handler';
+import { CreateUserHandler } from './modules/auth/application/use-cases/handlers/create-user.handler';
 import { CreateUserSaHandler } from './modules/sa-users/application/use-cases/handlers/create-user-sa.handler';
 import { DeleteUserHandler } from './modules/sa-users/application/use-cases/handlers/delete-user.handler';
-import { UpdateBanInfoHandler } from './modules/sa-users/application/use-cases/handlers/update-ban-info.handler';
+import { BanUserSaHandler } from './modules/sa-users/application/use-cases/handlers/ban-user-sa.handler';
 import { JwtService } from './modules/auth/application/jwt.service';
 import { MailService } from './modules/mail/mail.service';
 import { UsersRepositories } from './modules/sa-users/infrastructure/users-repositories';
@@ -26,7 +26,7 @@ import { DeleteDeviceByIdHandler } from './modules/security/application/use-case
 import { DevicesController } from './modules/security/api/devices.controller';
 import { DeviceQueryRepositories } from './modules/security/infrastructure/query-repository/device-query.repositories';
 import { BindBlogHandler } from './modules/sa/application/use-cases/handlers/bind-blog.handler';
-import { UpdateBanInfoForBlogHandler } from './modules/sa/application/use-cases/handlers/update-ban-info-for-blog.handler';
+import { UpdateBanBlogSaHandler } from './modules/sa/application/use-cases/handlers/update-ban-blog-sa.handler';
 import { BlogsQueryRepositories } from './modules/blogs/infrastructure/query-repository/blogs-query.repositories';
 import { BlogsRepositories } from './modules/blogs/infrastructure/blogs.repositories';
 import { SaController } from './modules/sa/api/sa.controller';
@@ -98,6 +98,11 @@ import { UploadImageMainHandler } from './modules/blogger/application/use-cases/
 import { ImageBlog } from './entities/imageBlog.entity';
 import { UploadImageMainPostHandler } from './modules/blogger/application/use-cases/handlers/upload-image-main-post.handler';
 import { ImagePost } from './entities/imagePost.entity';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { UnsubscriptionToBlogHandler } from './modules/blogs/application/use-cases/handlers/unsubscription-to-blog.handler';
+import { SubscriptionToBlogHandler } from './modules/blogs/application/use-cases/handlers/subscription-to-blog.handler';
+import { SubscriptionToBlog } from './entities/subscription.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 const controllers = [
   AuthController,
@@ -147,33 +152,49 @@ const adapters = [
   QuizQueryRepositories,
 ];
 const handlers = [
+  //---> auth
+  ConfirmByCodeHandler,
   CreateUserHandler,
-  CreateUserSaHandler,
+  LoginHandler,
+  LogoutHandler,
+  NewPasswordHandler,
+  RefreshHandler,
+  RecoveryHandler,
+  ResendingHandler,
+
+  //---> blogger
   CreateBlogHandler,
   CreatePostHandler,
-  CreateCommentHandler,
-  LogoutHandler,
-  ResendingHandler,
-  ConfirmByCodeHandler,
-  NewPasswordHandler,
-  RecoveryHandler,
-  LoginHandler,
-  RefreshHandler,
-  DeleteUserHandler,
   DeleteBlogHandler,
   DeletePostHandler,
-  DeleteCommentHandler,
-  DeleteDevicesHandler,
-  DeleteDeviceByIdHandler,
-  BindBlogHandler,
-  UpdateBanInfoForBlogHandler,
-  UpdateBanInfoHandler,
-  UpdateLikeStatusPostHandler,
-  UpdateCommentHandler,
-  UpdateLikeStatusCommentHandler,
   UpdateBlogHandler,
   UpdatePostHandler,
   UpdateBanUserForCurrentBlogHandler,
+  //---> blogger ---> upload images
+  UploadImageWallpaperHandler,
+  UploadImageMainHandler,
+  UploadImageMainPostHandler,
+
+  //---> comments
+  DeleteCommentHandler,
+  UpdateCommentHandler,
+  UpdateLikeStatusCommentHandler,
+  //---> posts
+  CreateCommentHandler,
+  UpdateLikeStatusPostHandler,
+
+  //---> sa
+  CreateUserSaHandler,
+  DeleteUserHandler,
+  BanUserSaHandler,
+  BindBlogHandler,
+  UpdateBanBlogSaHandler,
+
+  //---> security
+  DeleteDevicesHandler,
+  DeleteDeviceByIdHandler,
+
+  //---> sa ---> game
   CreateQuestionHandler,
   DeleteQuestionHandler,
   UpdateQuestionHandler,
@@ -181,9 +202,10 @@ const handlers = [
   ConnectionQuizHandler,
   // AnswerTransaction,
   AnswerQuizHandler,
-  UploadImageWallpaperHandler,
-  UploadImageMainHandler,
-  UploadImageMainPostHandler,
+
+  //------>subscribe
+  SubscriptionToBlogHandler,
+  UnsubscriptionToBlogHandler,
 ];
 const entities = [
   User,
@@ -200,6 +222,7 @@ const entities = [
   Game,
   ImageBlog,
   ImagePost,
+  SubscriptionToBlog,
 ];
 @Module({
   imports: [
@@ -231,9 +254,11 @@ const entities = [
       serveRoot: process.env.NODE_ENV === 'development' ? '/' : '/api',
     }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     MailModule,
     CqrsModule,
     TestingModule,
+    IntegrationsModule,
   ],
   controllers: [AppController, ...controllers],
   providers: [...providers, ...guards, ...adapters, ...handlers],

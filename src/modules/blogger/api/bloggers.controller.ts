@@ -51,6 +51,7 @@ import { FileSizeValidationImageWallpaperPipe } from '../../../validators/file-s
 import { UploadImageMainPostCommand } from '../application/use-cases/upload-image-main-post.command';
 import { FileSizeValidationImageMainPostPipe } from '../../../validators/file-size-validation-image-main-post.pipe';
 import { PostImagesViewModel } from '../infrastructure/post-images-view.dto';
+import { BloggerViewModel } from '../../blogs/infrastructure/query-repository/blogger-view.dto';
 
 @ApiBearerAuth()
 @SkipThrottle()
@@ -206,13 +207,13 @@ export class BloggersController {
 
   @ApiTags('Blogger-Blogs')
   @ApiOperation({ summary: 'Create new Blog' })
-  @ApiResponse({ status: 201, description: 'Returns the newly created blog', type: BlogViewModel })
+  @ApiResponse({ status: 201, description: 'Returns the newly created blog', type: BloggerViewModel })
   @ApiResponse({ status: 400, description: 'Incorrect input data for create blog', type: ApiErrorResultDto })
   @ApiResponse({ status: 401, description: 'User not Unauthorized' })
   @Post(`blogs`)
-  async createBlog(@CurrentUserIdBlogger() userId: string, @Body() blogInputModel: CreateBlogDto): Promise<BlogViewModel> {
+  async createBlog(@CurrentUserIdBlogger() userId: string, @Body() blogInputModel: CreateBlogDto): Promise<BloggerViewModel> {
     const blogId = await this.commandBus.execute(new CreateBlogCommand(userId, blogInputModel));
-    return this.blogsQueryRepo.findBlog(blogId);
+    return this.blogsQueryRepo.findBlogForBlogger(blogId);
   }
 
   @ApiTags('Blogger-Blogs')
@@ -296,14 +297,14 @@ export class BloggersController {
   @ApiOperation({ summary: 'Returns all banned users or blog' })
   @ApiOkResponsePaginated(UsersForBanBlogView)
   @ApiResponse({ status: 401, description: 'User not Unauthorized' })
-  @Get(`users/blog/:id`)
+  @Get(`users/blog/:blogId`)
   async getBanedUser(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`id`, ValidateUuidPipe) id: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @Query() paginationInputModel: PaginationUsersByLoginDto,
   ): Promise<PaginationViewDto<UsersForBanBlogView>> {
-    const blog = await this.blogsQueryRepo.findBlogWithMap(id);
-    if (blog.userId !== userId) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
-    return await this.blogsQueryRepo.getBannedUsersForBlog(id, paginationInputModel);
+    const blog = await this.blogsQueryRepo.findBlogWithMap(blogId);
+    if (!blog.checkOwner(userId)) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
+    return await this.blogsQueryRepo.getBannedUsersForBlog(blogId, paginationInputModel);
   }
 }

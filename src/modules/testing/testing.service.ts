@@ -15,6 +15,7 @@ import { Player } from '../../entities/player.entity';
 import { Game } from '../../entities/game.entity';
 import { ImageBlog } from '../../entities/imageBlog.entity';
 import { ImagePost } from '../../entities/imagePost.entity';
+import { SubscriptionToBlog } from '../../entities/subscription.entity';
 
 @Injectable()
 export class TestingService {
@@ -37,6 +38,7 @@ export class TestingService {
         await manager.delete(Post, {});
         await manager.delete(ImagePost, {});
         await manager.delete(BannedBlogUser, {});
+        await manager.delete(SubscriptionToBlog, {});
         await manager.delete(Blog, {});
         await manager.delete(ImageBlog, {});
         await manager.delete(Device, {});

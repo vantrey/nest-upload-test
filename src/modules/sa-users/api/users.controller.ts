@@ -9,7 +9,7 @@ import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { CommandBus } from '@nestjs/cqrs';
 import { DeleteUserCommand } from '../application/use-cases/delete-user.command';
 import { UpdateBanInfoDto } from './input-Dto/update-ban-info.dto';
-import { UpdateBanInfoCommand } from '../application/use-cases/update-ban-info.command';
+import { BanUserSaCommand } from '../application/use-cases/ban-user-sa.command';
 import { CreateUserSaCommand } from '../application/use-cases/create-user-sa.command';
 import { SkipThrottle } from '@nestjs/throttler';
 import { ApiBasicAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -39,7 +39,7 @@ export class UsersController {
     @Body() updateBanInfoModel: UpdateBanInfoDto,
     @Param(`userId`, ValidateUuidPipe) userId: string,
   ): Promise<boolean> {
-    return this.commandBus.execute(new UpdateBanInfoCommand(updateBanInfoModel, userId));
+    return this.commandBus.execute(new BanUserSaCommand(updateBanInfoModel, userId));
   }
 
   @ApiOperation({ summary: 'Returns all users with pagination' })

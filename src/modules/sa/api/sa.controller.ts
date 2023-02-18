@@ -7,7 +7,7 @@ import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { BindBlogCommand } from '../application/use-cases/bind-blog.command';
 import { UpdateBanInfoForBlogDto } from './input-dtos/update-ban-info-for-blog.dto';
-import { UpdateBanInfoForBlogCommand } from '../application/use-cases/update-ban-info-for-blog.command';
+import { UpdateBanBlogSaCommand } from '../application/use-cases/update-ban-blog-sa.command';
 import { SkipThrottle } from '@nestjs/throttler';
 import { CreateQuestionDto } from './input-dtos/create-Question.dto';
 import { CreateQuestionCommand } from '../application/use-cases/create-question.command';
@@ -45,7 +45,7 @@ export class SaController {
     @Body() updateBanInfoForBlogModel: UpdateBanInfoForBlogDto,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
   ): Promise<boolean> {
-    return this.commandBus.execute(new UpdateBanInfoForBlogCommand(updateBanInfoForBlogModel, blogId));
+    return this.commandBus.execute(new UpdateBanBlogSaCommand(updateBanInfoForBlogModel, blogId));
   }
 
   @ApiTags('Sa-Blogs')

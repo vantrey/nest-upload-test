@@ -1,13 +1,13 @@
-import { CreateUserDto } from '../../../api/input-Dto/create-User.dto';
-import { UsersRepositories } from '../../../infrastructure/users-repositories';
-import { UsersQueryRepositories } from '../../../infrastructure/query-reposirory/users-query.reposit';
+import { CreateUserDto } from '../../../../sa-users/api/input-Dto/create-User.dto';
+import { UsersRepositories } from '../../../../sa-users/infrastructure/users-repositories';
+import { UsersQueryRepositories } from '../../../../sa-users/infrastructure/query-reposirory/users-query.reposit';
 import { MailService } from '../../../../mail/mail.service';
 import { BadRequestExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../create-user.command';
-import { UsersService } from '../../../domain/users.service';
+import { UsersService } from '../../../../sa-users/domain/users.service';
 import { User } from '../../../../../entities/user.entity';
-import { UserViewModel } from '../../../infrastructure/query-reposirory/user-view.dto';
+import { UserViewModel } from '../../../../sa-users/infrastructure/query-reposirory/user-view.dto';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {

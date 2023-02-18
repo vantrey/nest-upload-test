@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BannedBlogUser } from '../../../entities/banned-blog-user.entity';
 import { ImageBlog } from '../../../entities/imageBlog.entity';
+import { SubscriptionStatuses, SubscriptionToBlog } from '../../../entities/subscription.entity';
 
 @Injectable()
 export class BlogsRepositories {
@@ -13,6 +14,8 @@ export class BlogsRepositories {
     private readonly bannedBlogUserRepo: Repository<BannedBlogUser>,
     @InjectRepository(ImageBlog)
     private readonly imageBlogRepo: Repository<ImageBlog>,
+    @InjectRepository(SubscriptionToBlog)
+    private readonly subscriptionToBlogRepo: Repository<SubscriptionToBlog>,
   ) {}
 
   async saveBlog(blog: Blog): Promise<Blog> {
@@ -66,5 +69,12 @@ export class BlogsRepositories {
 
   async saveBanStatus(banStatus: BannedBlogUser): Promise<BannedBlogUser> {
     return await this.bannedBlogUserRepo.save(banStatus);
+  }
+
+  async findSubscriptionForNotification(blogId: string): Promise<SubscriptionToBlog[]> {
+    return await this.subscriptionToBlogRepo.find({
+      select: ['telegramId'],
+      where: { blogId: blogId, status: SubscriptionStatuses.Subscribed },
+    });
   }
 }

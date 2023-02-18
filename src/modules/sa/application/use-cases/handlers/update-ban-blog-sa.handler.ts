@@ -1,14 +1,14 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotFoundExceptionMY } from '../../../../../helpers/My-HttpExceptionFilter';
-import { UpdateBanInfoForBlogCommand } from '../update-ban-info-for-blog.command';
+import { UpdateBanBlogSaCommand } from '../update-ban-blog-sa.command';
 import { BlogsRepositories } from '../../../../blogs/infrastructure/blogs.repositories';
 import { PostsRepositories } from '../../../../posts/infrastructure/posts-repositories';
 
-@CommandHandler(UpdateBanInfoForBlogCommand)
-export class UpdateBanInfoForBlogHandler implements ICommandHandler<UpdateBanInfoForBlogCommand> {
+@CommandHandler(UpdateBanBlogSaCommand)
+export class UpdateBanBlogSaHandler implements ICommandHandler<UpdateBanBlogSaCommand> {
   constructor(private readonly blogsRepo: BlogsRepositories, private readonly postsRepo: PostsRepositories) {}
 
-  async execute(command: UpdateBanInfoForBlogCommand): Promise<boolean> {
+  async execute(command: UpdateBanBlogSaCommand): Promise<boolean> {
     const { blogId } = command;
     const { isBanned } = command.updateBanInfoForBlogModel;
     //finding blog for check existence

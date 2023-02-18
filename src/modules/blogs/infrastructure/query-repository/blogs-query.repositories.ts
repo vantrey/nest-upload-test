@@ -13,6 +13,8 @@ import { BlogViewModel } from './blog-view.dto';
 import { BanInfoType } from '../../../sa-users/infrastructure/query-reposirory/ban-info.dto';
 import { ImageBlog } from '../../../../entities/imageBlog.entity';
 import { BlogImagesViewModel, PhotoSizeModel } from '../../../blogger/infrastructure/blog-images-view.dto';
+import { SubscriptionStatuses, SubscriptionToBlog } from '../../../../entities/subscription.entity';
+import { BloggerViewModel } from './blogger-view.dto';
 
 @Injectable()
 export class BlogsQueryRepositories {
@@ -23,6 +25,8 @@ export class BlogsQueryRepositories {
     private readonly bannedBlogUserRepo: Repository<BannedBlogUser>,
     @InjectRepository(ImageBlog)
     private readonly imageBlogRepo: Repository<ImageBlog>,
+    @InjectRepository(SubscriptionToBlog)
+    private readonly subscriptionToBlogRepo: Repository<SubscriptionToBlog>,
   ) {}
 
   private mapperBlogForSaView(object: Blog): BlogViewForSaModel {
@@ -40,11 +44,20 @@ export class BlogsQueryRepositories {
     );
   }
 
-  private mapperBlog(blog: Blog): BlogViewModel {
+  private mapperBlogger(blog: Blog): BloggerViewModel {
     let images: BlogImagesViewModel;
     if (blog.image === null) {
       images = new BlogImagesViewModel(null, null);
-      return new BlogViewModel(blog.id, blog.name, blog.description, blog.websiteUrl, blog.createdAt, blog.isMembership, images);
+      return new BloggerViewModel(
+        blog.id,
+        blog.name,
+        blog.description,
+        blog.websiteUrl,
+        blog.createdAt,
+        blog.isMembership,
+        images,
+        blog.subscribersCount,
+      );
     }
     const imageWallpaperDefault = new PhotoSizeModel(blog.image.keyImageWallpaper, 1028, 312, blog.image.sizeImageWallpaper);
     const imageWallpaper = blog.image.keyImageWallpaper ? imageWallpaperDefault : null;
@@ -52,7 +65,53 @@ export class BlogsQueryRepositories {
     const imageSmallMainDefault = new PhotoSizeModel(blog.image.keySmallImageMain, 48, 48, blog.image.sizeSmallImageMain);
     const imageMain = blog.image.keyImageMain ? [imageMainDefault, imageSmallMainDefault] : null;
     images = new BlogImagesViewModel(imageWallpaper, imageMain);
-    return new BlogViewModel(blog.id, blog.name, blog.description, blog.websiteUrl, blog.createdAt, blog.isMembership, images);
+    return new BloggerViewModel(
+      blog.id,
+      blog.name,
+      blog.description,
+      blog.websiteUrl,
+      blog.createdAt,
+      blog.isMembership,
+      images,
+      blog.subscribersCount,
+    );
+  }
+
+  private async mapperBlog(blog: Blog, userId?: string | null): Promise<BlogViewModel> {
+    const subscription = await this.subscriptionToBlogRepo.findOneBy({ userId: userId, blogId: blog.id });
+    const currentUserSubscriptionStatus = userId ? subscription.status : SubscriptionStatuses.None;
+    let images: BlogImagesViewModel;
+    if (blog.image === null) {
+      images = new BlogImagesViewModel(null, null);
+      return new BlogViewModel(
+        blog.id,
+        blog.name,
+        blog.description,
+        blog.websiteUrl,
+        blog.createdAt,
+        blog.isMembership,
+        images,
+        currentUserSubscriptionStatus,
+        blog.subscribersCount,
+      );
+    }
+    const imageWallpaperDefault = new PhotoSizeModel(blog.image.keyImageWallpaper, 1028, 312, blog.image.sizeImageWallpaper);
+    const imageWallpaper = blog.image.keyImageWallpaper ? imageWallpaperDefault : null;
+    const imageMainDefault = new PhotoSizeModel(blog.image.keyImageMain, 156, 156, blog.image.sizeMainImage);
+    const imageSmallMainDefault = new PhotoSizeModel(blog.image.keySmallImageMain, 48, 48, blog.image.sizeSmallImageMain);
+    const imageMain = blog.image.keyImageMain ? [imageMainDefault, imageSmallMainDefault] : null;
+    images = new BlogImagesViewModel(imageWallpaper, imageMain);
+    return new BlogViewModel(
+      blog.id,
+      blog.name,
+      blog.description,
+      blog.websiteUrl,
+      blog.createdAt,
+      blog.isMembership,
+      images,
+      currentUserSubscriptionStatus,
+      blog.subscribersCount,
+    );
   }
 
   private mapperBanInfo(object: BannedBlogUser): UsersForBanBlogView {
@@ -60,7 +119,7 @@ export class BlogsQueryRepositories {
     return new UsersForBanBlogView(object.userId, object.login, banInfo);
   }
 
-  async findBlogs(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewModel>> {
+  async findBlogs(data: PaginationBlogDto, userId?: string | null): Promise<PaginationViewDto<BlogViewModel>> {
     const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
     let order;
     if (sortDirection === 'asc') {
@@ -84,10 +143,11 @@ export class BlogsQueryRepositories {
       }),
       this.blogRepo.count({ where: filter }),
     ]);
-    const mappedBlogs = blogs.map((blog) => this.mapperBlog(blog));
+    const mappedBlogs = blogs.map((blog) => this.mapperBlog(blog, userId));
+    const items = await Promise.all(mappedBlogs);
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
+    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
   }
 
   async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewForSaModel>> {
@@ -150,19 +210,32 @@ export class BlogsQueryRepositories {
       this.blogRepo.count({ where: filter }),
     ]);
     const mappedBlogs = blogs.map((blog) => this.mapperBlog(blog));
+    const items = await Promise.all(mappedBlogs);
     const pagesCountRes = Math.ceil(count / pageSize);
     // Found Blogs with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
+    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
   }
 
-  async findBlog(id: string): Promise<BlogViewModel> {
+  async findBlog(blogId: string, userId?: string | null): Promise<BlogViewModel> {
     const blog = await this.blogRepo.findOne({
       select: [],
       relations: { image: true },
-      where: { id: id, isBanned: false },
+      where: { id: blogId, isBanned: false },
     });
-    if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${id}`);
-    return this.mapperBlog(blog);
+
+    if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${blogId}`);
+    return this.mapperBlog(blog, userId);
+  }
+
+  async findBlogForBlogger(blogId: string): Promise<BloggerViewModel> {
+    const blog = await this.blogRepo.findOne({
+      select: [],
+      relations: { image: true },
+      where: { id: blogId, isBanned: false },
+    });
+
+    if (!blog) throw new NotFoundExceptionMY(`Not found current blog with id: ${blogId}`);
+    return this.mapperBlogger(blog);
   }
 
   async findBlogWithMapped(id: string): Promise<Blog> {
@@ -210,6 +283,7 @@ export class BlogsQueryRepositories {
       }),
       this.bannedBlogUserRepo.count({ where: filter }),
     ]);
+
     //mapped for View
     const mappedBlogs = blogs.map((blog) => this.mapperBanInfo(blog));
     const pagesCountRes = Math.ceil(count / pageSize);

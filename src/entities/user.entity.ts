@@ -1,10 +1,4 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Relation,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Relation } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 import * as bcrypt from 'bcrypt';
@@ -14,6 +8,7 @@ import { Post } from './post.entity';
 import { Comment } from './comment.entity';
 import { LikePost } from './like-post.entity';
 import { LikeComment } from './like-comment.entity';
+import { SubscriptionToBlog } from './subscription.entity';
 
 @Entity()
 export class User {
@@ -48,6 +43,9 @@ export class User {
   @Column('boolean', { default: false })
   isConfirmationR: boolean;
   //-------
+  @Column({ type: 'int', default: null })
+  telegramId: number;
+  //-------
   @OneToMany(() => Device, (d) => d.user)
   device: Device[];
   @OneToMany(() => Blog, (d) => d.user)
@@ -60,13 +58,11 @@ export class User {
   likePosts: Relation<LikePost[]>;
   @OneToMany(() => LikeComment, (d) => d.user)
   likeComments: LikeComment[];
+  //--------
+  @OneToMany(() => SubscriptionToBlog, (d) => d.user, { cascade: true, onUpdate: 'CASCADE' })
+  subscriptions: SubscriptionToBlog[];
 
-  constructor(
-    login: string,
-    email: string,
-    passwordHash: string,
-    isConfirmation: boolean,
-  ) {
+  constructor(login: string, email: string, passwordHash: string, isConfirmation: boolean) {
     this.login = login;
     this.email = email;
     this.passwordHash = passwordHash;
@@ -78,12 +74,7 @@ export class User {
     this.expirationDateR = add(new Date(), { hours: 1 });
   }
 
-  static createUser(
-    login: string,
-    email: string,
-    passwordHash: string,
-    isConfirmation: boolean,
-  ): User {
+  static createUser(login: string, email: string, passwordHash: string, isConfirmation: boolean): User {
     const reg = new RegExp(`^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$`);
     if (login.length < 3 && login.length > 10 && !reg.test(email)) {
       throw new Error('Incorrect input data for create User');
@@ -149,5 +140,23 @@ export class User {
     this.isBanned = false;
     this.banDate = null;
     this.banReason = null;
+  }
+
+  setSubscription(blogId: string, userId: string, user: User) {
+    //find blog in subscriptions by blogId
+    const currentSubscription = this.subscriptions.find((e) => e.blogId === blogId);
+    if (!currentSubscription) {
+      const instanceSubscriptionToBlog = SubscriptionToBlog.createSubscriptionToBlog(blogId, userId, user);
+      instanceSubscriptionToBlog.subscription();
+      return;
+    }
+    currentSubscription.subscription();
+    return;
+  }
+
+  unSubscribe(blogId: string) {
+    const currentSubscription = this.subscriptions.find((e) => e.blogId === blogId);
+    currentSubscription.unSubscription();
+    return;
   }
 }

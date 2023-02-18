@@ -1184,6 +1184,76 @@ window.onload = function() {
           ]
         }
       },
+      "/blogs/{blogId}/subscription": {
+        "post": {
+          "operationId": "BlogsController_subscription",
+          "summary": "Subscribe user to blog. Notifications about new posts will be send to Telegram Bot",
+          "description": "",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "No Content"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found blog"
+            }
+          },
+          "tags": [
+            "Blogs"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
+          ]
+        },
+        "delete": {
+          "operationId": "BlogsController_unSubscription",
+          "summary": "Unsubscribe user from blog. Notifications about new posts will not be send to Telegram Bot",
+          "description": "",
+          "parameters": [
+            {
+              "name": "blogId",
+              "required": true,
+              "in": "path",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "No Content"
+            },
+            "401": {
+              "description": "Unauthorized"
+            },
+            "404": {
+              "description": "Not found blog"
+            }
+          },
+          "tags": [
+            "Blogs"
+          ],
+          "security": [
+            {
+              "basic": []
+            }
+          ]
+        }
+      },
       "/blogs": {
         "get": {
           "operationId": "BlogsController_findBlogs",
@@ -1404,29 +1474,6 @@ window.onload = function() {
             },
             "404": {
               "description": "Not found blog"
-            }
-          },
-          "tags": [
-            "Blogs"
-          ]
-        }
-      },
-      "/blogs/photo/ph": {
-        "get": {
-          "operationId": "BlogsController_getPhoto",
-          "summary": "",
-          "description": "",
-          "parameters": [],
-          "responses": {
-            "200": {
-              "description": "",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "object"
-                  }
-                }
-              }
             }
           },
           "tags": [
@@ -1861,7 +1908,7 @@ window.onload = function() {
               "content": {
                 "application/json": {
                   "schema": {
-                    "$ref": "#/components/schemas/BlogViewModel"
+                    "$ref": "#/components/schemas/BloggerViewModel"
                   }
                 }
               }
@@ -2219,14 +2266,14 @@ window.onload = function() {
           ]
         }
       },
-      "/blogger/users/blog/{id}": {
+      "/blogger/users/blog/{blogId}": {
         "get": {
           "operationId": "BloggersController_getBanedUser",
           "summary": "Returns all banned users or blog",
           "description": "",
           "parameters": [
             {
-              "name": "id",
+              "name": "blogId",
               "required": true,
               "in": "path",
               "schema": {
@@ -3190,6 +3237,51 @@ window.onload = function() {
             }
           ]
         }
+      },
+      "/testing/all-data": {
+        "delete": {
+          "operationId": "TestingController_deleteDB",
+          "summary": "Clear database: delete all data from all tables/collections",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "204": {
+              "description": "success"
+            }
+          },
+          "tags": [
+            "Testing"
+          ]
+        }
+      },
+      "/integrations/telegram/webhook": {
+        "post": {
+          "operationId": "IntegrationsController_forTelegramHook",
+          "summary": "Webhook for TelegramBot Api (see telegram bot official documentation)",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "integrations"
+          ]
+        }
+      },
+      "/integrations/notification": {
+        "get": {
+          "operationId": "IntegrationsController_sendMessage",
+          "summary": "",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "200": {
+              "description": ""
+            }
+          }
+        }
       }
     },
     "info": {
@@ -3698,6 +3790,17 @@ window.onload = function() {
             },
             "images": {
               "$ref": "#/components/schemas/BlogImagesViewModel"
+            },
+            "currentUserSubscriptionStatus": {
+              "enum": [
+                "Subscribed",
+                "Unsubscribed",
+                "None"
+              ],
+              "type": "string"
+            },
+            "subscribersCount": {
+              "type": "number"
             }
           },
           "required": [
@@ -3707,7 +3810,9 @@ window.onload = function() {
             "websiteUrl",
             "createdAt",
             "isMembership",
-            "images"
+            "images",
+            "currentUserSubscriptionStatus",
+            "subscribersCount"
           ]
         },
         "LikeDetailsViewModel": {
@@ -3956,6 +4061,45 @@ window.onload = function() {
             "websiteUrl",
             "name",
             "description"
+          ]
+        },
+        "BloggerViewModel": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "websiteUrl": {
+              "type": "string"
+            },
+            "createdAt": {
+              "type": "string"
+            },
+            "isMembership": {
+              "type": "boolean"
+            },
+            "images": {
+              "$ref": "#/components/schemas/BlogImagesViewModel"
+            },
+            "subscribersCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "description",
+            "websiteUrl",
+            "createdAt",
+            "isMembership",
+            "images",
+            "subscribersCount"
           ]
         },
         "CreatePostDto": {

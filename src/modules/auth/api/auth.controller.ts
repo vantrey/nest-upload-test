@@ -14,7 +14,7 @@ import { MeViewDto } from '../infrastructure/me-view.dto';
 import { CurrentUserId } from '../../../decorators/current-user-id.param.decorator';
 import { SkipThrottle } from '@nestjs/throttler';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../../sa-users/application/use-cases/create-user.command';
+import { CreateUserCommand } from '../application/use-cases/create-user.command';
 import { LogoutCommand } from '../application/use-cases/logout.command';
 import { ResendingCommand } from '../application/use-cases/resending.command';
 import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.command';

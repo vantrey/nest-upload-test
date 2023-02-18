@@ -6,7 +6,6 @@ import { reSizeImage } from '../../../../../helpers/re-size.image';
 import { S3StorageAdapter } from '../../../domain/s3-storage-adapter.service';
 import { BlogsQueryRepositories } from '../../../../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { BlogImagesViewModel } from '../../../infrastructure/blog-images-view.dto';
-import { ImageBlog } from '../../../../../entities/imageBlog.entity';
 
 @CommandHandler(UploadImageMainCommand)
 export class UploadImageMainHandler implements ICommandHandler<UploadImageMainCommand> {
@@ -26,6 +25,7 @@ export class UploadImageMainHandler implements ICommandHandler<UploadImageMainCo
     //changing size
     const changedBuffer = await reSizeImage(photo, 48, 48);
     //save on s3 storage
+    //Promise.All need
     const urlSmallImageMain = await this.storageS3.saveFile(userId, changedBuffer, keySmallImage);
     const urlImageMain = await this.storageS3.saveFile(userId, photo, keyImage);
     //creating instance main image
