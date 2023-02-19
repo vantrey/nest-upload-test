@@ -1,36 +1,8 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Trim } from '../../../../helpers/decorator-trim';
-import { SortDirectionType } from '../../../../common/pagination.dto';
+import { PaginationDto } from '../../../../common/pagination.dto';
 
-export class PaginationQuizDto {
-  /**
-   * pageSize is portions size that should be returned
-   */
-  @IsNumber()
-  @IsOptional()
-  pageSize: number = 10;
-  /**
-   *  pageNumber is number of portions that should be returned
-   */
-  @IsNumber()
-  @IsOptional()
-  pageNumber: number = 1;
-  /**
-   * Sort by parameters
-   */
-  @Trim()
-  @IsString()
-  @IsOptional()
-  sortBy: string = 'pairCreatedDate';
-  /**
-   * Sort by desc or asc
-   */
-  @Trim()
-  @IsEnum(SortDirectionType)
-  @IsOptional()
-  sortDirection: SortDirectionType = SortDirectionType.Desc;
-
-  get skip(): number {
-    return this.pageSize * (this.pageNumber - 1);
+export class PaginationQuizDto extends PaginationDto {
+  isSorByDefault() {
+    const defaultValue = ['id', 'status', 'pairCreatedDate', 'startGameDate', 'finishGameDate'];
+    return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'pairCreatedDate');
   }
 }

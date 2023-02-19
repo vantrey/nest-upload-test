@@ -9,6 +9,7 @@ import { Comment } from './comment.entity';
 import { LikePost } from './like-post.entity';
 import { LikeComment } from './like-comment.entity';
 import { SubscriptionToBlog } from './subscription.entity';
+import { NotFoundExceptionMY } from '../helpers/My-HttpExceptionFilter';
 
 @Entity()
 export class User {
@@ -148,15 +149,21 @@ export class User {
     if (!currentSubscription) {
       const instanceSubscriptionToBlog = SubscriptionToBlog.createSubscriptionToBlog(blogId, userId, user);
       instanceSubscriptionToBlog.subscription();
+      this.subscriptions.push(instanceSubscriptionToBlog);
       return;
     }
     currentSubscription.subscription();
+    this.subscriptions.push(currentSubscription);
     return;
   }
 
   unSubscribe(blogId: string) {
     const currentSubscription = this.subscriptions.find((e) => e.blogId === blogId);
+    if (!currentSubscription) {
+      throw new NotFoundExceptionMY('current subscription not found');
+    }
     currentSubscription.unSubscription();
+    this.subscriptions.push(currentSubscription);
     return;
   }
 }

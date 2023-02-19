@@ -386,7 +386,7 @@ window.onload = function() {
           "parameters": [
             {
               "name": "banStatus",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "banStatus by parameters",
               "schema": {
@@ -421,37 +421,34 @@ window.onload = function() {
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -710,37 +707,34 @@ window.onload = function() {
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -800,7 +794,7 @@ window.onload = function() {
           "parameters": [
             {
               "name": "publishedStatus",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "banStatus by parameters",
               "schema": {
@@ -825,37 +819,34 @@ window.onload = function() {
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -1272,37 +1263,34 @@ window.onload = function() {
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -1361,48 +1349,49 @@ window.onload = function() {
               }
             },
             {
-              "name": "searchNameTerm",
-              "required": false,
+              "name": "subscriptionStatus",
+              "required": true,
               "in": "query",
               "description": "Search term for blog Name: Name should contain this term in any position",
               "schema": {
-                "default": "",
+                "default": "all",
+                "enum": [
+                  "all",
+                  "onlyFromSubscribedBlogs"
+                ],
                 "type": "string"
               }
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -1704,37 +1693,34 @@ window.onload = function() {
           "parameters": [
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -1953,37 +1939,34 @@ window.onload = function() {
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -2281,38 +2264,45 @@ window.onload = function() {
               }
             },
             {
+              "name": "searchLoginTerm",
+              "required": false,
+              "in": "query",
+              "description": "Search term for user Login: Login should contain this term in any position",
+              "schema": {
+                "default": "",
+                "type": "string"
+              }
+            },
+            {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -2321,16 +2311,6 @@ window.onload = function() {
                   "asc",
                   "desc"
                 ],
-                "type": "string"
-              }
-            },
-            {
-              "name": "searchLoginTerm",
-              "required": false,
-              "in": "query",
-              "description": "Search term for user Login: Login should contain this term in any position",
-              "schema": {
-                "default": "",
                 "type": "string"
               }
             }
@@ -2446,37 +2426,34 @@ window.onload = function() {
             },
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -2591,38 +2568,49 @@ window.onload = function() {
           "description": "",
           "parameters": [
             {
-              "name": "pageSize",
+              "name": "subscriptionStatus",
               "required": true,
+              "in": "query",
+              "description": "Search term for blog Name: Name should contain this term in any position",
+              "schema": {
+                "default": "all",
+                "enum": [
+                  "all",
+                  "onlyFromSubscribedBlogs"
+                ],
+                "type": "string"
+              }
+            },
+            {
+              "name": "pageSize",
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "createdAt",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {
@@ -2891,7 +2879,7 @@ window.onload = function() {
           "parameters": [
             {
               "name": "sort",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "SORT    Default value : ?sort=avgScores desc&sort=sumScore desc",
               "schema": {
@@ -2911,7 +2899,6 @@ window.onload = function() {
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
@@ -2921,7 +2908,6 @@ window.onload = function() {
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             }
@@ -2988,37 +2974,34 @@ window.onload = function() {
           "parameters": [
             {
               "name": "pageSize",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageSize is portions size that should be returned",
               "schema": {
-                "default": 10,
                 "type": "number"
               }
             },
             {
               "name": "pageNumber",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "pageNumber is number of portions that should be returned",
               "schema": {
-                "default": 1,
                 "type": "number"
               }
             },
             {
               "name": "sortBy",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by parameters",
               "schema": {
-                "default": "pairCreatedDate",
                 "type": "string"
               }
             },
             {
               "name": "sortDirection",
-              "required": true,
+              "required": false,
               "in": "query",
               "description": "Sort by desc or asc",
               "schema": {

@@ -28,12 +28,9 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     const newPost = Post.createPost(userId, title, shortDescription, content, blogId, blog.getName(), blog);
     //save instance
     const createdPost = await this.postsRepo.savePost(newPost);
-    //mapped for view
+    //event for subscribed users
     await this.eventEmitter.emitAsync('createdNewPost', blogId);
+    //mapped for view
     return await this.postsQueryRepo.mappedPostForView(createdPost);
   }
-
-  //Event
-  //users subscription.blogId === blogId
-  //notifications USERs to bot Telegram
 }

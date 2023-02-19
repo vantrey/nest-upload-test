@@ -73,7 +73,7 @@ export class BlogsRepositories {
 
   async findSubscriptionForNotification(blogId: string): Promise<SubscriptionToBlog[]> {
     return await this.subscriptionToBlogRepo.find({
-      select: ['telegramId'],
+      select: [],
       where: { blogId: blogId, status: SubscriptionStatuses.Subscribed },
     });
   }

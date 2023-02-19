@@ -13,11 +13,11 @@ export class UnsubscriptionToBlogHandler implements ICommandHandler<Unsubscripti
     const blog = await this.blogsRepo.findBlog(blogId);
     if (!blog) throw new NotFoundExceptionMY(`Not found blog with id: ${blogId}`);
     blog.unSubscribe();
-    await this.blogsRepo.saveBlog(blog);
     //user ----->
     const user = await this.userRepo.findUserById(userId);
     user.unSubscribe(blogId);
     await this.userRepo.saveUser(user);
+    await this.blogsRepo.saveBlog(blog);
     return;
   }
 }

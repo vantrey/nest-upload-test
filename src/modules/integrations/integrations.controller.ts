@@ -24,6 +24,6 @@ export class IntegrationsController {
 
   @Get(`notification`)
   sendMessage(@Body() inputModel: any) {
-    return this.integrationsService.sendMessage(inputModel);
+    return this.integrationsService.sendMessage();
   }
 }

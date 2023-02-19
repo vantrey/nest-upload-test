@@ -27,42 +27,42 @@ export class UsersQueryRepositories {
   }
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel>> {
-    const { searchEmailTerm, searchLoginTerm, pageNumber, pageSize, sortBy, banStatus, sortDirection } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
+    const { searchEmailTerm, searchLoginTerm } = data;
+    let filter: any = {};
+    if (searchEmailTerm && searchLoginTerm) {
+      filter.where = [{ login: ILike(`%${searchLoginTerm}%`) }, { email: ILike(`%${searchEmailTerm}%`) }];
+    } else if (searchEmailTerm) {
+      filter.where = { email: ILike(`%${searchEmailTerm}%`) };
+    } else if (searchLoginTerm) {
+      filter.where = { login: ILike(`%${searchLoginTerm}%`) };
     }
-    let filter = {};
-    let advancedFilter;
-    if (banStatus === 'banned') {
-      filter = { isBanned: true };
+    if (data.getBanStatus() === 'banned') {
+      if (filter.where?.length) {
+        filter.where = filter.where.map((e) => ({ ...e, isBanned: true }));
+      } else {
+        filter.where = { ...filter.where, isBanned: true };
+      }
     }
-    if (banStatus === 'notBanned') {
-      filter = { isBanned: false };
+    if (data.getBanStatus() === 'notBanned') {
+      if (filter.where?.length) {
+        filter.where = filter.where.map((e) => ({ ...e, isBanned: false }));
+      } else {
+        filter.where = { ...filter.where, isBanned: false };
+      }
     }
-    if (searchEmailTerm.trim().length > 0 || searchLoginTerm.trim().length > 0) {
-      advancedFilter = [{ login: ILike(`%${searchLoginTerm}%`) }, { email: ILike(`%${searchEmailTerm}%`) }];
-    }
-    const queryFilter = searchEmailTerm || searchLoginTerm ? advancedFilter : filter;
-    console.log('queryFilter', queryFilter); //todo
-    const [users, count] = await Promise.all([
-      this.userRepo.find({
-        select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
-        where: queryFilter,
-        order: { [sortBy]: order },
-        skip: data.skip,
-        take: pageSize,
-      }),
-      this.userRepo.count({ where: queryFilter }),
-    ]);
+    const [users, count] = await this.userRepo.findAndCount({
+      select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
+      where: filter.where,
+      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
     //mapped user for View
     const mappedUsers = users.map((user) => this.mappedForUser(user));
     const items = await Promise.all(mappedUsers);
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found Users with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, items);
   }
 
   async getUserById(userId: string): Promise<MeViewDto> {

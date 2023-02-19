@@ -35,9 +35,11 @@ export class UploadImageMainPostHandler implements ICommandHandler<UploadImageMa
     const middlePhoto = await reSizeImage(photo, 300, 180);
     const smallPhoto = await reSizeImage(photo, 149, 96);
     //save on s3 storage
-    const urlImageMain = await this.storageS3.saveFile(userId, photo, key);
-    const urlMiddleImageMain = await this.storageS3.saveFile(userId, photo, keyMiddle);
-    const urlSmallImageMain = await this.storageS3.saveFile(userId, photo, keySmall);
+    const [urlImageMain, urlMiddleImageMain, urlSmallImageMain] = await Promise.all([
+      this.storageS3.saveFile(userId, photo, key),
+      this.storageS3.saveFile(userId, photo, keyMiddle),
+      this.storageS3.saveFile(userId, photo, keySmall),
+    ]);
     //creating instance main image
     await post.setImageMain(urlImageMain, urlMiddleImageMain, urlSmallImageMain, photo, middlePhoto, smallPhoto);
     //save

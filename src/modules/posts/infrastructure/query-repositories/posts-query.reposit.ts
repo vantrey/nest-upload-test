@@ -15,12 +15,13 @@ import { Repository } from 'typeorm';
 import { Comment } from '../../../../entities/comment.entity';
 import { LikePost, LikeStatusType } from '../../../../entities/like-post.entity';
 import { LikeComment } from '../../../../entities/like-comment.entity';
-import { PaginationDto } from '../../../../common/pagination.dto';
 import { CommentViewModel } from '../../../comments/infrastructure/query-repository/comment-view.dto';
 import { LikeInfoViewModel } from '../../../comments/infrastructure/query-repository/like-info-view.dto';
 import { PhotoSizeModel } from '../../../blogger/infrastructure/blog-images-view.dto';
 import { ImagePost } from '../../../../entities/imagePost.entity';
 import { PostImagesViewModel } from '../../../blogger/infrastructure/post-images-view.dto';
+import { PaginationPostDto } from '../../api/input-Dtos/pagination-post.dto';
+import { PaginationCommentDto } from '../../../blogger/api/input-dtos/pagination-comment.dto';
 
 @Injectable()
 export class PostsQueryRepositories {
@@ -94,39 +95,29 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findPosts(data: PaginationDto, userId: string | null, blogId?: string): Promise<PaginationViewDto<PostViewModel>> {
-    const { sortDirection, sortBy, pageSize } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
+  async findPosts(data: PaginationPostDto, userId: string | null, blogId?: string): Promise<PaginationViewDto<PostViewModel>> {
     let filter;
     if (blogId) {
       filter = { blogId: blogId, isBanned: false };
     } else {
       filter = { isBanned: false };
     }
-    const [posts, count] = await Promise.all([
-      this.postRepo.find({
-        select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt', 'image'],
-        relations: { image: true },
-        where: filter,
-        order: { [sortBy]: order },
-        skip: data.skip,
-        take: pageSize,
-      }),
-      this.postRepo.count({ where: filter }),
-    ]);
+    const [posts, count] = await this.postRepo.findAndCount({
+      select: ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt', 'image'],
+      relations: { image: true },
+      where: filter,
+      order: { [data.isSorByDefault()]: data.isSorByDefault() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
 
     //mapped posts for view
     const mappedPosts = posts.map((post) => this.postForView(post, userId));
     const itemsPosts = await Promise.all(mappedPosts);
     //counting blogs user
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found posts with pagination
-    return new PaginationViewDto(pagesCountRes, data.pageNumber, data.pageSize, count, itemsPosts);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, itemsPosts);
   }
 
   async findPost(id: string, userId: string | null): Promise<PostViewModel> {
@@ -144,35 +135,25 @@ export class PostsQueryRepositories {
 
   async findCommentsByIdPost(
     postId: string,
-    data: PaginationDto,
+    data: PaginationCommentDto,
     userId: string | null,
   ): Promise<PaginationViewDto<CommentViewModel>> {
-    const { sortDirection, sortBy, pageSize } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
-    //find post by postId and userId
     const post = await this.postRepo.findOneBy({ id: postId });
     if (!post) throw new NotFoundExceptionMY(`No content found for current id: ${postId}`);
-    const [comments, count] = await Promise.all([
-      this.commentRepo.find({
-        relations: { likesComment: true, user: true },
-        where: { postId: postId, isBanned: false },
-        order: { [sortBy]: order },
-        skip: data.skip,
-        take: pageSize,
-      }),
-      this.commentRepo.count({ where: { postId: postId, isBanned: false } }),
-    ]);
+    const [comments, count] = await this.commentRepo.findAndCount({
+      relations: { likesComment: true, user: true },
+      where: { postId: postId, isBanned: false },
+      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
+
     //mapped comments for View
     const mappedComments = comments.map((object) => this.commentByIdPostForView(object, userId));
     const itemsComments = await Promise.all(mappedComments);
-    const pagesCountRes = Math.ceil(count / data.pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     //returning comment with pagination
-    return new PaginationViewDto(pagesCountRes, data.pageNumber, data.pageSize, count, itemsComments);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, itemsComments);
   }
 
   private async commentByIdPostForView(object: Comment, userId: string | null): Promise<CommentViewModel> {
@@ -224,32 +205,23 @@ export class PostsQueryRepositories {
 
   async getCommentsBloggerForPosts(
     userId: string,
-    paginationInputModel: PaginationDto,
+    data: PaginationCommentDto,
   ): Promise<PaginationViewDto<BloggerCommentsViewModel>> {
-    const { sortDirection, sortBy, pageSize, pageNumber } = paginationInputModel;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
-    const [comments, count] = await Promise.all([
-      this.commentRepo.find({
-        select: ['id', 'content', 'createdAt', 'userId'],
-        relations: { post: true, user: true, likesComment: true },
-        where: { ownerId: userId },
-        order: { [sortBy]: order },
-        skip: paginationInputModel.skip,
-        take: pageSize,
-      }),
-      this.commentRepo.count({ where: { ownerId: userId } }),
-    ]);
+    const [comments, count] = await this.commentRepo.findAndCount({
+      select: ['id', 'content', 'createdAt', 'userId'],
+      relations: { post: true, user: true, likesComment: true },
+      where: { ownerId: userId },
+      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
+
     const mappedPosts = comments.map((object) => this.commentBloggerForPostView(object, userId));
     const items = await Promise.all(mappedPosts);
     // pages count
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found posts with pagination
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, items);
   }
 
   private async commentBloggerForPostView(object: Comment, userId: string) {

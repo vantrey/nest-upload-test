@@ -9,9 +9,8 @@ import { QuestionViewModel } from '../../../sa/infrastructure/query-reposirory/q
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { PaginationQuizDto } from '../../api/input-dtos/pagination-quiz.dto';
 import { StatisticGameView } from './statistic-game-view.dto';
-import { PaginationQuizTopDto } from '../../api/input-dtos/pagination-quiz-top.dto';
+import { Columns, PaginationQuizTopDto } from '../../api/input-dtos/pagination-quiz-top.dto';
 import { TopPlayerViewDto } from './top-player-view.dto';
-import { columns } from '../../api/columns';
 
 export class QuizQueryRepositories {
   constructor(
@@ -146,33 +145,23 @@ export class QuizQueryRepositories {
   }
 
   async getGames(userId: string, data: PaginationQuizDto): Promise<PaginationViewDto<GameViewModel>> {
-    const { pageNumber, pageSize, sortBy, sortDirection } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
+    const [games, count] = await this.gameRepo.findAndCount({
+      select: [],
+      relations: {
+        firstPlayerProgress: true,
+        secondPlayerProgress: true,
+        questions: true,
+      },
+      where: [{ firstPlayerId: userId }, { secondPlayerId: userId }],
+      order: { [data.isSorByDefault()]: data.isSortDirection(), pairCreatedDate: 'DESC' },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
 
-    const [games, count] = await Promise.all([
-      this.gameRepo.find({
-        select: [],
-        relations: {
-          firstPlayerProgress: true,
-          secondPlayerProgress: true,
-          questions: true,
-        },
-        where: [{ firstPlayerId: userId }, { secondPlayerId: userId }],
-        order: { [sortBy]: order, pairCreatedDate: 'DESC' },
-        skip: data.skip,
-        take: pageSize,
-      }),
-      this.gameRepo.count({ where: [{ firstPlayerId: userId }, { secondPlayerId: userId }] }),
-    ]);
     const mappedGames = games.map((game) => this.mappedGameForView(game));
     const items = await Promise.all(mappedGames);
-    const pagesCountRes = Math.ceil(count / pageSize);
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, items);
   }
 
   async getStatistic(userId: string): Promise<StatisticGameView> {
@@ -199,32 +188,32 @@ export class QuizQueryRepositories {
   }
 
   async getTop(data: PaginationQuizTopDto): Promise<PaginationViewDto<TopPlayerViewDto>> {
-    const { sort, pageNumber, pageSize, skip } = data;
+    const { sort } = data;
     let sortBy = sort;
     //default query
     const defaultQuery = this.playerRepo
       .createQueryBuilder('p')
-      .select(columns.sumScore, 'sumScore')
+      .select(Columns.sumScore, 'sumScore')
       .addSelect('p.userId', 'id')
       .addSelect('p.login', 'login')
-      .addSelect(columns.avgScores, 'avgScores')
-      .addSelect(columns.gamesCount, 'gamesCount')
-      .addSelect(columns.winsCount, 'winsCount')
-      .addSelect(columns.lossesCount, 'lossesCount')
-      .addSelect(columns.drawsCount, 'drawsCount')
+      .addSelect(Columns.avgScores, 'avgScores')
+      .addSelect(Columns.gamesCount, 'gamesCount')
+      .addSelect(Columns.winsCount, 'winsCount')
+      .addSelect(Columns.lossesCount, 'lossesCount')
+      .addSelect(Columns.drawsCount, 'drawsCount')
       .groupBy('p.userId, p.login');
     //dynamic sortBy for query
     for (const i of sortBy) {
       const column = i.split(' ')[0];
       const rawDirection = i.split(' ')[1].toUpperCase();
       const direction = rawDirection === 'ASC' ? 'ASC' : 'DESC';
-      defaultQuery.addOrderBy(columns[column], direction);
+      defaultQuery.addOrderBy(Columns[column], direction);
     }
     const [players, value] = await Promise.all([
-      defaultQuery.skip(skip).take(pageSize).getRawMany(),
+      defaultQuery.skip(data.skip).take(data.getPageSize()).getRawMany(),
       this.playerRepo
         .createQueryBuilder('p')
-        .select(columns.sumScore, 'sumScore')
+        .select(Columns.sumScore, 'sumScore')
         .addSelect('p.userId', 'id')
         .addSelect('p.login', 'login')
         .groupBy('p.userId, p.login')
@@ -233,8 +222,8 @@ export class QuizQueryRepositories {
     const mappedTopPlayer = players.map((player) => this.mappedTopPlayerGame(player));
     const items = await Promise.all(mappedTopPlayer);
     const count = value.length;
-    const pagesCountRes = Math.ceil(count / pageSize);
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, items);
   }
 
   private mappedTopPlayerGame(res: any): TopPlayerViewDto {

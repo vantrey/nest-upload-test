@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { PaginationDto } from '../../../../common/pagination.dto';
 
 export enum PublishedStatusType {
@@ -11,14 +11,21 @@ export class PaginationQuestionDto extends PaginationDto {
   /**
    * banStatus by parameters
    */
-  @IsString()
-  @IsEnum(PublishedStatusType)
   @IsOptional()
-  publishedStatus: PublishedStatusType = PublishedStatusType.all;
+  publishedStatus?: PublishedStatusType = PublishedStatusType.all;
   /**
    * Search term for body
    */
-  @IsString()
   @IsOptional()
   bodySearchTerm?: string = '';
+
+  isSorByDefault() {
+    const defaultValue = ['id', 'body', 'correctAnswers', 'published', 'createdAt', 'updatedAt'];
+    return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
+  }
+
+  getPublishedStatus() {
+    const defaultValue = ['all', 'published', 'notPublished'];
+    return (this.publishedStatus = defaultValue.includes(this.publishedStatus) ? this.publishedStatus : PublishedStatusType.all);
+  }
 }

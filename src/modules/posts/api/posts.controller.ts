@@ -12,11 +12,12 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateCommentCommand } from '../application/use-cases/create-comment.command';
 import { UpdateLikeStatusCommand } from '../application/use-cases/update-like-status.command';
 import { SkipThrottle } from '@nestjs/throttler';
-import { PaginationDto } from '../../../common/pagination.dto';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommentViewModel } from '../../comments/infrastructure/query-repository/comment-view.dto';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { ApiOkResponsePaginated } from '../../../swagger/ApiOkResponsePaginated';
+import { PaginationPostDto } from './input-Dtos/pagination-post.dto';
+import { PaginationCommentDto } from '../../blogger/api/input-dtos/pagination-comment.dto';
 
 @ApiTags('Posts')
 @SkipThrottle()
@@ -50,7 +51,7 @@ export class PostsController {
   async findComments(
     @CurrentUserId() userId: string,
     @Param(`postId`, ValidateUuidPipe) id: string,
-    @Query() paginationInputModel: PaginationDto,
+    @Query() paginationInputModel: PaginationCommentDto,
   ): Promise<PaginationViewDto<CommentViewModel>> {
     return await this.postsQueryRepo.findCommentsByIdPost(id, paginationInputModel, userId);
   }
@@ -76,7 +77,10 @@ export class PostsController {
   @ApiResponse({ status: 200, description: 'success', type: PostViewModel })
   @UseGuards(JwtForGetGuard)
   @Get()
-  async findAll(@CurrentUserId() userId: string, @Query() pagination: PaginationDto): Promise<PaginationViewDto<PostViewModel>> {
+  async findAll(
+    @CurrentUserId() userId: string,
+    @Query() pagination: PaginationPostDto,
+  ): Promise<PaginationViewDto<PostViewModel>> {
     return await this.postsQueryRepo.findPosts(pagination, userId);
   }
 

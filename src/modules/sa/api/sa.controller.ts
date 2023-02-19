@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { BlogsQueryRepositories } from '../../blogs/infrastructure/query-repository/blogs-query.repositories';
-import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-blog.dto';
+import { PaginationBlogDto } from '../../blogger/api/input-dtos/pagination-blog.dto';
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { BasicAuthGuard } from '../../../guards/basic-auth.guard';
 import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';

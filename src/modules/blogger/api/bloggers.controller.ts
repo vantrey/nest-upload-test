@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CreatePostDto } from '../../posts/api/input-Dtos/create-post.dto';
-import { ValidateUuidPipe, ValidateUuidPipeFor404Error } from '../../../validators/id-validation-pipe';
+import { ValidateUuidPipe } from '../../../validators/id-validation-pipe';
 import { PostViewModel } from '../../posts/infrastructure/query-repositories/post-view.dto';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateBlogCommand } from '../application/use-cases/create-blog.command';
@@ -22,7 +22,7 @@ import { UpdateBlogCommand } from '../application/use-cases/update-blog.command'
 import { CreatePostCommand } from '../application/use-cases/create-post.command';
 import { BlogsQueryRepositories } from '../../blogs/infrastructure/query-repository/blogs-query.repositories';
 import { JwtAuthGuard } from '../../../guards/jwt-auth-bearer.guard';
-import { PaginationBlogDto } from '../../blogs/api/input-Dtos/pagination-blog.dto';
+import { PaginationBlogDto } from './input-dtos/pagination-blog.dto';
 import { PaginationViewDto } from '../../../common/pagination-View.dto';
 import { UpdatePostCommand } from '../application/use-cases/update-post.command';
 import { DeletePostCommand } from '../application/use-cases/delete-post.command';
@@ -34,8 +34,7 @@ import { UpdateBanUserForCurrentBlogCommand } from '../application/use-cases/upd
 import { PostsQueryRepositories } from '../../posts/infrastructure/query-repositories/posts-query.reposit';
 import { ForbiddenExceptionMY } from '../../../helpers/My-HttpExceptionFilter';
 import { SkipThrottle } from '@nestjs/throttler';
-import { PaginationUsersByLoginDto } from '../../blogs/api/input-Dtos/pagination-users-by-login.dto';
-import { PaginationDto } from '../../../common/pagination.dto';
+import { PaginationBannedUsersDto } from './input-dtos/pagination-banned-users.dto';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorResultDto } from '../../../common/api-error-result.dto';
 import { BlogViewModel } from '../../blogs/infrastructure/query-repository/blog-view.dto';
@@ -52,6 +51,7 @@ import { UploadImageMainPostCommand } from '../application/use-cases/upload-imag
 import { FileSizeValidationImageMainPostPipe } from '../../../validators/file-size-validation-image-main-post.pipe';
 import { PostImagesViewModel } from '../infrastructure/post-images-view.dto';
 import { BloggerViewModel } from '../../blogs/infrastructure/query-repository/blogger-view.dto';
+import { PaginationCommentDto } from './input-dtos/pagination-comment.dto';
 
 @ApiBearerAuth()
 @SkipThrottle()
@@ -92,7 +92,7 @@ export class BloggersController {
   })
   async uploadPhotoWallpaper(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, ValidateUuidPipeFor404Error) blogId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @UploadedFile(FileSizeValidationImageWallpaperPipe) file: Express.Multer.File,
   ) {
     return await this.commandBus.execute(new UploadImageWallpaperCommand(userId, blogId, file.originalname, file.buffer));
@@ -125,7 +125,7 @@ export class BloggersController {
   })
   async uploadPhotoMain(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, ValidateUuidPipeFor404Error) blogId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
     @UploadedFile(FileSizeValidationImageMainPipe) file: Express.Multer.File,
   ) {
     return await this.commandBus.execute(new UploadImageMainCommand(userId, blogId, file.originalname, file.buffer));
@@ -158,8 +158,8 @@ export class BloggersController {
   })
   async uploadPhotoMainPost(
     @CurrentUserIdBlogger() userId: string,
-    @Param(`blogId`, ValidateUuidPipeFor404Error) blogId: string,
-    @Param(`postId`, ValidateUuidPipeFor404Error) postId: string,
+    @Param(`blogId`, ValidateUuidPipe) blogId: string,
+    @Param(`postId`, ValidateUuidPipe) postId: string,
     @UploadedFile(FileSizeValidationImageMainPostPipe) file: Express.Multer.File,
   ): Promise<PostImagesViewModel> {
     return await this.commandBus.execute(new UploadImageMainPostCommand(userId, blogId, postId, file.originalname, file.buffer));
@@ -172,7 +172,7 @@ export class BloggersController {
   @Get(`blogs/comments`)
   async getComments(
     @CurrentUserIdBlogger() userId: string,
-    @Query() paginationInputModel: PaginationDto,
+    @Query() paginationInputModel: PaginationCommentDto,
   ): Promise<PaginationViewDto<BloggerCommentsViewModel>> {
     return await this.postsQueryRepo.getCommentsBloggerForPosts(userId, paginationInputModel);
   }
@@ -301,7 +301,7 @@ export class BloggersController {
   async getBanedUser(
     @CurrentUserIdBlogger() userId: string,
     @Param(`blogId`, ValidateUuidPipe) blogId: string,
-    @Query() paginationInputModel: PaginationUsersByLoginDto,
+    @Query() paginationInputModel: PaginationBannedUsersDto,
   ): Promise<PaginationViewDto<UsersForBanBlogView>> {
     const blog = await this.blogsQueryRepo.findBlogWithMap(blogId);
     if (!blog.checkOwner(userId)) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);

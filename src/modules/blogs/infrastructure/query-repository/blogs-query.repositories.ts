@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { BanInfoForBlogType, BlogOwnerInfoType, BlogViewForSaModel } from './blog-view-for-sa.dto';
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
-import { PaginationBlogDto } from '../../api/input-Dtos/pagination-blog.dto';
+import { PaginationBlogDto } from '../../../blogger/api/input-dtos/pagination-blog.dto';
 import { NotFoundExceptionMY } from '../../../../helpers/My-HttpExceptionFilter';
 import { UsersForBanBlogView } from '../../../sa-users/infrastructure/query-reposirory/user-ban-for-blog-view.dto';
 import { Blog } from '../../../../entities/blog.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { BannedBlogUser } from '../../../../entities/banned-blog-user.entity';
-import { PaginationUsersByLoginDto } from '../../api/input-Dtos/pagination-users-by-login.dto';
+import { PaginationBannedUsersDto } from '../../../blogger/api/input-dtos/pagination-banned-users.dto';
 import { BlogViewModel } from './blog-view.dto';
 import { BanInfoType } from '../../../sa-users/infrastructure/query-reposirory/ban-info.dto';
 import { ImageBlog } from '../../../../entities/imageBlog.entity';
@@ -120,75 +120,52 @@ export class BlogsQueryRepositories {
   }
 
   async findBlogs(data: PaginationBlogDto, userId?: string | null): Promise<PaginationViewDto<BlogViewModel>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
+    const { searchNameTerm } = data;
     let filter: any = { isBanned: false };
     if (searchNameTerm.trim().length > 0) {
       filter = { isBanned: false, name: ILike(`%${searchNameTerm}%`) };
     }
     //search all blogs for current user
-    const [blogs, count] = await Promise.all([
-      this.blogRepo.find({
-        select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership', 'image'],
-        relations: { image: true },
-        where: filter,
-        order: { [sortBy]: order },
-        skip: data.skip,
-        take: pageSize,
-      }),
-      this.blogRepo.count({ where: filter }),
-    ]);
+    const [blogs, count] = await this.blogRepo.findAndCount({
+      select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership', 'image', 'subscribersCount'],
+      relations: { image: true },
+      where: filter,
+      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
+
     const mappedBlogs = blogs.map((blog) => this.mapperBlog(blog, userId));
     const items = await Promise.all(mappedBlogs);
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found Blogs with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, items);
   }
 
   async findBlogsForSa(data: PaginationBlogDto): Promise<PaginationViewDto<BlogViewForSaModel>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
+    const { searchNameTerm } = data;
     let filter = {};
     if (searchNameTerm.trim().length > 0) {
-      filter = { name: ILike(`%${searchNameTerm}%`) };
+      filter['name'] = ILike(`%${searchNameTerm}%`);
     }
     //search all blogs for current user and counting
-    const [blogs, count] = await Promise.all([
-      this.blogRepo.find({
-        select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'userId', 'isBanned', 'banDate'],
-        relations: { user: true },
-        where: filter,
-        order: { [sortBy]: order },
-        skip: data.skip,
-        take: pageSize,
-      }),
-      this.blogRepo.count({ where: filter }),
-    ]);
+    const [blogs, count] = await this.blogRepo.findAndCount({
+      select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'userId', 'isBanned', 'banDate'],
+      relations: { user: true },
+      where: filter,
+      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
     //mapped for View
     const mappedBlogs = blogs.map((blog) => this.mapperBlogForSaView(blog));
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found Blogs with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, mappedBlogs);
   }
 
   async findBlogsForCurrentBlogger(data: PaginationBlogDto, userId: string): Promise<PaginationViewDto<BlogViewModel>> {
-    const { searchNameTerm, pageSize, pageNumber, sortDirection, sortBy } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
+    const { searchNameTerm } = data;
     let filter: any = { userId: userId, isBanned: false };
     if (searchNameTerm.trim().length > 0) {
       filter = {
@@ -198,22 +175,20 @@ export class BlogsQueryRepositories {
       };
     }
     //search all blogs and counting for current user
-    const [blogs, count] = await Promise.all([
-      this.blogRepo.find({
-        select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership', 'image'],
-        relations: { image: true },
-        where: filter,
-        order: { [sortBy]: order },
-        skip: data.skip,
-        take: pageSize,
-      }),
-      this.blogRepo.count({ where: filter }),
-    ]);
+    const [blogs, count] = await this.blogRepo.findAndCount({
+      select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership', 'image'],
+      relations: { image: true },
+      where: filter,
+      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
+
     const mappedBlogs = blogs.map((blog) => this.mapperBlog(blog));
     const items = await Promise.all(mappedBlogs);
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found Blogs with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, items);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, items);
   }
 
   async findBlog(blogId: string, userId?: string | null): Promise<BlogViewModel> {
@@ -253,17 +228,8 @@ export class BlogsQueryRepositories {
     return blog;
   }
 
-  async getBannedUsersForBlog(
-    blogId: string,
-    paginationInputModel: PaginationUsersByLoginDto,
-  ): Promise<PaginationViewDto<UsersForBanBlogView>> {
-    const { searchLoginTerm, pageSize, pageNumber, sortDirection, sortBy } = paginationInputModel;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
+  async getBannedUsersForBlog(blogId: string, data: PaginationBannedUsersDto): Promise<PaginationViewDto<UsersForBanBlogView>> {
+    const { searchLoginTerm } = data;
     let filter: any = { blogId: blogId, isBanned: true };
     if (searchLoginTerm.trim().length > 0) {
       filter = {
@@ -273,22 +239,19 @@ export class BlogsQueryRepositories {
       };
     }
     //search all blogs for current user
-    const [blogs, count] = await Promise.all([
-      this.bannedBlogUserRepo.find({
-        select: ['isBanned', 'banReason', 'banDate', 'userId', 'login'],
-        where: filter,
-        order: { [sortBy]: order },
-        skip: paginationInputModel.skip,
-        take: pageSize,
-      }),
-      this.bannedBlogUserRepo.count({ where: filter }),
-    ]);
+    const [blogs, count] = await this.bannedBlogUserRepo.findAndCount({
+      select: ['isBanned', 'banReason', 'banDate', 'userId', 'login'],
+      where: filter,
+      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      skip: data.skip,
+      take: data.getPageSize(),
+    });
 
     //mapped for View
     const mappedBlogs = blogs.map((blog) => this.mapperBanInfo(blog));
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found Blogs with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, mappedBlogs);
   }
 
   async getImageMain(id: string): Promise<BlogImagesViewModel> {

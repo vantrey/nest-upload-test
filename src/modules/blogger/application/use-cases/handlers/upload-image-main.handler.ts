@@ -25,9 +25,10 @@ export class UploadImageMainHandler implements ICommandHandler<UploadImageMainCo
     //changing size
     const changedBuffer = await reSizeImage(photo, 48, 48);
     //save on s3 storage
-    //Promise.All need
-    const urlSmallImageMain = await this.storageS3.saveFile(userId, changedBuffer, keySmallImage);
-    const urlImageMain = await this.storageS3.saveFile(userId, photo, keyImage);
+    const [urlSmallImageMain, urlImageMain] = await Promise.all([
+      this.storageS3.saveFile(userId, changedBuffer, keySmallImage),
+      this.storageS3.saveFile(userId, photo, keyImage),
+    ]);
     //creating instance main image
     await blog.setImageMain(urlSmallImageMain, urlImageMain, photo, changedBuffer);
     //save

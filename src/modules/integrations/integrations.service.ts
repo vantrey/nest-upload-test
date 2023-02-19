@@ -18,8 +18,8 @@ export class IntegrationsService {
   private async notification(blogId: string) {
     console.log('i am  sent, ----------');
     const subscriptionToBlog = await this.blogsRepo.findSubscriptionForNotification(blogId);
-    for (const telegramId of subscriptionToBlog) {
-      const url = `https://api.telegram.org/bot${this.token.TOKEN_TELEGRAM}/sendMessage?chat_id=${telegramId}&text=newPost%20Created http://www.localhost:5004/blogs/${blogId}`;
+    for (const s of subscriptionToBlog) {
+      const url = `https://api.telegram.org/bot${this.token.TOKEN_TELEGRAM}/sendMessage?chat_id=${s.telegramId}&text=newPost%20Created http://www.localhost:5004/blogs/${blogId}`;
       await https.get(url);
     }
   }

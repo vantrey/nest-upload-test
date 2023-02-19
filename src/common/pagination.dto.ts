@@ -1,5 +1,4 @@
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { Trim } from '../helpers/decorator-trim';
+import { IsOptional } from 'class-validator';
 
 export enum SortDirectionType {
   Asc = 'asc',
@@ -10,31 +9,49 @@ export class PaginationDto {
   /**
    * pageSize is portions size that should be returned
    */
-  @IsNumber()
   @IsOptional()
-  pageSize: number = 10;
+  pageSize?: number;
   /**
    *  pageNumber is number of portions that should be returned
    */
-  @IsNumber()
   @IsOptional()
-  pageNumber: number = 1;
+  pageNumber?: number;
   /**
    * Sort by parameters
    */
-  @Trim()
-  @IsString()
   @IsOptional()
-  sortBy: string = 'createdAt';
+  sortBy?: string;
   /**
    * Sort by desc or asc
    */
-  @Trim()
-  @IsEnum(SortDirectionType)
   @IsOptional()
-  sortDirection: SortDirectionType = SortDirectionType.Desc;
+  private sortDirection?: SortDirectionType = SortDirectionType.Desc;
 
   get skip(): number {
-    return this.pageSize * (this.pageNumber - 1);
+    return this.getPageSize() * (this.getPageNumber() - 1);
+  }
+
+  isSortDirection(): 'ASC' | 'DESC' {
+    return this.sortDirection === SortDirectionType.Asc ? 'ASC' : 'DESC';
+  }
+
+  getPageSize() {
+    if (isNaN(this.pageSize)) {
+      return (this.pageSize = 10);
+    }
+    if (this.pageSize < 1) {
+      return (this.pageSize = 10);
+    }
+    return this.pageSize;
+  }
+
+  getPageNumber() {
+    if (isNaN(this.pageNumber)) {
+      return (this.pageNumber = 1);
+    }
+    if (this.pageNumber < 1) {
+      return (this.pageNumber = 1);
+    }
+    return this.pageNumber;
   }
 }

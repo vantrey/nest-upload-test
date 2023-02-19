@@ -32,18 +32,12 @@ export class QuestionQueryRepository {
   }
 
   async getQuestions(data: PaginationQuestionDto): Promise<PaginationViewDto<QuestionForSaViewModel>> {
-    const { bodySearchTerm, publishedStatus, pageSize, pageNumber, sortDirection, sortBy } = data;
-    let order;
-    if (sortDirection === 'asc') {
-      order = 'ASC';
-    } else {
-      order = 'DESC';
-    }
+    const { bodySearchTerm } = data;
     let filter = {};
-    if (publishedStatus === 'notPublished') {
+    if (data.getPublishedStatus() === 'notPublished') {
       filter = { published: false };
     }
-    if (publishedStatus === 'published') {
+    if (data.getPublishedStatus() === 'published') {
       filter = { published: true };
     }
     if (bodySearchTerm.trim().length > 0) {
@@ -54,16 +48,16 @@ export class QuestionQueryRepository {
       this.questionRepo.find({
         select: ['id', 'body', 'correctAnswers', 'published', 'createdAt', 'updatedAt'],
         where: filter,
-        order: { [sortBy]: order },
+        order: { [data.isSorByDefault()]: data.isSortDirection() },
         skip: data.skip,
-        take: pageSize,
+        take: data.getPageSize(),
       }),
       this.questionRepo.count({ where: filter }),
     ]);
     //mapped for View
     const mappedBlogs = question.map((q) => this.mappedForQuestion(q));
-    const pagesCountRes = Math.ceil(count / pageSize);
+    const pagesCountRes = Math.ceil(count / data.getPageSize());
     // Found Blogs with pagination!
-    return new PaginationViewDto(pagesCountRes, pageNumber, pageSize, count, mappedBlogs);
+    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, mappedBlogs);
   }
 }

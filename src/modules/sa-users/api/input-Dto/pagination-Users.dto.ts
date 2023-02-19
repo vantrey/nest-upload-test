@@ -1,4 +1,4 @@
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsOptional } from 'class-validator';
 import { PaginationDto } from '../../../../common/pagination.dto';
 
 export enum BanStatusType {
@@ -11,20 +11,26 @@ export class PaginationUsersDto extends PaginationDto {
   /**
    * banStatus by parameters
    */
-  @IsString()
-  @IsEnum(BanStatusType)
   @IsOptional()
-  banStatus: BanStatusType = BanStatusType.all;
+  banStatus?: BanStatusType = BanStatusType.all;
   /**
    * Search term for user Login: Login should contain this term in any position
    */
-  @IsString()
   @IsOptional()
   searchLoginTerm?: string = '';
   /**
    *  Search term for user Email: Email should contain this term in any position
    */
-  @IsString()
   @IsOptional()
   searchEmailTerm?: string = '';
+
+  isSorByDefault() {
+    const defaultValue = ['id', 'login', 'email', 'createdAt'];
+    return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
+  }
+
+  getBanStatus() {
+    const defaultValue = ['all', 'banned', 'notBanned'];
+    return (this.banStatus = defaultValue.includes(this.banStatus) ? this.banStatus : BanStatusType.all);
+  }
 }
