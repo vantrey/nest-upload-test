@@ -2651,6 +2651,11 @@ window.onload = function() {
           },
           "tags": [
             "Posts"
+          ],
+          "security": [
+            {
+              "bearer": []
+            }
           ]
         }
       },
@@ -3253,6 +3258,22 @@ window.onload = function() {
           ]
         }
       },
+      "/integrations/telegram/stripe": {
+        "post": {
+          "operationId": "IntegrationsController_forStripeHook",
+          "summary": "Webhook for Stripe Api (see stripeofficial documentation)",
+          "description": "",
+          "parameters": [],
+          "responses": {
+            "204": {
+              "description": ""
+            }
+          },
+          "tags": [
+            "integrations"
+          ]
+        }
+      },
       "/integrations/notification": {
         "get": {
           "operationId": "IntegrationsController_sendMessage",
@@ -3263,7 +3284,10 @@ window.onload = function() {
             "200": {
               "description": ""
             }
-          }
+          },
+          "tags": [
+            "integrations"
+          ]
         }
       }
     },

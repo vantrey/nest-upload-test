@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PaginationUsersDto } from '../../api/input-Dto/pagination-Users.dto';
+import { BanStatusType, PaginationUsersDto } from '../../api/input-Dto/pagination-Users.dto';
 import { PaginationViewDto } from '../../../../common/pagination-View.dto';
 import { MeViewDto } from '../../../auth/infrastructure/me-view.dto';
 import { ILike, Repository } from 'typeorm';
@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../../../entities/user.entity';
 import { UserViewModel } from './user-view.dto';
 import { BanInfoType } from './ban-info.dto';
+import { ValidateValue } from '../../../../helpers/validate-value';
 
 @Injectable()
 export class UsersQueryRepositories {
@@ -27,7 +28,14 @@ export class UsersQueryRepositories {
   }
 
   async findUsers(data: PaginationUsersDto): Promise<PaginationViewDto<UserViewModel>> {
-    const { searchEmailTerm, searchLoginTerm } = data;
+    const { searchEmailTerm, searchLoginTerm, banStatus, sortBy, sortDirection, pageSize, pageNumber } = data;
+    const possibleValueFilter = ['id', 'login', 'email', 'createdAt'];
+    const checkedSortBy = ValidateValue.prototype.validateValue(sortBy, possibleValueFilter, 'createdAt');
+    const checkedBanStatus = ValidateValue.prototype.validateEnum(banStatus, BanStatusType, BanStatusType.all);
+    const checkedSortDirection = ValidateValue.prototype.validateSortDirection(sortDirection);
+    const checkedPageSize = ValidateValue.prototype.validatePageSize(pageSize);
+    const checkedPageNumber = ValidateValue.prototype.validatePageNumber(pageNumber);
+
     let filter: any = {};
     if (searchEmailTerm && searchLoginTerm) {
       filter.where = [{ login: ILike(`%${searchLoginTerm}%`) }, { email: ILike(`%${searchEmailTerm}%`) }];
@@ -36,14 +44,14 @@ export class UsersQueryRepositories {
     } else if (searchLoginTerm) {
       filter.where = { login: ILike(`%${searchLoginTerm}%`) };
     }
-    if (data.getBanStatus() === 'banned') {
+    if (checkedBanStatus === 'banned') {
       if (filter.where?.length) {
         filter.where = filter.where.map((e) => ({ ...e, isBanned: true }));
       } else {
         filter.where = { ...filter.where, isBanned: true };
       }
     }
-    if (data.getBanStatus() === 'notBanned') {
+    if (checkedBanStatus === 'notBanned') {
       if (filter.where?.length) {
         filter.where = filter.where.map((e) => ({ ...e, isBanned: false }));
       } else {
@@ -53,16 +61,16 @@ export class UsersQueryRepositories {
     const [users, count] = await this.userRepo.findAndCount({
       select: ['id', 'login', 'email', 'createdAt', 'isBanned', 'banDate', 'banReason'],
       where: filter.where,
-      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      order: { [checkedSortBy]: checkedSortDirection },
       skip: data.skip,
-      take: data.getPageSize(),
+      take: checkedPageSize,
     });
     //mapped user for View
     const mappedUsers = users.map((user) => this.mappedForUser(user));
     const items = await Promise.all(mappedUsers);
-    const pagesCountRes = Math.ceil(count / data.getPageSize());
+    const pagesCountRes = Math.ceil(count / checkedPageSize);
     // Found Users with pagination!
-    return new PaginationViewDto(pagesCountRes, data.getPageNumber(), data.getPageSize(), count, items);
+    return new PaginationViewDto(pagesCountRes, checkedPageNumber, checkedPageSize, count, items);
   }
 
   async getUserById(userId: string): Promise<MeViewDto> {

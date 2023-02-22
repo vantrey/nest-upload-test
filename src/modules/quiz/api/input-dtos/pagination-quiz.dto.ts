@@ -1,7 +1,7 @@
 import { PaginationDto } from '../../../../common/pagination.dto';
 
 export class PaginationQuizDto extends PaginationDto {
-  isSorByDefault() {
+  isSorByDefault(): string {
     const defaultValue = ['id', 'status', 'pairCreatedDate', 'startGameDate', 'finishGameDate'];
     return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'pairCreatedDate');
   }

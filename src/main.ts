@@ -10,12 +10,12 @@ import { TelegramAdapter } from './modules/integrations/adapters/telegram.adapte
 import process from 'process';
 import * as ngrok from 'ngrok';
 
-async function connectToNgrok() {
-  return await ngrok.connect({ authtoken: process.env.TOKEN_NGROK, addr: 5004 });
+async function connectToNgrok(port: number) {
+  return await ngrok.connect({ authtoken: process.env.TOKEN_NGROK, addr: port });
 }
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, { cors: true, rawBody: true });
   const configService = app.get(ConfigService<ConfigType>);
   const port = configService.get('PORT', { infer: true });
   const finishedApp = createdApp(app);
@@ -26,7 +26,7 @@ async function bootstrap() {
   let baseUrl = development.CURRENT_APP_BASE_URL;
   const telegramAdapter = await app.resolve(TelegramAdapter);
   if (development.NODE_ENV === 'development') {
-    baseUrl = await connectToNgrok();
+    baseUrl = await connectToNgrok(port);
   }
   await telegramAdapter
     .setWebhook(baseUrl + '/integrations/telegram/webhook')

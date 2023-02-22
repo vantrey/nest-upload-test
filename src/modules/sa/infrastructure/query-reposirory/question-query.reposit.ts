@@ -26,7 +26,6 @@ export class QuestionQueryRepository {
 
   async findQuestion(questionId: string): Promise<QuestionForSaViewModel> {
     const user = await this.questionRepo.findOneBy({ id: questionId });
-    console.log('user', user);
     if (!user) return null;
     return this.mappedForQuestion(user);
   }

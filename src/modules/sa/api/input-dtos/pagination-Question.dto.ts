@@ -19,12 +19,12 @@ export class PaginationQuestionDto extends PaginationDto {
   @IsOptional()
   bodySearchTerm?: string = '';
 
-  isSorByDefault() {
+  isSorByDefault(): string {
     const defaultValue = ['id', 'body', 'correctAnswers', 'published', 'createdAt', 'updatedAt'];
     return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
   }
 
-  getPublishedStatus() {
+  getPublishedStatus(): string {
     const defaultValue = ['all', 'published', 'notPublished'];
     return (this.publishedStatus = defaultValue.includes(this.publishedStatus) ? this.publishedStatus : PublishedStatusType.all);
   }

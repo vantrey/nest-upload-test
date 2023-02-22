@@ -6,7 +6,6 @@ import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface 
 @Injectable()
 export class ArrayStringsValidatorService implements ValidatorConstraintInterface {
   validate(value: any[]) {
-    console.log('value', value);
     try {
       if (!Array.isArray(value)) return false;
       value.forEach((record) => {

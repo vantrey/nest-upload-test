@@ -28,12 +28,8 @@ export class Game {
   @Column({ type: 'timestamptz', default: null })
   finishGameDate: Date; //Game finishes immediately after both players have answered all the questions
 
-  helpers;
   @Column({ type: 'timestamptz', default: null })
   finishedOnePlayer: Date; //Finished one player, for 10s
-
-  // @Column({ type: 'timestamptz', default: null })
-  // lastAnswerAnyPlayer: Date; //Finished one player, for 10s
 
   @Column({ type: 'uuid' })
   firstPlayerId: string;
@@ -121,10 +117,10 @@ export class Game {
   }
 
   private firstStageGame(player: Player, answer: string) {
-    let question = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
-    const numberQuestionFirstPlayer = question[player.answers.length];
-    if (!this.isAnswerCorrect(answer, numberQuestionFirstPlayer)) {
-      const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
+    let filteredQuestions = this.questions.sort((a, b) => Number(b.updatedAt) - Number(a.updatedAt));
+    const currentQuestion = filteredQuestions[player.answers.length];
+    if (!this.isAnswerCorrect(answer, currentQuestion)) {
+      const instanceAnswer = Player.createAnswer(answer, currentQuestion.id, player);
       instanceAnswer.inCorrectAnswer();
       player.answers.push(instanceAnswer);
       if (this.isGameFinished()) {
@@ -133,10 +129,9 @@ export class Game {
       return;
     }
     player.score += 1;
-    const instanceAnswer = Player.createAnswer(answer, numberQuestionFirstPlayer.id, player);
+    const instanceAnswer = Player.createAnswer(answer, currentQuestion.id, player);
     instanceAnswer.correctAnswer();
     player.answers.push(instanceAnswer);
-    // this.lastAnswerAnyPlayer = new Date();
     if (this.isGameFinished()) {
       this.secondStageGame();
     }

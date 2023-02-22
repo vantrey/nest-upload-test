@@ -76,7 +76,7 @@ export class BlogsController {
     @Query() paginationInputModel: PaginationPostDto,
   ): Promise<PaginationViewDto<PostViewModel>> {
     await this.blogsQueryRepo.findBlog(blogId, userId);
-    return this.postsQueryRepo.findPosts(paginationInputModel, userId, blogId);
+    return this.postsQueryRepo.findPosts(paginationInputModel, blogId);
   }
 
   @ApiOperation({ summary: 'Returns blog by id' })

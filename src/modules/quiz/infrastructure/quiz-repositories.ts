@@ -16,18 +16,10 @@ export class QuizRepositories {
   //save
   async saveGame(createdGame: Game, manager?: EntityManager): Promise<Game> {
     return manager ? manager.getRepository(Game).save(createdGame) : this.gameRepo.save(createdGame);
-    // if (manager) {
-    //   return manager.getRepository(Game).save(createdGame);
-    // }
-    // return this.gameRepo.save(createdGame);
   }
 
   async savePlayer(createdPlayer: Player, manager?: EntityManager): Promise<Player> {
     return manager ? manager.getRepository(Player).save(createdPlayer) : this.playerRepo.save(createdPlayer);
-    // if (manager) {
-    //   return manager.getRepository(Player).save(createdPlayer);
-    // }
-    // return this.playerRepo.save(createdPlayer);
   }
 
   //get
@@ -130,7 +122,6 @@ export class QuizRepositories {
     const game = await manager
       .getRepository(Game)
       .createQueryBuilder('g')
-      // .setLock('pessimistic_write')
       .setLock('pessimistic_write', undefined, ['g'])
       .innerJoinAndSelect('g.questions', 'q')
       .innerJoinAndSelect('g.firstPlayerProgress', 'firstPlayerProgress')
@@ -138,10 +129,8 @@ export class QuizRepositories {
       .innerJoinAndSelect('g.secondPlayerProgress', 'secondPlayerProgress')
       .leftJoinAndSelect('secondPlayerProgress.answers', 'secondAnswers')
       .where('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
-      .orWhere('g.status = :gameStatus AND g.firstPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
+      .orWhere('g.status = :gameStatus AND g.secondPlayerId = :userId', { gameStatus: GameStatusesType.Active, userId: userId })
       .getOne();
-
-    console.log('--------------------------------------', game);
     if (!game) return null;
     return game;
   }

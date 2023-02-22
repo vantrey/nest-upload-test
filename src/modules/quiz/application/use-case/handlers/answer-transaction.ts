@@ -21,22 +21,16 @@ export class AnswerTransaction
   async execute(command: AnswerQuizCommand): Promise<AnswerViewModel> {
     return await this.run(command);
   }
-
   // the important thing here is to use the manager that we've created in the base class
   protected async onExecute(data: AnswerQuizCommand, manager: EntityManager): Promise<AnswerViewModel> {
     const { answer } = data.inputAnswerModel;
     const { userId } = data;
-    console.log('-------answer', answer);
     //start ----
     const activeGame = await this.quizRepo.findActiveGameByUserIdManager(userId, manager);
-    console.log('--__________________________________-');
-    console.log('--------', activeGame);
     if (!activeGame) throw new ForbiddenExceptionMY('Current user is already participating in active pair');
     activeGame.startGame(userId, answer);
     // console.log('--__________________________________-');
     await this.quizRepo.saveGame(activeGame, manager);
-    // console.log('-------1', res.firstPlayerProgress.answers);
-    // console.log('-------2', res.secondPlayerProgress.answers);
     const result =
       activeGame.getIdFirstPlayer() === userId ? activeGame.getLastAnswerFirstPlayer() : activeGame.getLastAnswerSecondPlayer();
     //finish ----

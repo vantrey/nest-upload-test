@@ -1,7 +1,7 @@
 import { PaginationDto } from '../../../../common/pagination.dto';
 
 export class PaginationCommentDto extends PaginationDto {
-  isSorByDefault() {
+  isSorByDefault(): string {
     const defaultValue = ['id', 'content', 'createdAt'];
     return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
   }

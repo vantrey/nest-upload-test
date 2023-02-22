@@ -130,7 +130,7 @@ export class BlogsQueryRepositories {
       select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership', 'image', 'subscribersCount'],
       relations: { image: true },
       where: filter,
-      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      order: { [data.isSortByDefault()]: data.isSortDirection() },
       skip: data.skip,
       take: data.getPageSize(),
     });
@@ -153,7 +153,7 @@ export class BlogsQueryRepositories {
       select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'userId', 'isBanned', 'banDate'],
       relations: { user: true },
       where: filter,
-      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      order: { [data.isSortByDefault()]: data.isSortDirection() },
       skip: data.skip,
       take: data.getPageSize(),
     });
@@ -179,7 +179,7 @@ export class BlogsQueryRepositories {
       select: ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership', 'image'],
       relations: { image: true },
       where: filter,
-      order: { [data.isSorByDefault()]: data.isSortDirection() },
+      order: { [data.isSortByDefault()]: data.isSortDirection() },
       skip: data.skip,
       take: data.getPageSize(),
     });

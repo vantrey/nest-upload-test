@@ -20,8 +20,9 @@ import { LikeInfoViewModel } from '../../../comments/infrastructure/query-reposi
 import { PhotoSizeModel } from '../../../blogger/infrastructure/blog-images-view.dto';
 import { ImagePost } from '../../../../entities/imagePost.entity';
 import { PostImagesViewModel } from '../../../blogger/infrastructure/post-images-view.dto';
-import { PaginationPostDto } from '../../api/input-Dtos/pagination-post.dto';
+import { PaginationPostDto, SubscriptionStatus } from '../../api/input-Dtos/pagination-post.dto';
 import { PaginationCommentDto } from '../../../blogger/api/input-dtos/pagination-comment.dto';
+import { SubscriptionStatuses, SubscriptionToBlog } from '../../../../entities/subscription.entity';
 
 @Injectable()
 export class PostsQueryRepositories {
@@ -32,6 +33,8 @@ export class PostsQueryRepositories {
     @InjectRepository(LikePost) private readonly likePostRepo: Repository<LikePost>,
     @InjectRepository(BannedBlogUser) private readonly bannedBlogUserRepo: Repository<BannedBlogUser>,
     @InjectRepository(ImagePost) private readonly imagePostRepo: Repository<ImagePost>,
+    @InjectRepository(SubscriptionToBlog)
+    private readonly subscriptionToBlogRepo: Repository<SubscriptionToBlog>,
   ) {}
 
   private async postForView(post: Post, userId: string | null): Promise<PostViewModel> {
@@ -95,10 +98,19 @@ export class PostsQueryRepositories {
     );
   }
 
-  async findPosts(data: PaginationPostDto, userId: string | null, blogId?: string): Promise<PaginationViewDto<PostViewModel>> {
+  async findPosts(data: PaginationPostDto, userId?: string | null, blogId?: string): Promise<PaginationViewDto<PostViewModel>> {
     let filter;
     if (blogId) {
       filter = { blogId: blogId, isBanned: false };
+    } else if (userId && data.getSubscriptionStatus() === SubscriptionStatus.OnlyFromSubscribedBlogs) {
+      const subscriptionToBlogs = await this.subscriptionToBlogRepo.find({
+        select: ['blogId'],
+        where: { userId: userId, status: SubscriptionStatuses.Subscribed },
+      });
+      filter = subscriptionToBlogs.map((e) => ({
+        blogId: e.blogId,
+        isBanned: false,
+      }));
     } else {
       filter = { isBanned: false };
     }

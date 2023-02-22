@@ -60,10 +60,12 @@
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
     "sharp": "^0.31.3",
+    "stripe": "^11.11.0",
     "typeorm": "^0.3.11"
   },
   "devDependencies": {
     "@aws-sdk/s3-request-presigner": "^3.267.0",
+    "@compodoc/compodoc": "^1.1.19",
     "@nestjs/cli": "^9.0.0",
     "@nestjs/schematics": "^9.0.0",
     "@nestjs/testing": "^9.0.0",

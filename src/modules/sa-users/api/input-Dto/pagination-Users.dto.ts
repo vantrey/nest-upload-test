@@ -23,14 +23,14 @@ export class PaginationUsersDto extends PaginationDto {
    */
   @IsOptional()
   searchEmailTerm?: string = '';
-
-  isSorByDefault() {
-    const defaultValue = ['id', 'login', 'email', 'createdAt'];
-    return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
-  }
-
-  getBanStatus() {
-    const defaultValue = ['all', 'banned', 'notBanned'];
-    return (this.banStatus = defaultValue.includes(this.banStatus) ? this.banStatus : BanStatusType.all);
-  }
+  //
+  // isSorByDefault(): string {
+  //   const defaultValue = ['id', 'login', 'email', 'createdAt'];
+  //   return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
+  // }
+  //
+  // getBanStatus(): string {
+  //   const defaultValue = ['all', 'banned', 'notBanned'];
+  //   return (this.banStatus = defaultValue.includes(this.banStatus) ? this.banStatus : BanStatusType.all);
+  // }
 }

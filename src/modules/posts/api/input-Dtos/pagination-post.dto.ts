@@ -13,12 +13,12 @@ export class PaginationPostDto extends PaginationDto {
   @IsOptional()
   subscriptionStatus: SubscriptionStatus = SubscriptionStatus.All;
 
-  isSorByDefault() {
+  isSorByDefault(): string {
     const defaultValue = ['id', 'title', 'shortDescription', 'content', 'blogId', 'blogName', 'createdAt'];
     return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
   }
 
-  getSubscriptionStatus() {
+  getSubscriptionStatus(): string {
     const defaultValue = ['all', 'onlyFromSubscribedBlogs'];
     return (this.subscriptionStatus = defaultValue.includes(this.subscriptionStatus)
       ? this.subscriptionStatus

@@ -25,7 +25,7 @@ export class PaginationDto {
    * Sort by desc or asc
    */
   @IsOptional()
-  private sortDirection?: SortDirectionType = SortDirectionType.Desc;
+  sortDirection?: SortDirectionType = SortDirectionType.Desc;
 
   get skip(): number {
     return this.getPageSize() * (this.getPageNumber() - 1);
@@ -35,7 +35,7 @@ export class PaginationDto {
     return this.sortDirection === SortDirectionType.Asc ? 'ASC' : 'DESC';
   }
 
-  getPageSize() {
+  getPageSize(): number {
     if (isNaN(this.pageSize)) {
       return (this.pageSize = 10);
     }
@@ -45,7 +45,7 @@ export class PaginationDto {
     return this.pageSize;
   }
 
-  getPageNumber() {
+  getPageNumber(): number {
     if (isNaN(this.pageNumber)) {
       return (this.pageNumber = 1);
     }

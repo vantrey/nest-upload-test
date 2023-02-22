@@ -72,6 +72,7 @@ export class PostsController {
     return await this.commandBus.execute(new CreateCommentCommand(id, inputCommentModel, userId));
   }
 
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Returns all posts with pagination' })
   @ApiOkResponsePaginated(PostViewModel)
   @ApiResponse({ status: 200, description: 'success', type: PostViewModel })

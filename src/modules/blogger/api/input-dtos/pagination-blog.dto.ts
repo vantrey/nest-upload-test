@@ -8,7 +8,7 @@ export class PaginationBlogDto extends PaginationDto {
   @IsOptional()
   searchNameTerm?: string = '';
 
-  isSorByDefault() {
+  isSortByDefault(): string {
     const defaultValue = ['id', 'name', 'description', 'websiteUrl', 'createdAt', 'isMembership', 'subscribersCount'];
     return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'createdAt');
   }
