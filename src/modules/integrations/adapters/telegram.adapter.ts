@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+const axios = require('axios');
 import { ConfigType } from '../../../config/configuration';
 
 @Injectable()
