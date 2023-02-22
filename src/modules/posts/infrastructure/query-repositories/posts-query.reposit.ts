@@ -68,7 +68,7 @@ export class PostsQueryRepositories {
     });
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(countLike, countDislike, myStatus, newestLikes);
     if (post.image === null) {
-      const images = new PostImagesViewModel(null);
+      const images = new PostImagesViewModel([]);
       return new PostViewModel(
         post.id,
         post.title,
@@ -202,6 +202,7 @@ export class PostsQueryRepositories {
   async mappedPostForView(post: Post): Promise<PostViewModel> {
     const extendedLikesInfo = new ExtendedLikesInfoViewModel(0, 0, LikeStatusType.None, []);
     //returning created post with extended likes info for View
+    const images = new PostImagesViewModel([]);
     return new PostViewModel(
       post.id,
       post.title,
@@ -211,7 +212,7 @@ export class PostsQueryRepositories {
       post.blog.name,
       post.createdAt,
       extendedLikesInfo,
-      null,
+      images,
     );
   }
 
