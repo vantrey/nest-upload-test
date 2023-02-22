@@ -82,7 +82,7 @@ export class BloggersController {
     schema: {
       type: 'object',
       properties: {
-        wallpaper: {
+        file: {
           // 👈 this property
           type: 'string',
           format: 'binary',
@@ -115,7 +115,7 @@ export class BloggersController {
     schema: {
       type: 'object',
       properties: {
-        main: {
+        file: {
           // 👈 this property
           type: 'string',
           format: 'binary',
@@ -148,7 +148,7 @@ export class BloggersController {
     schema: {
       type: 'object',
       properties: {
-        main: {
+        file: {
           // 👈 this property
           type: 'string',
           format: 'binary',

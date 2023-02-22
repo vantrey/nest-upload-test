@@ -1492,7 +1492,7 @@ window.onload = function() {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "wallpaper": {
+                    "file": {
                       "type": "string",
                       "format": "binary"
                     }
@@ -1561,7 +1561,7 @@ window.onload = function() {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "main": {
+                    "file": {
                       "type": "string",
                       "format": "binary"
                     }
@@ -1638,7 +1638,7 @@ window.onload = function() {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "main": {
+                    "file": {
                       "type": "string",
                       "format": "binary"
                     }
