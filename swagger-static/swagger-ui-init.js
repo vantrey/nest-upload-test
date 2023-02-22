@@ -3797,17 +3797,6 @@ window.onload = function() {
             },
             "images": {
               "$ref": "#/components/schemas/BlogImagesViewModel"
-            },
-            "currentUserSubscriptionStatus": {
-              "enum": [
-                "Subscribed",
-                "Unsubscribed",
-                "None"
-              ],
-              "type": "string"
-            },
-            "subscribersCount": {
-              "type": "number"
             }
           },
           "required": [
@@ -3817,9 +3806,7 @@ window.onload = function() {
             "websiteUrl",
             "createdAt",
             "isMembership",
-            "images",
-            "currentUserSubscriptionStatus",
-            "subscribersCount"
+            "images"
           ]
         },
         "LikeDetailsViewModel": {
@@ -4093,9 +4080,6 @@ window.onload = function() {
             },
             "images": {
               "$ref": "#/components/schemas/BlogImagesViewModel"
-            },
-            "subscribersCount": {
-              "type": "number"
             }
           },
           "required": [
@@ -4105,8 +4089,7 @@ window.onload = function() {
             "websiteUrl",
             "createdAt",
             "isMembership",
-            "images",
-            "subscribersCount"
+            "images"
           ]
         },
         "CreatePostDto": {

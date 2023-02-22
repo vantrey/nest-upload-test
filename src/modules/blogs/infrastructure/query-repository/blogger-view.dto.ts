@@ -8,7 +8,7 @@ export class BloggerViewModel {
   public createdAt: string;
   public isMembership: boolean;
   public images: BlogImagesViewModel;
-  public subscribersCount: number;
+  // public subscribersCount: number;
   constructor(
     id: string,
     name: string,
@@ -17,7 +17,7 @@ export class BloggerViewModel {
     createdAt: string,
     isMembership: boolean,
     images: BlogImagesViewModel,
-    subscribersCount: number,
+    // subscribersCount: number,
   ) {
     this.id = id;
     this.name = name;
@@ -26,6 +26,6 @@ export class BloggerViewModel {
     this.createdAt = createdAt;
     this.isMembership = isMembership;
     this.images = images;
-    this.subscribersCount = subscribersCount;
+    // this.subscribersCount = subscribersCount;
   }
 }

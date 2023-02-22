@@ -47,7 +47,7 @@ export class BlogsQueryRepositories {
   private mapperBlogger(blog: Blog): BloggerViewModel {
     let images: BlogImagesViewModel;
     if (blog.image === null) {
-      images = new BlogImagesViewModel(null, null);
+      images = new BlogImagesViewModel(null, []);
       return new BloggerViewModel(
         blog.id,
         blog.name,
@@ -56,14 +56,14 @@ export class BlogsQueryRepositories {
         blog.createdAt,
         blog.isMembership,
         images,
-        blog.subscribersCount,
+        // blog.subscribersCount,
       );
     }
     const imageWallpaperDefault = new PhotoSizeModel(blog.image.keyImageWallpaper, 1028, 312, blog.image.sizeImageWallpaper);
     const imageWallpaper = blog.image.keyImageWallpaper ? imageWallpaperDefault : null;
     const imageMainDefault = new PhotoSizeModel(blog.image.keyImageMain, 156, 156, blog.image.sizeMainImage);
     const imageSmallMainDefault = new PhotoSizeModel(blog.image.keySmallImageMain, 48, 48, blog.image.sizeSmallImageMain);
-    const imageMain = blog.image.keyImageMain ? [imageMainDefault, imageSmallMainDefault] : null;
+    const imageMain = blog.image.keyImageMain ? [imageMainDefault, imageSmallMainDefault] : [];
     images = new BlogImagesViewModel(imageWallpaper, imageMain);
     return new BloggerViewModel(
       blog.id,
@@ -73,16 +73,16 @@ export class BlogsQueryRepositories {
       blog.createdAt,
       blog.isMembership,
       images,
-      blog.subscribersCount,
+      // blog.subscribersCount,
     );
   }
 
   private async mapperBlog(blog: Blog, userId?: string | null): Promise<BlogViewModel> {
     const subscription = await this.subscriptionToBlogRepo.findOneBy({ userId: userId, blogId: blog.id });
-    const currentUserSubscriptionStatus = userId ? subscription.status : SubscriptionStatuses.None;
+    // const currentUserSubscriptionStatus = userId ? subscription.status : SubscriptionStatuses.None;
     let images: BlogImagesViewModel;
     if (blog.image === null) {
-      images = new BlogImagesViewModel(null, null);
+      images = new BlogImagesViewModel(null, []);
       return new BlogViewModel(
         blog.id,
         blog.name,
@@ -91,15 +91,15 @@ export class BlogsQueryRepositories {
         blog.createdAt,
         blog.isMembership,
         images,
-        currentUserSubscriptionStatus,
-        blog.subscribersCount,
+        // currentUserSubscriptionStatus,
+        // blog.subscribersCount,
       );
     }
     const imageWallpaperDefault = new PhotoSizeModel(blog.image.keyImageWallpaper, 1028, 312, blog.image.sizeImageWallpaper);
     const imageWallpaper = blog.image.keyImageWallpaper ? imageWallpaperDefault : null;
     const imageMainDefault = new PhotoSizeModel(blog.image.keyImageMain, 156, 156, blog.image.sizeMainImage);
     const imageSmallMainDefault = new PhotoSizeModel(blog.image.keySmallImageMain, 48, 48, blog.image.sizeSmallImageMain);
-    const imageMain = blog.image.keyImageMain ? [imageMainDefault, imageSmallMainDefault] : null;
+    const imageMain = blog.image.keyImageMain ? [imageMainDefault, imageSmallMainDefault] : [];
     images = new BlogImagesViewModel(imageWallpaper, imageMain);
     return new BlogViewModel(
       blog.id,
@@ -109,8 +109,8 @@ export class BlogsQueryRepositories {
       blog.createdAt,
       blog.isMembership,
       images,
-      currentUserSubscriptionStatus,
-      blog.subscribersCount,
+      // currentUserSubscriptionStatus,
+      // blog.subscribersCount,
     );
   }
 
