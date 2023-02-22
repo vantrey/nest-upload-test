@@ -272,7 +272,7 @@ export class BlogsQueryRepositories {
     const imageBlogInfo = await this.imageBlogRepo.findOne({
       where: { blogId: blogId },
     });
-    let photoInfoMain = null;
+    let photoInfoMain = [];
     if (imageBlogInfo.keyImageMain !== null) {
       const infoMain = new PhotoSizeModel(imageBlogInfo.keyImageMain, 156, 156, imageBlogInfo.sizeMainImage);
       const infoReducedMain = new PhotoSizeModel(imageBlogInfo.keySmallImageMain, 48, 48, imageBlogInfo.sizeSmallImageMain);
