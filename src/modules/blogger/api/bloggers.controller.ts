@@ -76,7 +76,7 @@ export class BloggersController {
   @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
   @Post('blogs/:blogId/images/wallpaper')
   @HttpCode(200)
-  @UseInterceptors(FileInterceptor('wallpaper'))
+  @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -109,7 +109,7 @@ export class BloggersController {
   @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
   @Post('blogs/:blogId/images/main')
   @HttpCode(200)
-  @UseInterceptors(FileInterceptor('main'))
+  @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -142,7 +142,7 @@ export class BloggersController {
   @ApiResponse({ status: 403, description: 'You are not the owner of the blog' })
   @Post('blogs/:blogId/posts/:postId/images/main')
   @HttpCode(200)
-  @UseInterceptors(FileInterceptor('main'))
+  @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
