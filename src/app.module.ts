@@ -244,7 +244,7 @@ const entities = [
           url: database.PGSQL_URL,
           autoLoadEntities: true,
           synchronize: true,
-          ssl: true,
+          //ssl: true,
         };
       },
     }),

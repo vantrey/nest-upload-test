@@ -61,7 +61,7 @@ export class S3StorageAdapter {
         fieldId: uploadResult.ETag.slice(1, -1),
       };
     } catch (e) {
-      console.error(e);
+      console.error('aws err', e);
     }
   }
 

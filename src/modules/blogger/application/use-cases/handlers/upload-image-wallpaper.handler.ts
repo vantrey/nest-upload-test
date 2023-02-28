@@ -21,6 +21,7 @@ export class UploadImageWallpaperHandler implements ICommandHandler<UploadImageW
     if (!blog.checkOwner(userId)) throw new ForbiddenExceptionMY(`You are not the owner of the blog`);
     const key = `blogger/${userId}/wallpaper/${blogId}-1028x312.png`;
     //save on s3 storage
+    console.log('upload key', key)
     const urlImageWallpaper = await this.storageS3.saveFile(userId, photo, key);
     //creating instance main image
     await blog.setImageWallpaper(urlImageWallpaper, photo);
